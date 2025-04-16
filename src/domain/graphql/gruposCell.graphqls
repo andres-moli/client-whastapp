@@ -1,0 +1,83 @@
+mutation CreateGroup($createInput: CreateGroupInput!) {
+  createGroup(createInput: $createInput) {
+    id
+  }
+}
+query Groups($orderBy: [FindGroupOrderBy!], $where: FindGroupWhere, $pagination: Pagination) {
+  groups(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nombre
+    descripcion
+    worker {
+      email
+      identificationType
+      identificationNumber
+      fullName
+    }
+    wsGroupCells {
+      cell {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        celular
+        region
+        nit
+        nombre
+        direccion
+        email
+        status
+      }
+    }
+  }
+  groupsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    totalItems
+    itemsPerPage
+    totalPages
+    currentPage
+  }
+}
+mutation UpdateGroup($updateInput: UpdateGroupInput!) {
+  updateGroup(updateInput: $updateInput) {
+    id
+  }
+}
+query Group($groupId: ID!) {
+  group(id: $groupId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nombre
+    descripcion
+    worker {
+      email
+      identificationType
+      identificationNumber
+      fullName
+    }
+    wsGroupCells {
+      cell {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        celular
+        region
+        nit
+        nombre
+        direccion
+        email
+        status
+      }
+    }
+  }
+}
+mutation RemoveGroupWithCells($groupId: String!, $cellId: String!) {
+  removeGroupWithCells(groupId: $groupId, cellId: $cellId) {
+    id
+  }
+}

@@ -1,0 +1,160 @@
+mutation CreateBundle($createInput: CreateWsBatchDto!) {
+  createBundle(createInput: $createInput) {
+    id
+  }
+}
+mutation UpdateBundle($updateInput: UpdateBundleInput!) {
+  updateBundle(updateInput: $updateInput) {
+    id
+  }
+}
+query Bundles($orderBy: [FindWsBatchOrderBy!], $where: FindWsBatchWhere, $pagination: Pagination) {
+  bundles(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nombre
+    message
+    descripcion
+    estado
+    group {
+      nombre
+      descripcion
+    }
+    createdByUserAt {
+      fullName
+      email
+      identificationNumber
+    }
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      chunkSize
+      fileUrl
+      url
+    }
+    detalles {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      celular {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        celular
+        region
+        nit
+        nombre
+        direccion
+        email
+        status
+        wsGroupCells {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          group {
+            id
+            createdAt
+            updatedAt
+            deletedAt
+            nombre
+            descripcion
+          }
+        }
+      }
+      estado
+    }
+  }
+  bundlesCount (orderBy: $orderBy, where: $where, pagination: $pagination){
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+mutation SendLoteMessages($sendLoteMessagesId: String!) {
+  sendLoteMessages(id: $sendLoteMessagesId) {
+    success
+    message
+    error
+  }
+}
+query Bundle($bundleId: ID!) {
+  bundle(id: $bundleId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nombre
+    message
+    descripcion
+    estado
+    group {
+      nombre
+      descripcion
+    }
+    createdByUserAt {
+      fullName
+      email
+      identificationNumber
+    }
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      chunkSize
+      fileUrl
+      url
+    }
+    detalles {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      celular {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        celular
+        region
+        nit
+        nombre
+        direccion
+        email
+        status
+        wsGroupCells {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          group {
+            id
+            createdAt
+            updatedAt
+            deletedAt
+            nombre
+            descripcion
+          }
+        }
+      }
+      estado
+      error
+    }
+  }
+}

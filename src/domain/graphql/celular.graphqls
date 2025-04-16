@@ -1,0 +1,33 @@
+query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pagination) {
+  Cells(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    celular
+    region
+    nit
+    nombre
+    direccion
+    email
+    status
+  }
+  CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    totalItems
+    itemsPerPage
+    totalPages
+    currentPage
+  }
+}
+
+mutation UpdateCell($updateInput: UpdateCellInput!) {
+  updateCell(updateInput: $updateInput) {
+    id
+  }
+}
+
+mutation CreateCell($createInput: CreateCellInput!) {
+  createCell(createInput: $createInput) {
+    id
+  }
+}
