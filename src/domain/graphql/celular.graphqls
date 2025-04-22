@@ -11,6 +11,14 @@ query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pa
     direccion
     email
     status
+    city {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      code
+      name
+    }
   }
   CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
     totalItems

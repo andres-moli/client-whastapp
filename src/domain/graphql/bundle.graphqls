@@ -40,40 +40,6 @@ query Bundles($orderBy: [FindWsBatchOrderBy!], $where: FindWsBatchWhere, $pagina
       fileUrl
       url
     }
-    detalles {
-      id
-      createdAt
-      updatedAt
-      deletedAt
-      celular {
-        id
-        createdAt
-        updatedAt
-        deletedAt
-        celular
-        region
-        nit
-        nombre
-        direccion
-        email
-        status
-        wsGroupCells {
-          id
-          createdAt
-          updatedAt
-          deletedAt
-          group {
-            id
-            createdAt
-            updatedAt
-            deletedAt
-            nombre
-            descripcion
-          }
-        }
-      }
-      estado
-    }
   }
   bundlesCount (orderBy: $orderBy, where: $where, pagination: $pagination){
     currentPage

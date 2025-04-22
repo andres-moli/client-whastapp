@@ -190,12 +190,14 @@ export type CreateAndRemoveRoleFxInput = {
 
 export type CreateCellInput = {
   celular: Scalars['String']['input'];
+  ciudad?: InputMaybe<Scalars['String']['input']>;
   direccion?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
-  nit: Scalars['String']['input'];
+  nit?: InputMaybe<Scalars['String']['input']>;
   nombre?: InputMaybe<Scalars['String']['input']>;
   region: Scalars['String']['input'];
   status?: CellStatusEmun;
+  tipoCliente?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateClientContactInput = {
@@ -498,6 +500,7 @@ export type CreateWsBatchDto = {
   groupId: Scalars['String']['input'];
   message: Scalars['String']['input'];
   nombre: Scalars['String']['input'];
+  variables?: InputMaybe<Array<KeyValuePairInput>>;
 };
 
 export type DashboardDataModal = {
@@ -1001,6 +1004,17 @@ export type Group = {
   users?: Maybe<Array<User>>;
 };
 
+export type KeyValuePair = {
+  __typename?: 'KeyValuePair';
+  key: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type KeyValuePairInput = {
+  key: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
 export type MarcaProyecto = {
   __typename?: 'MarcaProyecto';
   createdAt: Scalars['DateTime']['output'];
@@ -1084,6 +1098,7 @@ export type Mutation = {
   eliminarConcepto: Scalars['String']['output'];
   enableAndDisableDoubleVerification: Scalars['String']['output'];
   i18nTest: Scalars['String']['output'];
+  importGroupWithExcell: Scalars['String']['output'];
   recoverPassword: Scalars['String']['output'];
   remove: NotificationGroup;
   removeBundle: WsBatch;
@@ -1367,6 +1382,11 @@ export type MutationEliminarConceptoArgs = {
 
 export type MutationEnableAndDisableDoubleVerificationArgs = {
   doubleVerificationInput: DoubleVerificationInput;
+};
+
+
+export type MutationImportGroupWithExcellArgs = {
+  fileId: Scalars['String']['input'];
 };
 
 
@@ -3102,10 +3122,12 @@ export type UpdateBundleInput = {
   id: Scalars['ID']['input'];
   message?: InputMaybe<Scalars['String']['input']>;
   nombre?: InputMaybe<Scalars['String']['input']>;
+  variables?: InputMaybe<Array<KeyValuePairInput>>;
 };
 
 export type UpdateCellInput = {
   celular?: InputMaybe<Scalars['String']['input']>;
+  ciudad?: InputMaybe<Scalars['String']['input']>;
   direccion?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
@@ -3113,6 +3135,7 @@ export type UpdateCellInput = {
   nombre?: InputMaybe<Scalars['String']['input']>;
   region?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<CellStatusEmun>;
+  tipoCliente?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateClientContactInput = {
@@ -3662,6 +3685,7 @@ export type WsBatch = {
   message: Scalars['String']['output'];
   nombre: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+  variables?: Maybe<Array<KeyValuePair>>;
 };
 
 export type WsBatchDetail = {
@@ -3693,15 +3717,18 @@ export enum WsBatchStatus {
 export type WsCell = {
   __typename?: 'WsCell';
   celular: Scalars['String']['output'];
+  city?: Maybe<City>;
+  ciudad?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   direccion?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  nit: Scalars['String']['output'];
+  nit?: Maybe<Scalars['String']['output']>;
   nombre?: Maybe<Scalars['String']['output']>;
   region: Scalars['String']['output'];
   status: CellStatusEmun;
+  tipoCliente?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   wsGroupCells?: Maybe<Array<WsGroupCell>>;
 };
@@ -3812,7 +3839,7 @@ export type BundlesQueryVariables = Exact<{
 }>;
 
 
-export type BundlesQuery = { __typename?: 'Query', bundles: Array<{ __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit: string, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null }>, bundlesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+export type BundlesQuery = { __typename?: 'Query', bundles: Array<{ __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }>, bundlesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
 
 export type SendLoteMessagesMutationVariables = Exact<{
   sendLoteMessagesId: Scalars['String']['input'];
@@ -3826,7 +3853,7 @@ export type BundleQueryVariables = Exact<{
 }>;
 
 
-export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit: string, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
+export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
 
 export type CellsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindCellOrderBy> | FindCellOrderBy>;
@@ -3835,7 +3862,7 @@ export type CellsQueryVariables = Exact<{
 }>;
 
 
-export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit: string, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type UpdateCellMutationVariables = Exact<{
   updateInput: UpdateCellInput;
@@ -4074,7 +4101,7 @@ export type GroupsQueryVariables = Exact<{
 }>;
 
 
-export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit: string, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun } }> | null }>, groupsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun } }> | null }>, groupsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type UpdateGroupMutationVariables = Exact<{
   updateInput: UpdateGroupInput;
@@ -4088,7 +4115,7 @@ export type GroupQueryVariables = Exact<{
 }>;
 
 
-export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit: string, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun } }> | null } };
+export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun } }> | null } };
 
 export type RemoveGroupWithCellsMutationVariables = Exact<{
   groupId: Scalars['String']['input'];
@@ -4097,6 +4124,13 @@ export type RemoveGroupWithCellsMutationVariables = Exact<{
 
 
 export type RemoveGroupWithCellsMutation = { __typename?: 'Mutation', removeGroupWithCells: { __typename?: 'WsGroupCell', id: string } };
+
+export type ImportGroupWithExcellMutationVariables = Exact<{
+  fileId: Scalars['String']['input'];
+}>;
+
+
+export type ImportGroupWithExcellMutation = { __typename?: 'Mutation', importGroupWithExcell: string };
 
 export type ParametersQueryVariables = Exact<{
   pagination?: InputMaybe<Pagination>;
@@ -4802,40 +4836,6 @@ export const BundlesDocument = gql`
       fileUrl
       url
     }
-    detalles {
-      id
-      createdAt
-      updatedAt
-      deletedAt
-      celular {
-        id
-        createdAt
-        updatedAt
-        deletedAt
-        celular
-        region
-        nit
-        nombre
-        direccion
-        email
-        status
-        wsGroupCells {
-          id
-          createdAt
-          updatedAt
-          deletedAt
-          group {
-            id
-            createdAt
-            updatedAt
-            deletedAt
-            nombre
-            descripcion
-          }
-        }
-      }
-      estado
-    }
   }
   bundlesCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
     currentPage
@@ -5033,6 +5033,14 @@ export const CellsDocument = gql`
     direccion
     email
     status
+    city {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      code
+      name
+    }
   }
   CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
     totalItems
@@ -6765,6 +6773,37 @@ export function useRemoveGroupWithCellsMutation(baseOptions?: Apollo.MutationHoo
 export type RemoveGroupWithCellsMutationHookResult = ReturnType<typeof useRemoveGroupWithCellsMutation>;
 export type RemoveGroupWithCellsMutationResult = Apollo.MutationResult<RemoveGroupWithCellsMutation>;
 export type RemoveGroupWithCellsMutationOptions = Apollo.BaseMutationOptions<RemoveGroupWithCellsMutation, RemoveGroupWithCellsMutationVariables>;
+export const ImportGroupWithExcellDocument = gql`
+    mutation ImportGroupWithExcell($fileId: String!) {
+  importGroupWithExcell(fileId: $fileId)
+}
+    `;
+export type ImportGroupWithExcellMutationFn = Apollo.MutationFunction<ImportGroupWithExcellMutation, ImportGroupWithExcellMutationVariables>;
+
+/**
+ * __useImportGroupWithExcellMutation__
+ *
+ * To run a mutation, you first call `useImportGroupWithExcellMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useImportGroupWithExcellMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [importGroupWithExcellMutation, { data, loading, error }] = useImportGroupWithExcellMutation({
+ *   variables: {
+ *      fileId: // value for 'fileId'
+ *   },
+ * });
+ */
+export function useImportGroupWithExcellMutation(baseOptions?: Apollo.MutationHookOptions<ImportGroupWithExcellMutation, ImportGroupWithExcellMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ImportGroupWithExcellMutation, ImportGroupWithExcellMutationVariables>(ImportGroupWithExcellDocument, options);
+      }
+export type ImportGroupWithExcellMutationHookResult = ReturnType<typeof useImportGroupWithExcellMutation>;
+export type ImportGroupWithExcellMutationResult = Apollo.MutationResult<ImportGroupWithExcellMutation>;
+export type ImportGroupWithExcellMutationOptions = Apollo.BaseMutationOptions<ImportGroupWithExcellMutation, ImportGroupWithExcellMutationVariables>;
 export const ParametersDocument = gql`
     query Parameters($pagination: Pagination) {
   parameters(pagination: $pagination) {

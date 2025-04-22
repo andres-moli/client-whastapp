@@ -81,3 +81,6 @@ mutation RemoveGroupWithCells($groupId: String!, $cellId: String!) {
     id
   }
 }
+mutation ImportGroupWithExcell($fileId: String!) {
+  importGroupWithExcell(fileId: $fileId)
+}

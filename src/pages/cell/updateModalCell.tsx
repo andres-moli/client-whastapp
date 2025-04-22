@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { Modal } from "../../components/ui/modal";
 import { ToastyErrorGraph } from "../../lib/utils";
-import { useUpdateCellMutation, CellStatusEmun, WsCell } from "../../domain/graphql";
+import { useUpdateCellMutation, CellStatusEmun, WsCell, useCitiesQuery } from "../../domain/graphql";
 import { apolloClient } from "../../main.config";
 import SearchableSelect, { Option } from "../../components/form/selectSeach";
 
@@ -34,6 +34,7 @@ interface UpdateCellModalProps {
 export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeModal, openModal, cell }) => {
   if(cell == undefined) return null;
   const [updateCell] = useUpdateCellMutation();
+  const {data: dataCity, loading: loadingCity} = useCitiesQuery({})
 
   // Prellenar los estados
   const [celular, setCelular] = useState(cell.celular);
@@ -43,7 +44,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
   const [direccion, setDireccion] = useState(cell.direccion ?? "");
   const [email, setEmail] = useState(cell.email ?? "");
   const [status, setStatus] = useState<CellStatusEmun>(cell.status);
-
+  const [cityId, setCityId] = useState("");
   useEffect(() => {
     if (isOpen) {
       setCelular(cell.celular);
@@ -53,6 +54,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       setDireccion(cell.direccion ?? "");
       setEmail(cell.email ?? "");
       setStatus(cell.status);
+      setCityId(cell.city?.id ?? "");
     }
   }, [isOpen, cell]);
 
@@ -99,7 +101,8 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
               nombre,
               direccion,
               email,
-              status
+              status,
+              ciudad: cityId || undefined
             }
           }
         });
@@ -117,7 +120,12 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       ToastyErrorGraph(err as any);
     }
   };
-
+  const cityOptions: Option[] = dataCity?.cities.map((city) => {
+    return {
+      value: city.id,
+      label: city.name
+    }
+  }).sort((a,b) => a.label.localeCompare(b.label)) || []
   return (
     <Modal isOpen={isOpen} onClose={closeModal} className="max-w-3xl p-6 lg:p-10">
       <div className="flex flex-col px-2 overflow-y-auto custom-scrollbar">
@@ -158,7 +166,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
             <div className="relative">
               <input
                 type="text"
-                value={nit}
+                value={nit || ''}
                 onChange={(e) => setNit(e.target.value)}
                 className="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
               />
@@ -213,6 +221,23 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
               onChange={(value) => setStatus(value as CellStatusEmun)}
               defaultValue={status}
             />
+          </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Ciudad
+            </label>
+            {
+              loadingCity 
+              ? 
+              <>Cargando ciudades</>
+              :
+              <SearchableSelect
+                placeholder="Seleccione una ciudad"
+                options={cityOptions}
+                onChange={setCityId}
+                defaultValue={cityId}
+              />
+            }
           </div>
         </div>
         <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-end">

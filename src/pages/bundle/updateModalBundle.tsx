@@ -11,6 +11,8 @@ import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import { BundleDetailTable } from "./BundleDetailTable";
 import { FileIcon } from "lucide-react";
+import { io, Socket } from "socket.io-client";
+import { ProgressBar } from "./loadingProcess";
 
 export const UpdateBundlePage = () => {
   const navigate = useNavigate();
@@ -27,7 +29,9 @@ export const UpdateBundlePage = () => {
   const [file, setFile] = useState<FileInfo>();
   const [estado, setEstado] = useState<WsBatchStatus>();
   const [detail, setDetail] = useState<WsBatchDetail[]>([]);
-
+  const [logs, setLogs] = useState<string[]>([]);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [progress, setProgress] = useState<{ current: number; total: number; percentage: number } | null>(null);
   useEffect(() => {
     if (bundle) {
       setName(bundle.nombre);
@@ -40,7 +44,94 @@ export const UpdateBundlePage = () => {
       setDetail(bundle.detalles || []);
     }
   }, [bundle]);
-
+  useEffect(() => {
+    if (!id) return;
+  
+    // 1. Recuperar estado anterior del localStorage
+    const savedProgress = localStorage.getItem(`progress-${id}`);
+    if (savedProgress) {
+      try {
+        const parsedProgress = JSON.parse(savedProgress);
+        setProgress(parsedProgress);
+      } catch (e) {
+        console.error("Error parsing saved progress", e);
+      }
+    }
+  
+    const savedLogs = localStorage.getItem(`logs-${id}`);
+    if (savedLogs) {
+      try {
+        const parsedLogs = JSON.parse(savedLogs);
+        setLogs(parsedLogs);
+      } catch (e) {
+        console.error("Error parsing saved logs", e);
+      }
+    }
+  
+    // 2. Establecer conexión WebSocket
+    const newSocket = io('ws://localhost:3021/ws', {
+      transports: ["websocket"],
+      query: { bundleId: id },
+    });
+  
+    setSocket(newSocket);
+  
+    newSocket.on("connect", () => {
+      console.log("📡 Conectado al socket");
+      newSocket.emit('subscribe', { bundleId: id });
+      
+      // 3. Verificar si hay progreso guardado para sincronizar
+      if (savedProgress) {
+        const parsedProgress = JSON.parse(savedProgress);
+        console.log("Recuperando progreso guardado:", parsedProgress);
+        setProgress(parsedProgress);
+      }
+    });
+  
+    newSocket.on("log", (data: { message: string }) => {
+      console.log("📡 Log recibido:", data.message);
+      setLogs((prevLogs) => {
+        const newLogs = [...prevLogs, data.message];
+        
+        // Guardar en localStorage
+        localStorage.setItem(`logs-${id}`, JSON.stringify(newLogs));
+        
+        return newLogs;
+      });
+    });
+  
+    newSocket.on("progress", (progress: { current: number; total: number; percentage: number }) => {
+      console.log(`Progreso: ${progress.current}/${progress.total} (${progress.percentage}%)`);
+      setProgress(progress);
+      
+      // Guardar en localStorage
+      localStorage.setItem(`progress-${id}`, JSON.stringify(progress));
+    });
+  
+    // 4. Limpieza al desmontar el componente
+    return () => {
+      newSocket.disconnect();
+      
+      // Opcional: Limpiar localStorage cuando el proceso esté completo
+      if (progress?.percentage === 100) {
+        localStorage.removeItem(`progress-${id}`);
+        localStorage.removeItem(`logs-${id}`);
+      }
+    };
+  }, [id]);
+  
+  // 5. Efecto adicional para limpiar datos obsoletos
+  useEffect(() => {
+    return () => {
+      // Limpiar datos al desmontar el componente si el proceso no está completo
+      if (progress?.percentage !== 100 && id) {
+        localStorage.removeItem(`progress-${id}`);
+        localStorage.removeItem(`logs-${id}`);
+      }
+    };
+  }, [progress, id]);
+  
+  
   const handleUpdate = async () => {
     try {
       const confirm = await Swal.fire({
@@ -145,7 +236,30 @@ export const UpdateBundlePage = () => {
           onChange={setMessage}
         />
       </div>
-      <BundleDetailTable  detail={detail} />
+      {
+        estado === WsBatchStatus.EnProceso && (
+          <>
+          <div className="mt-4">
+            <ProgressBar  progress={progress || undefined} />
+          </div>
+          <div className="mt-6">
+            <h4 className="mb-2 font-medium text-gray-800 dark:text-white/80">Logs en tiempo real</h4>
+            <div className="max-h-64 overflow-y-auto rounded border border-gray-300 p-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+              {logs.length === 0 ? (
+                <p className="text-gray-400 italic">No hay logs aún...</p>
+              ) : (
+                logs.map((log, index) => (
+                  <p key={index} className="mb-1">{log}</p>
+                ))
+              )}
+            </div>
+          </div>
+          <div className="mt-6">
+            <BundleDetailTable  detail={detail} />
+          </div>
+          </>
+        )
+      }
       <div className="flex items-center gap-3 mt-6">
         <button
           onClick={() => navigate("/bundles")}

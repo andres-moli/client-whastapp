@@ -16,6 +16,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useModal } from "../../hooks/useModal";
 import { debounce } from "lodash";
 import Input from "../../components/form/input/InputField";
+import { CreateGrupoExcelModal } from "./createModalBasic";
 
 export default function GroupTable() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export default function GroupTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [group, setGruoup] = useState<WsGroup>();
-
+  const {closeModal, isOpen, openModal} = useModal();
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -95,6 +96,9 @@ export default function GroupTable() {
             onChange={handleSearchChange}
           />
         </div>
+        <ButtonTable onClick={openModal}>
+          Crear desde excel
+        </ButtonTable>
         <ButtonTable onClick={() => navigate(`/group-create`)}>
           Crear Grupo
         </ButtonTable>
@@ -177,6 +181,11 @@ export default function GroupTable() {
           />
         </div>
       </div>
+      <CreateGrupoExcelModal 
+        closeModal={closeModal}
+        isOpen={isOpen} 
+        openModal={openModal}
+      />
     </div>
   );
 }

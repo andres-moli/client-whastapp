@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { Modal } from "../../components/ui/modal";
 import { ToastyErrorGraph } from "../../lib/utils";
-import { useCreateCellMutation, CellStatusEmun } from "../../domain/graphql";
+import { useCreateCellMutation, CellStatusEmun, useCitiesQuery } from "../../domain/graphql";
 import { useUser } from "../../context/UserContext";
 import { apolloClient } from "../../main.config";
 import SearchableSelect, { Option } from "../../components/form/selectSeach";
@@ -36,6 +36,7 @@ interface CreateCellModalProps {
 export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeModal, openModal }) => {
   const { user } = useUser();
   const [createCell] = useCreateCellMutation();
+  const {data: dataCity, loading: loadingCity} = useCitiesQuery({})
 
   // Estados
   const [celular, setCelular] = useState("");
@@ -45,6 +46,7 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
   const [direccion, setDireccion] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<CellStatusEmun>(CellStatusEmun.Activo);
+  const [cityId, setCityId] = useState("");
 
   const handleCreate = async () => {
     const validation = cellSchema.safeParse({
@@ -88,7 +90,8 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
               nombre,
               direccion,
               email,
-              status
+              status,
+              ciudad: cityId || undefined,
             }
           }
         });
@@ -106,13 +109,18 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
       ToastyErrorGraph(err as any);
     }
   };
-
+  const cityOptions: Option[] = dataCity?.cities.map((city) => {
+    return {
+      value: city.id,
+      label: city.name
+    }
+  }).sort((a,b) => a.label.localeCompare(b.label)) || []
   return (
-    <Modal isOpen={isOpen} onClose={closeModal} className="max-w-3xl p-6 lg:p-10">
+    <Modal isOpen={isOpen} onClose={closeModal} className="max-w-9xl p-6 lg:p-10">
       <div className="flex flex-col px-2 overflow-y-auto custom-scrollbar">
         <h5 className="mb-4 font-semibold text-gray-800 text-xl dark:text-white/90">Crear Celular</h5>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="mt-6">
             <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
               Celular
@@ -203,6 +211,22 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
               onChange={(value) => setStatus(value as CellStatusEmun)}
               defaultValue={status}
             />
+          </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Ciudad
+            </label>
+            {
+              loadingCity 
+              ? 
+              <>Cargando ciudades</>
+              :
+              <SearchableSelect
+                placeholder="Seleccione una ciudad"
+                options={cityOptions}
+                onChange={setCityId}
+              />
+            }
           </div>
         </div>
 

@@ -50,15 +50,21 @@ export default function CellTable() {
                 nombre: {
                   _contains: searchTerm
                 },
-                email: {
-                  _contains: searchTerm
-                },
-                nit: {
-                  _contains: searchTerm
-                },
-                direccion: {
-                  _contains: searchTerm
-                }
+                _or: [{
+                  email: {
+                    _contains: searchTerm
+                  },
+                  _or: [{
+                    nit: {
+                      _contains: searchTerm
+                    },
+                    _or: [{
+                      direccion: {
+                        _contains: searchTerm
+                      }
+                    }]
+                  }]
+                }],
               }]
             },
           ]
