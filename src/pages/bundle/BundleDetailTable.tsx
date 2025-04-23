@@ -45,7 +45,7 @@ const filteredCells = useMemo(() => {
         detail.celular.celular.toLowerCase().includes(searchTerm) ||
         detail.celular.nombre?.toLowerCase().includes(searchTerm) ||
         detail.celular.email?.toLowerCase().includes(searchTerm) ||
-        detail.celular.nit.toLowerCase().includes(searchTerm);
+        detail.celular?.nit?.toLowerCase().includes(searchTerm);
   
       const matchesStatus =
         statusFilter === "ALL"

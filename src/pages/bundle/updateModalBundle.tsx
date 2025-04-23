@@ -254,12 +254,12 @@ export const UpdateBundlePage = () => {
               )}
             </div>
           </div>
-          <div className="mt-6">
-            <BundleDetailTable  detail={detail} />
-          </div>
           </>
         )
       }
+      <div className="mt-6">
+        <BundleDetailTable  detail={detail} />
+      </div>
       <div className="flex items-center gap-3 mt-6">
         <button
           onClick={() => navigate("/bundles")}

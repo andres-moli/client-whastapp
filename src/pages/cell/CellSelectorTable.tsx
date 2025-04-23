@@ -174,7 +174,7 @@ export const CellSelectorTable = ({ onSelectionChange }: Props) => {
                         </TableHeader>
 
                         <TableBody className="divide-y divide-gray-100">
-                            {data?.Cells.map((cell: WsCell) => (
+                            {data?.Cells.map((cell) => (
                                 <TableRow key={cell.id}>
                                     <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">
                                         <input

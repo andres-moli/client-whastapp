@@ -44,7 +44,7 @@ const filteredCells = useMemo(() => {
         cell.celular.toLowerCase().includes(searchTerm) ||
         cell.nombre?.toLowerCase().includes(searchTerm) ||
         cell.email?.toLowerCase().includes(searchTerm) ||
-        cell.nit.toLowerCase().includes(searchTerm)
+        cell.nit?.toLowerCase().includes(searchTerm)
     );
 }, [cells, searchTerm]);
 

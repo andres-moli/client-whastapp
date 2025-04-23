@@ -189,15 +189,20 @@ export type CreateAndRemoveRoleFxInput = {
 };
 
 export type CreateCellInput = {
+  apellido?: InputMaybe<Scalars['String']['input']>;
+  asesorId?: InputMaybe<Scalars['String']['input']>;
+  asistenteId?: InputMaybe<Scalars['String']['input']>;
   celular: Scalars['String']['input'];
   ciudad?: InputMaybe<Scalars['String']['input']>;
   direccion?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  empresa?: InputMaybe<Scalars['String']['input']>;
+  groupIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   nit?: InputMaybe<Scalars['String']['input']>;
   nombre?: InputMaybe<Scalars['String']['input']>;
   region: Scalars['String']['input'];
   status?: CellStatusEmun;
-  tipoCliente?: InputMaybe<Scalars['String']['input']>;
+  tipoCliente?: InputMaybe<TypeClientEnum>;
 };
 
 export type CreateClientContactInput = {
@@ -3126,16 +3131,21 @@ export type UpdateBundleInput = {
 };
 
 export type UpdateCellInput = {
+  apellido?: InputMaybe<Scalars['String']['input']>;
+  asesorId?: InputMaybe<Scalars['String']['input']>;
+  asistenteId?: InputMaybe<Scalars['String']['input']>;
   celular?: InputMaybe<Scalars['String']['input']>;
   ciudad?: InputMaybe<Scalars['String']['input']>;
   direccion?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  empresa?: InputMaybe<Scalars['String']['input']>;
+  groupIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   id: Scalars['ID']['input'];
   nit?: InputMaybe<Scalars['String']['input']>;
   nombre?: InputMaybe<Scalars['String']['input']>;
   region?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<CellStatusEmun>;
-  tipoCliente?: InputMaybe<Scalars['String']['input']>;
+  tipoCliente?: InputMaybe<TypeClientEnum>;
 };
 
 export type UpdateClientContactInput = {
@@ -3716,6 +3726,9 @@ export enum WsBatchStatus {
 
 export type WsCell = {
   __typename?: 'WsCell';
+  apellido?: Maybe<Scalars['String']['output']>;
+  asesor?: Maybe<User>;
+  asistente?: Maybe<User>;
   celular: Scalars['String']['output'];
   city?: Maybe<City>;
   ciudad?: Maybe<Scalars['String']['output']>;
@@ -3723,12 +3736,13 @@ export type WsCell = {
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   direccion?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
+  empresa?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   nit?: Maybe<Scalars['String']['output']>;
   nombre?: Maybe<Scalars['String']['output']>;
   region: Scalars['String']['output'];
   status: CellStatusEmun;
-  tipoCliente?: Maybe<Scalars['String']['output']>;
+  tipoCliente?: Maybe<TypeClientEnum>;
   updatedAt: Scalars['DateTime']['output'];
   wsGroupCells?: Maybe<Array<WsGroupCell>>;
 };
@@ -3862,7 +3876,7 @@ export type CellsQueryVariables = Exact<{
 }>;
 
 
-export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type UpdateCellMutationVariables = Exact<{
   updateInput: UpdateCellInput;
@@ -5030,9 +5044,11 @@ export const CellsDocument = gql`
     region
     nit
     nombre
+    apellido
     direccion
     email
     status
+    empresa
     city {
       id
       createdAt
@@ -5040,6 +5056,21 @@ export const CellsDocument = gql`
       deletedAt
       code
       name
+    }
+    tipoCliente
+    asistente {
+      email
+      identificationType
+      identificationNumber
+      fullName
+      id
+    }
+    asesor {
+      email
+      identificationType
+      identificationNumber
+      fullName
+      id
     }
   }
   CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {

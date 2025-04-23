@@ -192,6 +192,7 @@ export default function CellTable() {
                   <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                     <Eye
                       className="cursor-pointer"
+                      //@ts-ignore
                       onClick={() => updateModal(cell)}
                     />
                   </TableCell>
