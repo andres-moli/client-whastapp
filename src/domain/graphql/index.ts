@@ -1060,6 +1060,7 @@ export type MultikeyRegisterIdInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptOrDeclineVisit: Scalars['String']['output'];
+  addCellToGroup: WsGroupCell;
   addUserRole: User;
   assignSubordinate: User;
   codeConfirmation: User;
@@ -1146,6 +1147,7 @@ export type Mutation = {
   saveDetalleCotizacion: Scalars['Boolean']['output'];
   sendCodeDoubleVerification: Scalars['String']['output'];
   sendLoteMessages: SendLoteResult;
+  sendLoteMessagesByOption: SendLoteResult;
   signInAdmin: AuthResponse;
   signUpWithDocument: AuthResponse;
   signUpWithEmail: AuthResponse;
@@ -1191,6 +1193,12 @@ export type Mutation = {
 
 export type MutationAcceptOrDeclineVisitArgs = {
   UpdateStatusInput: UpdateStatusInput;
+};
+
+
+export type MutationAddCellToGroupArgs = {
+  cellId: Scalars['String']['input'];
+  groupId: Scalars['String']['input'];
 };
 
 
@@ -1599,6 +1607,12 @@ export type MutationSendCodeDoubleVerificationArgs = {
 
 export type MutationSendLoteMessagesArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type MutationSendLoteMessagesByOptionArgs = {
+  id: Scalars['String']['input'];
+  option: ResendOption;
 };
 
 
@@ -2089,6 +2103,7 @@ export type Query = {
   findAll: Array<UserKey>;
   findAllFacturaCliente: Array<FletesWithDocument>;
   findAllVisitDashboard: VisitDashboardModel;
+  findBundleInStop?: Maybe<WsBatch>;
   findOne: UserKey;
   findOneFacturaClienteByCode: FindOneFacturaClienteByCode;
   findSeachCotizacion: Scalars['Boolean']['output'];
@@ -2875,6 +2890,13 @@ export type ReferenciaProyecto = {
   marca: Array<MarcaProyecto>;
   updatedAt: Scalars['DateTime']['output'];
 };
+
+export enum ResendOption {
+  Fallidos = 'FALLIDOS',
+  FallidosPendientes = 'FALLIDOS_PENDIENTES',
+  Pendientes = 'PENDIENTES',
+  Todos = 'TODOS'
+}
 
 export type Role = {
   __typename?: 'Role';
@@ -3721,6 +3743,7 @@ export enum WsBatchStatus {
   Completado = 'COMPLETADO',
   EnProceso = 'EN_PROCESO',
   Fallido = 'FALLIDO',
+  Pausado = 'PAUSADO',
   Pendiente = 'PENDIENTE'
 }
 
@@ -3868,6 +3891,19 @@ export type BundleQueryVariables = Exact<{
 
 
 export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
+
+export type SendLoteMessagesByOptionMutationVariables = Exact<{
+  sendLoteMessagesByOptionId: Scalars['String']['input'];
+  option: ResendOption;
+}>;
+
+
+export type SendLoteMessagesByOptionMutation = { __typename?: 'Mutation', sendLoteMessagesByOption: { __typename?: 'SendLoteResult', success: boolean, message: string, error?: string | null } };
+
+export type FindBundleInStopQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FindBundleInStopQuery = { __typename?: 'Query', findBundleInStop?: { __typename?: 'WsBatch', id: string, nombre: string } | null };
 
 export type CellsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindCellOrderBy> | FindCellOrderBy>;
@@ -4129,7 +4165,7 @@ export type GroupQueryVariables = Exact<{
 }>;
 
 
-export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun } }> | null } };
+export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', createdAt: any, cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun } }> | null } };
 
 export type RemoveGroupWithCellsMutationVariables = Exact<{
   groupId: Scalars['String']['input'];
@@ -4145,6 +4181,14 @@ export type ImportGroupWithExcellMutationVariables = Exact<{
 
 
 export type ImportGroupWithExcellMutation = { __typename?: 'Mutation', importGroupWithExcell: string };
+
+export type AddCellToGroupMutationVariables = Exact<{
+  cellId: Scalars['String']['input'];
+  groupId: Scalars['String']['input'];
+}>;
+
+
+export type AddCellToGroupMutation = { __typename?: 'Mutation', addCellToGroup: { __typename?: 'WsGroupCell', id: string } };
 
 export type ParametersQueryVariables = Exact<{
   pagination?: InputMaybe<Pagination>;
@@ -5033,6 +5077,82 @@ export type BundleQueryHookResult = ReturnType<typeof useBundleQuery>;
 export type BundleLazyQueryHookResult = ReturnType<typeof useBundleLazyQuery>;
 export type BundleSuspenseQueryHookResult = ReturnType<typeof useBundleSuspenseQuery>;
 export type BundleQueryResult = Apollo.QueryResult<BundleQuery, BundleQueryVariables>;
+export const SendLoteMessagesByOptionDocument = gql`
+    mutation SendLoteMessagesByOption($sendLoteMessagesByOptionId: String!, $option: ResendOption!) {
+  sendLoteMessagesByOption(id: $sendLoteMessagesByOptionId, option: $option) {
+    success
+    message
+    error
+  }
+}
+    `;
+export type SendLoteMessagesByOptionMutationFn = Apollo.MutationFunction<SendLoteMessagesByOptionMutation, SendLoteMessagesByOptionMutationVariables>;
+
+/**
+ * __useSendLoteMessagesByOptionMutation__
+ *
+ * To run a mutation, you first call `useSendLoteMessagesByOptionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendLoteMessagesByOptionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendLoteMessagesByOptionMutation, { data, loading, error }] = useSendLoteMessagesByOptionMutation({
+ *   variables: {
+ *      sendLoteMessagesByOptionId: // value for 'sendLoteMessagesByOptionId'
+ *      option: // value for 'option'
+ *   },
+ * });
+ */
+export function useSendLoteMessagesByOptionMutation(baseOptions?: Apollo.MutationHookOptions<SendLoteMessagesByOptionMutation, SendLoteMessagesByOptionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendLoteMessagesByOptionMutation, SendLoteMessagesByOptionMutationVariables>(SendLoteMessagesByOptionDocument, options);
+      }
+export type SendLoteMessagesByOptionMutationHookResult = ReturnType<typeof useSendLoteMessagesByOptionMutation>;
+export type SendLoteMessagesByOptionMutationResult = Apollo.MutationResult<SendLoteMessagesByOptionMutation>;
+export type SendLoteMessagesByOptionMutationOptions = Apollo.BaseMutationOptions<SendLoteMessagesByOptionMutation, SendLoteMessagesByOptionMutationVariables>;
+export const FindBundleInStopDocument = gql`
+    query FindBundleInStop {
+  findBundleInStop {
+    id
+    nombre
+  }
+}
+    `;
+
+/**
+ * __useFindBundleInStopQuery__
+ *
+ * To run a query within a React component, call `useFindBundleInStopQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindBundleInStopQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindBundleInStopQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useFindBundleInStopQuery(baseOptions?: Apollo.QueryHookOptions<FindBundleInStopQuery, FindBundleInStopQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindBundleInStopQuery, FindBundleInStopQueryVariables>(FindBundleInStopDocument, options);
+      }
+export function useFindBundleInStopLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindBundleInStopQuery, FindBundleInStopQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindBundleInStopQuery, FindBundleInStopQueryVariables>(FindBundleInStopDocument, options);
+        }
+export function useFindBundleInStopSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FindBundleInStopQuery, FindBundleInStopQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FindBundleInStopQuery, FindBundleInStopQueryVariables>(FindBundleInStopDocument, options);
+        }
+export type FindBundleInStopQueryHookResult = ReturnType<typeof useFindBundleInStopQuery>;
+export type FindBundleInStopLazyQueryHookResult = ReturnType<typeof useFindBundleInStopLazyQuery>;
+export type FindBundleInStopSuspenseQueryHookResult = ReturnType<typeof useFindBundleInStopSuspenseQuery>;
+export type FindBundleInStopQueryResult = Apollo.QueryResult<FindBundleInStopQuery, FindBundleInStopQueryVariables>;
 export const CellsDocument = gql`
     query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pagination) {
   Cells(orderBy: $orderBy, where: $where, pagination: $pagination) {
@@ -6720,6 +6840,7 @@ export const GroupDocument = gql`
       fullName
     }
     wsGroupCells {
+      createdAt
       cell {
         id
         createdAt
@@ -6835,6 +6956,40 @@ export function useImportGroupWithExcellMutation(baseOptions?: Apollo.MutationHo
 export type ImportGroupWithExcellMutationHookResult = ReturnType<typeof useImportGroupWithExcellMutation>;
 export type ImportGroupWithExcellMutationResult = Apollo.MutationResult<ImportGroupWithExcellMutation>;
 export type ImportGroupWithExcellMutationOptions = Apollo.BaseMutationOptions<ImportGroupWithExcellMutation, ImportGroupWithExcellMutationVariables>;
+export const AddCellToGroupDocument = gql`
+    mutation AddCellToGroup($cellId: String!, $groupId: String!) {
+  addCellToGroup(cellId: $cellId, groupId: $groupId) {
+    id
+  }
+}
+    `;
+export type AddCellToGroupMutationFn = Apollo.MutationFunction<AddCellToGroupMutation, AddCellToGroupMutationVariables>;
+
+/**
+ * __useAddCellToGroupMutation__
+ *
+ * To run a mutation, you first call `useAddCellToGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCellToGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addCellToGroupMutation, { data, loading, error }] = useAddCellToGroupMutation({
+ *   variables: {
+ *      cellId: // value for 'cellId'
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function useAddCellToGroupMutation(baseOptions?: Apollo.MutationHookOptions<AddCellToGroupMutation, AddCellToGroupMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddCellToGroupMutation, AddCellToGroupMutationVariables>(AddCellToGroupDocument, options);
+      }
+export type AddCellToGroupMutationHookResult = ReturnType<typeof useAddCellToGroupMutation>;
+export type AddCellToGroupMutationResult = Apollo.MutationResult<AddCellToGroupMutation>;
+export type AddCellToGroupMutationOptions = Apollo.BaseMutationOptions<AddCellToGroupMutation, AddCellToGroupMutationVariables>;
 export const ParametersDocument = gql`
     query Parameters($pagination: Pagination) {
   parameters(pagination: $pagination) {

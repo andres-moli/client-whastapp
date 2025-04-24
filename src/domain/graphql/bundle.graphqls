@@ -124,3 +124,16 @@ query Bundle($bundleId: ID!) {
     }
   }
 }
+mutation SendLoteMessagesByOption($sendLoteMessagesByOptionId: String!, $option: ResendOption!) {
+  sendLoteMessagesByOption(id: $sendLoteMessagesByOptionId, option: $option) {
+    success
+    message
+    error
+  }
+}
+query FindBundleInStop {
+  findBundleInStop {
+    id
+    nombre
+  }
+}

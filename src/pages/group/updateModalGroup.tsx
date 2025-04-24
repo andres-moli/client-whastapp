@@ -11,6 +11,11 @@ import { useNavigate, useParams } from "react-router";
 import { Loader } from "lucide-react";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
+import { ButtonTable } from "../../components/ui/table";
+import { useModal } from "../../hooks/useModal";
+import { AddCellToGroupModal } from "../cell/addCellToGroupModal";
+import Button from "../../components/ui/button/Button";
+import { useLoteLoadingToast } from "../../hooks/loadingTable";
 
 const cellSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -20,13 +25,15 @@ const cellSchema = z.object({
 export const UpdateGroupPage: React.FC = () => {
   const { id } = useParams(); // Asegúrate de tener el param en la ruta
   const navigate = useNavigate();
-
+  const {openModal, closeModal, isOpen} = useModal();
   const { data, loading, refetch } = useGroupQuery({
     variables: { 
       groupId: id! 
     },
     skip: !id,
   });
+  useLoteLoadingToast(loading, 'Cargando detalle del grupo...');
+  
   const [deleteGroupCell] = useRemoveGroupWithCellsMutation();
   const [updateGroup] = useUpdateGroupMutation();
 
@@ -40,7 +47,14 @@ export const UpdateGroupPage: React.FC = () => {
     if (group) {
       setName(group.nombre || "");
       setDescription(group.descripcion || "");
-      setCells(group.wsGroupCells?.map((value) => value.cell) || []);
+      setCells(
+        [...(group.wsGroupCells || [])]
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .map((value) => value.cell)
+      );
+      
+      
+      
     }
   }, [group]);
 
@@ -83,7 +97,7 @@ export const UpdateGroupPage: React.FC = () => {
       }
 
       toast.success("Grupo actualizado correctamente");
-      navigate("/grupos"); // Redirige a la lista de grupos, ajusta según tu ruta
+      navigate("/groups"); // Redirige a la lista de grupos, ajusta según tu ruta
     } catch (err) {
       ToastyErrorGraph(err as any);
     }
@@ -150,6 +164,11 @@ export const UpdateGroupPage: React.FC = () => {
             className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
           />
         </div>
+        <Button 
+          onClick={() => openModal()}
+        >
+          Añadir Celular
+        </Button>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">Celulares asociadas</label>
@@ -172,6 +191,13 @@ export const UpdateGroupPage: React.FC = () => {
         </div>
       </div>
     </div>
+    <AddCellToGroupModal 
+      closeModal={closeModal}
+      isOpen={isOpen}
+      grupoId={group.id}
+      openModal={openModal}
+      key={group.id}
+    />
     </div>
   );
 };

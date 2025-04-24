@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
 import { ToastyErrorGraph } from "../../lib/utils";
-import { useUpdateBundleMutation, useBundleQuery, WsBatchDetail, WsBatchStatus, FileInfo } from "../../domain/graphql";
+import { useUpdateBundleMutation, useBundleQuery, WsBatchDetail, WsBatchStatus, FileInfo, ResendOption, useSendLoteMessagesByOptionMutation } from "../../domain/graphql";
 import { apolloClient } from "../../main.config";
 import TextArea from "../../components/form/input/TextArea";
 import { WhatsAppMessageEditor } from "../../components/form/WhatsAppMessageEditor";
@@ -13,12 +13,14 @@ import { BundleDetailTable } from "./BundleDetailTable";
 import { FileIcon } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { ProgressBar } from "./loadingProcess";
+import Button from "../../components/ui/button/Button";
 
 export const UpdateBundlePage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [update] = useUpdateBundleMutation();
-  const { data, loading } = useBundleQuery({ variables: { bundleId: id || "" }, skip: !id });
+  const [resendLoteMessages] = useSendLoteMessagesByOptionMutation();
+  const { data, loading, refetch } = useBundleQuery({ variables: { bundleId: id || "" }, fetchPolicy: 'no-cache' });
 
   const bundle = data?.bundle;
 
@@ -69,7 +71,7 @@ export const UpdateBundlePage = () => {
     }
   
     // 2. Establecer conexión WebSocket
-    const newSocket = io('ws://localhost:3021/ws', {
+    const newSocket = io(import.meta.env.WS_VITE_APP_GRAPH_WHASTAPP + '/ws', {
       transports: ["websocket"],
       query: { bundleId: id },
     });
@@ -89,6 +91,7 @@ export const UpdateBundlePage = () => {
     });
   
     newSocket.on("log", (data: { message: string }) => {
+      refetch()
       console.log("📡 Log recibido:", data.message);
       setLogs((prevLogs) => {
         const newLogs = [...prevLogs, data.message];
@@ -168,7 +171,48 @@ export const UpdateBundlePage = () => {
       ToastyErrorGraph(err as any);
     }
   };
-
+  const handleResend = async (option: ResendOption) => {
+    try {
+      const confirm = await Swal.fire({
+        title: "¿Enviar lote?",
+        text: "¿Deseas enviar este lote?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, Enviar",
+        cancelButtonText: "Cancelar"
+      });
+      if(confirm.isConfirmed) {
+        const res = await resendLoteMessages({
+          variables: {
+            option,
+            sendLoteMessagesByOptionId: bundle?.id!,
+          },
+        });
+        if(res.data?.sendLoteMessagesByOption.success) {
+          await refetch();
+          Swal.fire({
+            title: "Éxito",
+            text: "Lote enviado correctamente",
+            icon: "success",
+            confirmButtonText: "Aceptar"
+          });
+          return
+        } 
+        else {
+          Swal.fire({
+            title: "No se pudo enviar el lote",
+            text: res.data?.sendLoteMessagesByOption.message,
+            icon: "error",
+            confirmButtonText: "Aceptar"
+          });
+          return
+        }
+      }
+    } catch (error) {
+      toast.error("Error al reenviar los mensajes");
+    }
+  };
+  
   if (loading) return <p className="p-4">Cargando información del lote...</p>;
   if (!bundle) return <p className="p-4 text-red-600">No se encontró el lote.</p>;
 
@@ -257,6 +301,34 @@ export const UpdateBundlePage = () => {
           </>
         )
       }
+    <div className="mt-4 flex flex-wrap gap-2">
+      <Button 
+        className="bg-brand-500 hover:bg-brand-600 text-white"
+        onClick={() => handleResend(ResendOption.Todos)}
+      >
+        Enviar todos
+      </Button>
+
+      <Button 
+        className="bg-red-500 hover:bg-red-600 text-white"
+        onClick={() => handleResend(ResendOption.Fallidos)}
+      >
+        Enviar fallidos
+      </Button>
+
+      <Button 
+        className="bg-yellow-500 hover:bg-yellow-600 text-white"
+        onClick={() => handleResend(ResendOption.Pendientes)}
+      >
+        Enviar pendientes
+      </Button>
+      <Button
+        className="bg-orange-500 hover:bg-orange-600 text-white"
+        onClick={() => handleResend(ResendOption.FallidosPendientes)}
+      >
+        Enviar fallidos y pendientes
+      </Button>
+    </div>
       <div className="mt-6">
         <BundleDetailTable  detail={detail} />
       </div>

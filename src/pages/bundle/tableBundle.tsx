@@ -19,6 +19,8 @@ import Input from "../../components/form/input/InputField";
 import { CreateBundleModal } from "./createModalBundle";
 import Swal from "sweetalert2";
 import clsx from "clsx";
+import { toast } from "sonner";
+import { useLoteLoadingToast } from "../../hooks/loadingTable";
 
 export default function BundleTable() {
   const navigate = useNavigate();
@@ -84,6 +86,8 @@ export default function BundleTable() {
       debouncedSearch.cancel();
     };
   }, [debouncedSearch]);
+ 
+  useLoteLoadingToast(loading, 'Cargando lotes...');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     debouncedSearch(e.target.value);
@@ -235,7 +239,8 @@ export default function BundleTable() {
                         {
                           'text-green-600 border-green-600 bg-green-50': bundle.estado === WsBatchStatus.Completado,
                           'text-orange-600 border-orange-600 bg-orange-50': bundle.estado ===  WsBatchStatus.EnProceso,
-                          'text-blue-600 border-blue-600 bg-blue-50': bundle.estado ===  WsBatchStatus.Pendiente,
+                          'text-yellow-600 border-yellow-600 bg-yellow-50': bundle.estado ===  WsBatchStatus.Pendiente,
+                          'text-blue-600 border-blue-600 bg-blue-50': bundle.estado ===  WsBatchStatus.Pausado,
                           'text-red-600 border-red-600 bg-red-50': bundle.estado ===  WsBatchStatus.Fallido,
                           'text-gray-500 border-gray-300 bg-gray-100': !bundle.estado,
                         }

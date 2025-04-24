@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import { useUser } from "../../context/UserContext";
 import { apolloClient } from "../../main.config";
 import SearchableSelect, { Option } from "../../components/form/selectSeach";
 import SearchableMultiSelect from "../../components/form/SearchableMultiSelect";
+import EmailInputWithSuggestions from "../../components/form/input/EmailInputWithSuggestions";
 
 // Enum de estado para options
 const statusOptions: Option[] = [
@@ -158,9 +159,19 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
   const grupoOptions: Option[] = dataGrupo?.groups?.map((city) => {
     return {
       value: city.id,
-      label: city.nombre.toUpperCase()
+      label: city.nombre.toUpperCase().trim()
     }
   }).sort((a,b) => a.label.localeCompare(b.label)) || []
+  useEffect(() => {
+    if (!loadingCity && cityOptions.length) {
+      console.log(cityOptions)
+      const barranquilla = cityOptions.find(c => c.label.toUpperCase().trim() === "BARRANQUILLA");
+      if (barranquilla) {
+        setCityId(barranquilla.value);
+      }
+    }
+  }, [loadingCity, cityOptions]);
+  
   return (
     <Modal isOpen={isOpen} onClose={closeModal} className="max-w-9xl p-6 lg:p-10">
       <div className="flex flex-col px-2 overflow-y-auto custom-scrollbar">
@@ -234,19 +245,12 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
               />
             </div>
           </div>
-          <div className="mt-6">
-            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-            Correo electrónico
-            </label>
-            <div className="relative">
-              <input
-                type="text"
+          <EmailInputWithSuggestions 
+                onChange={setEmail}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                label="Correo electrónico"
+                placeholder="example@gmail.com"
               />
-            </div>
-          </div>
           <div className="mt-2">
             <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
             Empresa
@@ -294,6 +298,7 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
                 placeholder="Seleccione una ciudad"
                 options={cityOptions}
                 onChange={setCityId}
+                defaultValue={cityId}
               />
             }
           </div>

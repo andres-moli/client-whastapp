@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
@@ -7,13 +7,19 @@ import UserDropdown from "../components/header/UserDropdown";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { formatCurrency } from "../lib/utils";
+import { useUser } from "../context/UserContext";
+import { useFindBundleInStopQuery } from "../domain/graphql";
 
 const API_BASE_URL = `${import.meta.env.VITE_APP_GRAPH}fletes/ventasAgrupadasXmes`;
 
 const AppHeader: React.FC = () => {
+  const {user} = useUser()
+  const navigate = useNavigate();
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
-
+  const {data, loading} = useFindBundleInStopQuery()
+  
+  const loteEnPausa = data?.findBundleInStop;
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleToggle = () => {
@@ -81,11 +87,28 @@ const AppHeader: React.FC = () => {
             <img src="./images/logo/cytech.png" alt="Logo" className="hidden dark:block" />
           </Link>
         </div>
-  
+        {
+           (!loading && loteEnPausa) && (
+            <div className="flex items-center justify-between px-4 py-2 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-900 rounded-md dark:bg-yellow-900 dark:border-yellow-400 dark:text-yellow-100 w-full max-w-4xl">
+            <span className="text-base font-medium">
+              {user ? user.fullName : 'Señor usuario'}, usted tiene un lote en <span className="uppercase font-bold">pausa</span>.
+            </span>
+            <button
+              onClick={() =>  navigate(`/bundle/${loteEnPausa?.id}`)}
+              className="ml-4 text-sm font-semibold underline text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              Ver detalles
+            </button>
+          </div>
+          )
+        }
+
+
+
         {/* Derecha: Botonera completa */}
         <div className="flex items-center gap-3">
           <ThemeToggleButton />
-          <NotificationDropdown />
+          {/* <NotificationDropdown /> */}
           <UserDropdown />
         </div>
       </div>

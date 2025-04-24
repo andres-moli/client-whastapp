@@ -60,6 +60,7 @@ query Group($groupId: ID!) {
       fullName
     }
     wsGroupCells {
+      createdAt
       cell {
         id
         createdAt
@@ -83,4 +84,9 @@ mutation RemoveGroupWithCells($groupId: String!, $cellId: String!) {
 }
 mutation ImportGroupWithExcell($fileId: String!) {
   importGroupWithExcell(fileId: $fileId)
+}
+mutation AddCellToGroup($cellId: String!, $groupId: String!) {
+  addCellToGroup(cellId: $cellId, groupId: $groupId) {
+    id
+  }
 }

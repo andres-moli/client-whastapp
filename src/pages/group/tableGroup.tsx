@@ -17,6 +17,7 @@ import { useModal } from "../../hooks/useModal";
 import { debounce } from "lodash";
 import Input from "../../components/form/input/InputField";
 import { CreateGrupoExcelModal } from "./createModalBasic";
+import { useLoteLoadingToast } from "../../hooks/loadingTable";
 
 export default function GroupTable() {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ export default function GroupTable() {
       }
     }
   });
+  useLoteLoadingToast(loading, 'Cargando grupos...');
 
   // Debounce search to avoid too many requests
   const debouncedSearch = useMemo(

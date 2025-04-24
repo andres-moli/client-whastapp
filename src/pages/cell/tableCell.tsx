@@ -18,6 +18,7 @@ import { CreateCellModal } from "./createModalCellc";
 import { debounce } from "lodash";
 import Input from "../../components/form/input/InputField";
 import { UpdateCellModal } from "./updateModalCell";
+import { useLoteLoadingToast } from "../../hooks/loadingTable";
 
 export default function CellTable() {
   const navigate = useNavigate();
@@ -79,6 +80,7 @@ export default function CellTable() {
       }
     }
   });
+  useLoteLoadingToast(loading, 'Cargando celulares...');
 
   // Debounce search to avoid too many requests
   const debouncedSearch = useMemo(
