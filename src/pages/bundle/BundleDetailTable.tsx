@@ -128,6 +128,17 @@ return (
     Fallidos
   </button>
   <button
+    onClick={() => setStatusFilter(WsBatchDetailStatus.NoEntregado)}
+    className={clsx(
+      "px-3 py-1 rounded-full border text-sm font-medium",
+      statusFilter === WsBatchDetailStatus.NoEntregado
+        ? "bg-gray-600 text-white"
+        : "border-gray-600 text-gray-600"
+    )}
+  >
+    No entregado
+  </button>
+  <button
     onClick={() => setStatusFilter("SIN_ESTADO")}
     className={clsx(
       "px-3 py-1 rounded-full border text-sm font-medium",
@@ -146,6 +157,8 @@ return (
             <TableHeader>
             <TableRow>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Celular</TableCell>
+                <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Nombre</TableCell>
+                <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Empresa</TableCell>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Estado</TableCell>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Error</TableCell>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Acciones</TableCell>
@@ -155,6 +168,8 @@ return (
             {paginatedCells.map((cell) => (
                 <TableRow key={cell.id}>
                 <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.celular}</TableCell>
+                <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.nombre}</TableCell>
+                <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.empresa}</TableCell>
                    <TableCell className="px-4 py-3 text-start text-theme-sm">
                      <span
                        className={clsx(

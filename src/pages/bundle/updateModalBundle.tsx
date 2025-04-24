@@ -10,10 +10,12 @@ import { useNavigate, useParams } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import { BundleDetailTable } from "./BundleDetailTable";
-import { FileIcon } from "lucide-react";
+import { FileIcon, Trash2Icon } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { ProgressBar } from "./loadingProcess";
 import Button from "../../components/ui/button/Button";
+import FileInput from "../../components/form/input/FileInput";
+import handleUploadImage from "../../lib/uptloadFile";
 
 export const UpdateBundlePage = () => {
   const navigate = useNavigate();
@@ -34,6 +36,8 @@ export const UpdateBundlePage = () => {
   const [detail, setDetail] = useState<WsBatchDetail[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [inputKey, setInputKey] = useState(Date.now()); // Forzar reinicio
+  const [fileNew, setFileNew] = useState<React.ChangeEvent<HTMLInputElement>>();
   const [progress, setProgress] = useState<{ current: number; total: number; percentage: number } | null>(null);
   useEffect(() => {
     if (bundle) {
@@ -189,14 +193,24 @@ export const UpdateBundlePage = () => {
       });
 
       if (!confirm.isConfirmed) return;
-
+      let fileId: null | string = null
+      if(fileNew){
+        if(fileNew?.target?.files?.[0]){
+          const dataFile = await handleUploadImage(fileNew?.target?.files?.[0])
+          fileId = dataFile?.id || ''
+        }else {
+          toast.error('No se selecionaste un archivo para subir')
+          return
+        }
+      }
       const res = await update({
         variables: {
           updateInput: {
             id: bundle?.id!,
             nombre: name,
             descripcion: description,
-            message: message
+            message: message,
+            fileId: fileId ? fileId : undefined
           }
         }
       });
@@ -208,7 +222,7 @@ export const UpdateBundlePage = () => {
 
       apolloClient.cache.evict({ fieldName: "bundles" });
       toast.success("Lote actualizado correctamente");
-      navigate("/bundles"); // O redirige a donde desees
+      refetch()
     } catch (err) {
       ToastyErrorGraph(err as any);
     }
@@ -254,7 +268,28 @@ export const UpdateBundlePage = () => {
       toast.error("Error al reenviar los mensajes");
     }
   };
-  
+  const deleteFile = async () => {
+    const res = await update({
+      variables: {
+        updateInput: {
+          id: bundle?.id!,
+          deleteFile: true,
+        }
+      }
+    });
+    if(res.errors) {
+      toast.error("Error al eliminar el archivo: " + res.errors[0].message);
+      return;
+    }
+    toast.success("Archivo eliminado correctamente");
+    setFile(undefined); // Quita el archivo del estado local
+    refetch(); // Refresca la información del lote
+  }
+  const onDeleteFile = () => {
+    setFile(undefined)
+    setInputKey(Date.now()); // Cambia la key para reiniciar el input
+    toast.success('Archivo eliminado con exitó')
+  }
   if (loading) return <p className="p-4">Cargando información del lote...</p>;
   if (!bundle) return <p className="p-4 text-red-600">No se encontró el lote.</p>;
 
@@ -305,17 +340,54 @@ export const UpdateBundlePage = () => {
         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
       />
       {file && (
-        <div className="mt-2">
+        <div className="mt-2 flex items-center gap-2">
           <a
             href={file.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-700 text-sm"
+            className="text-blue-500 hover:text-blue-700 text-sm flex items-center gap-1"
           >
             <FileIcon /> {file.fileName}
           </a>
+          <button
+            className="text-red-500 hover:underline text-xs"
+            onClick={() => {
+              Swal.fire({
+                title: "¿Eliminar archivo?",
+                text: "Esta acción eliminará el archivo adjunto del lote.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  deleteFile();
+                }
+              });
+            }}
+          >
+            Eliminar archivo
+          </button>
         </div>
       )}
+      {
+        !file && (
+          <div className="mt-2 flex items-center gap-2">
+            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              Subir archivo
+            </label>
+            {file && (
+              <Trash2Icon className="mb-1.5 block cursor-pointer" onClick={onDeleteFile} />
+            )}
+            <FileInput
+              key={inputKey.toString()} // Cambia la key para forzar el reinicio
+              onChange={(e) => setFileNew(e)}
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            />
+          </div>
+        )
+      }
+
       <div className="mt-4">
         <WhatsAppMessageEditor 
           value={message}

@@ -3150,6 +3150,7 @@ export enum TypeWorker {
 export type UpdateBundleInput = {
   celularesIds?: InputMaybe<Array<Scalars['String']['input']>>;
   createdByUserAtId?: InputMaybe<Scalars['String']['input']>;
+  deleteFile?: InputMaybe<Scalars['Boolean']['input']>;
   descripcion?: InputMaybe<Scalars['String']['input']>;
   fileId?: InputMaybe<Scalars['String']['input']>;
   groupId?: InputMaybe<Scalars['String']['input']>;
@@ -3743,6 +3744,7 @@ export enum WsBatchDetailStatus {
   Entregado = 'ENTREGADO',
   Enviado = 'ENVIADO',
   Fallido = 'FALLIDO',
+  NoEntregado = 'NO_ENTREGADO',
   Pendiente = 'PENDIENTE'
 }
 

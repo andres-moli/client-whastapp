@@ -37,7 +37,8 @@ export const CreateBundleModal: React.FC<CreateTaskModalProps> = ({ isOpen, clos
         skip: 0,
         take: 99999999
       }
-    }
+    },
+    fetchPolicy: 'no-cache'
   })
   const optionGroup: Option[] = data?.groups?.map((group) => ({
     value: group.id,
