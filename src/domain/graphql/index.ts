@@ -1147,6 +1147,7 @@ export type Mutation = {
   saveDetalleCotizacion: Scalars['Boolean']['output'];
   sendCodeDoubleVerification: Scalars['String']['output'];
   sendLoteMessages: SendLoteResult;
+  sendLoteMessagesById: SendLoteResult;
   sendLoteMessagesByOption: SendLoteResult;
   signInAdmin: AuthResponse;
   signUpWithDocument: AuthResponse;
@@ -1607,6 +1608,12 @@ export type MutationSendCodeDoubleVerificationArgs = {
 
 export type MutationSendLoteMessagesArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type MutationSendLoteMessagesByIdArgs = {
+  bundleId: Scalars['String']['input'];
+  cellId: Scalars['String']['input'];
 };
 
 
@@ -3905,6 +3912,14 @@ export type FindBundleInStopQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type FindBundleInStopQuery = { __typename?: 'Query', findBundleInStop?: { __typename?: 'WsBatch', id: string, nombre: string } | null };
 
+export type SendLoteMessagesByIdMutationVariables = Exact<{
+  bundleId: Scalars['String']['input'];
+  cellId: Scalars['String']['input'];
+}>;
+
+
+export type SendLoteMessagesByIdMutation = { __typename?: 'Mutation', sendLoteMessagesById: { __typename?: 'SendLoteResult', success: boolean, message: string, error?: string | null } };
+
 export type CellsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindCellOrderBy> | FindCellOrderBy>;
   where?: InputMaybe<FindCellWhere>;
@@ -5153,6 +5168,42 @@ export type FindBundleInStopQueryHookResult = ReturnType<typeof useFindBundleInS
 export type FindBundleInStopLazyQueryHookResult = ReturnType<typeof useFindBundleInStopLazyQuery>;
 export type FindBundleInStopSuspenseQueryHookResult = ReturnType<typeof useFindBundleInStopSuspenseQuery>;
 export type FindBundleInStopQueryResult = Apollo.QueryResult<FindBundleInStopQuery, FindBundleInStopQueryVariables>;
+export const SendLoteMessagesByIdDocument = gql`
+    mutation SendLoteMessagesById($bundleId: String!, $cellId: String!) {
+  sendLoteMessagesById(bundleId: $bundleId, cellId: $cellId) {
+    success
+    message
+    error
+  }
+}
+    `;
+export type SendLoteMessagesByIdMutationFn = Apollo.MutationFunction<SendLoteMessagesByIdMutation, SendLoteMessagesByIdMutationVariables>;
+
+/**
+ * __useSendLoteMessagesByIdMutation__
+ *
+ * To run a mutation, you first call `useSendLoteMessagesByIdMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendLoteMessagesByIdMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendLoteMessagesByIdMutation, { data, loading, error }] = useSendLoteMessagesByIdMutation({
+ *   variables: {
+ *      bundleId: // value for 'bundleId'
+ *      cellId: // value for 'cellId'
+ *   },
+ * });
+ */
+export function useSendLoteMessagesByIdMutation(baseOptions?: Apollo.MutationHookOptions<SendLoteMessagesByIdMutation, SendLoteMessagesByIdMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendLoteMessagesByIdMutation, SendLoteMessagesByIdMutationVariables>(SendLoteMessagesByIdDocument, options);
+      }
+export type SendLoteMessagesByIdMutationHookResult = ReturnType<typeof useSendLoteMessagesByIdMutation>;
+export type SendLoteMessagesByIdMutationResult = Apollo.MutationResult<SendLoteMessagesByIdMutation>;
+export type SendLoteMessagesByIdMutationOptions = Apollo.BaseMutationOptions<SendLoteMessagesByIdMutation, SendLoteMessagesByIdMutationVariables>;
 export const CellsDocument = gql`
     query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pagination) {
   Cells(orderBy: $orderBy, where: $where, pagination: $pagination) {

@@ -137,3 +137,10 @@ query FindBundleInStop {
     nombre
   }
 }
+mutation SendLoteMessagesById($bundleId: String!, $cellId: String!) {
+  sendLoteMessagesById(bundleId: $bundleId, cellId: $cellId) {
+    success
+    message
+    error
+  }
+}

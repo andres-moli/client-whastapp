@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
 import { ToastyErrorGraph } from "../../lib/utils";
-import { useUpdateBundleMutation, useBundleQuery, WsBatchDetail, WsBatchStatus, FileInfo, ResendOption, useSendLoteMessagesByOptionMutation } from "../../domain/graphql";
+import { useUpdateBundleMutation, useBundleQuery, WsBatchDetail, WsBatchStatus, FileInfo, ResendOption, useSendLoteMessagesByOptionMutation, WsCell, useSendLoteMessagesByIdMutation } from "../../domain/graphql";
 import { apolloClient } from "../../main.config";
 import TextArea from "../../components/form/input/TextArea";
 import { WhatsAppMessageEditor } from "../../components/form/WhatsAppMessageEditor";
@@ -19,6 +19,7 @@ export const UpdateBundlePage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [update] = useUpdateBundleMutation();
+  const [send] = useSendLoteMessagesByIdMutation();
   const [resendLoteMessages] = useSendLoteMessagesByOptionMutation();
   const { data, loading, refetch } = useBundleQuery({ variables: { bundleId: id || "" }, fetchPolicy: 'no-cache' });
 
@@ -69,9 +70,9 @@ export const UpdateBundlePage = () => {
         console.error("Error parsing saved logs", e);
       }
     }
-  
+    const url = import.meta.env.VITE_APP_GRAPH_WHASTAPP_WS + 'ws';
     // 2. Establecer conexión WebSocket
-    const newSocket = io(import.meta.env.WS_VITE_APP_GRAPH_WHASTAPP + '/ws', {
+    const newSocket = io(url, {
       transports: ["websocket"],
       query: { bundleId: id },
     });
@@ -134,7 +135,48 @@ export const UpdateBundlePage = () => {
     };
   }, [progress, id]);
   
-  
+  const handleSendOneCell = async (cellId: string, cellNumber: string) => {
+    let toastId: string | number | undefined = undefined;
+    try {
+      const confirm = await Swal.fire({
+        title: `¿Estas seguro que deseas enviar este unico mensaje al celular ${cellNumber}?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, enviar",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (confirm.dismiss) {
+        return;
+      }
+
+      if (confirm.isConfirmed) {
+        toastId = toast.loading("Enviando mensaje...");
+        const res = await send({
+          variables: {
+            bundleId: bundle?.id!,
+            cellId: cellId,
+          },
+        });
+
+        if (res.errors) {
+          toast.error("Error: " + res.errors[0].message);
+          return;
+        }
+        if(res.data?.sendLoteMessagesById.success) {
+          toast.success("Mensaje enviado exitosamente");
+        }
+        if(!res.data?.sendLoteMessagesById.success){
+          toast.error("Error: " + res.data?.sendLoteMessagesById.message);
+        }
+        refetch();
+      }
+    } catch (err) {
+      ToastyErrorGraph(err as any);
+    } finally {
+      toast.dismiss(toastId);
+    }
+  };
   const handleUpdate = async () => {
     try {
       const confirm = await Swal.fire({
@@ -286,7 +328,10 @@ export const UpdateBundlePage = () => {
           <div className="mt-4">
             <ProgressBar  progress={progress || undefined} />
           </div>
-          <div className="mt-6">
+          </>
+        )
+      }
+                <div className="mt-6">
             <h4 className="mb-2 font-medium text-gray-800 dark:text-white/80">Logs en tiempo real</h4>
             <div className="max-h-64 overflow-y-auto rounded border border-gray-300 p-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
               {logs.length === 0 ? (
@@ -298,9 +343,6 @@ export const UpdateBundlePage = () => {
               )}
             </div>
           </div>
-          </>
-        )
-      }
     <div className="mt-4 flex flex-wrap gap-2">
       <Button 
         className="bg-brand-500 hover:bg-brand-600 text-white"
@@ -330,7 +372,7 @@ export const UpdateBundlePage = () => {
       </Button>
     </div>
       <div className="mt-6">
-        <BundleDetailTable  detail={detail} />
+        <BundleDetailTable  detail={detail}  handleSendOneCell={handleSendOneCell}/>
       </div>
       <div className="flex items-center gap-3 mt-6">
         <button

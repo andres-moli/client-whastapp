@@ -16,9 +16,10 @@ import clsx from "clsx";
 
 type Props = {
     detail: WsBatchDetail[];
+    handleSendOneCell: (cellId: string, cellNumber: string) => void;
 };
 
-export const BundleDetailTable = ({ detail }: Props) => {
+export const BundleDetailTable = ({ detail, handleSendOneCell }: Props) => {
 const [itemsPerPage, setItemsPerPage] = useState(10);
 const [currentPage, setCurrentPage] = useState(1);
 const [searchTerm, setSearchTerm] = useState("");
@@ -172,7 +173,7 @@ return (
                 <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.error}</TableCell>
                 <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">
                     <button
-                    onClick={() => alert(cell.id)}
+                    onClick={() => handleSendOneCell(cell.id, cell.celular.celular)}
                     className="text-red-500 hover:text-red-700 transition-colors dark:text-gray-400"
                     >
                     <Send size={16} />
