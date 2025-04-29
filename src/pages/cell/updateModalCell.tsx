@@ -5,9 +5,10 @@ import { set, z } from "zod";
 
 import { Modal } from "../../components/ui/modal";
 import { ToastyErrorGraph } from "../../lib/utils";
-import { useUpdateCellMutation, CellStatusEmun, WsCell, useCitiesQuery, useUsersQuery, TypeClientEnum } from "../../domain/graphql";
+import { useUpdateCellMutation, CellStatusEmun, WsCell, useCitiesQuery, useUsersQuery, TypeClientEnum, useGroupsQuery } from "../../domain/graphql";
 import { apolloClient } from "../../main.config";
 import SearchableSelect, { Option } from "../../components/form/selectSeach";
+import SearchableMultiSelect from "../../components/form/SearchableMultiSelect";
 
 const statusOptions: Option[] = [
   { value: CellStatusEmun.Activo, label: "Activo" },
@@ -48,6 +49,14 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       }
     }
   })
+  const {data: dataGrupo, loading: loadingGrupo} = useGroupsQuery({
+    variables: {
+      pagination: {
+        skip: 0,
+        take: 9999999
+      }
+    }
+  })
   // Prellenar los estados
   const [celular, setCelular] = useState(cell.celular);
   const [region, setRegion] = useState(cell.region);
@@ -62,6 +71,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
   const [asesorId, setAsesorId] = useState(cell.asesor?.id ?? "");
   const [empresa, setEmpresa] = useState(cell.empresa ?? "");
   const [tipoCliente, setTipoCliente] = useState<TypeClientEnum | undefined>(cell.tipoCliente || undefined);
+  const [groupIds, setGroups] = useState<string[]>([]);
   
   useEffect(() => {
     if (isOpen) {
@@ -78,6 +88,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       setEmpresa(cell.empresa ?? "");
       setTipoCliente(cell.tipoCliente ?? undefined);
       setApellido(cell.apellido ?? "");
+      setGroups(cell.wsGroupCells?.map(wsgc => wsgc.group.id) || [])
       
     }
   }, [isOpen, cell]);
@@ -132,6 +143,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
               asistenteId: asistendId || undefined,
               empresa: empresa || undefined,
               tipoCliente: tipoCliente || undefined,
+              groupIds
             }
           }
         });
@@ -161,10 +173,16 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       label: city.fullName.toUpperCase() + ' - ' + city.identificationNumber
     }
   }).sort((a,b) => a.label.localeCompare(b.label)) || []
+  const grupoOptions: Option[] = dataGrupo?.groups?.map((city) => {
+    return {
+      value: city.id,
+      label: city.nombre.toUpperCase().trim()
+    }
+  }).sort((a,b) => a.label.localeCompare(b.label)) || []
   return (
     <Modal isOpen={isOpen} onClose={closeModal} className="max-w-9xl p-6 lg:p-10">
       <div className="flex flex-col px-2 overflow-y-auto custom-scrollbar">
-        <h5 className="mb-4 font-semibold text-gray-800 text-xl dark:text-white/90">Crear Celular</h5>
+        <h5 className="mb-4 font-semibold text-gray-800 text-xl dark:text-white/90">Actualizar Celular</h5>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="mt-6">
@@ -334,7 +352,23 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
             }
           </div>
         </div>
-
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Selecione grupo
+          </label>
+          {
+            loadingGrupo 
+            ? 
+            <>Cargando grupos</>
+            :
+            <SearchableMultiSelect
+              placeholder="Seleccione uno o varios grupos"
+              options={grupoOptions}
+              onChange={setGroups}
+              defaultValue={groupIds}
+            />
+          }
+        </div>
         {/* Botones del modal */}
         <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-end">
           <button

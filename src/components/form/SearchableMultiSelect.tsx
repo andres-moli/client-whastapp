@@ -67,7 +67,10 @@ const SearchableMultiSelect: React.FC<SearchableMultiSelectProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+  useEffect(() => {
+    setSelectedValues(defaultValue);
+  }, [defaultValue]);
+  
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
       <div

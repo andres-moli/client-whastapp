@@ -36,6 +36,15 @@ query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pa
       fullName
       id
     }
+    wsGroupCells {
+      group {
+        id
+        createdAt
+        descripcion
+        id
+        nombre
+      }
+    }
   }
   CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
     totalItems
