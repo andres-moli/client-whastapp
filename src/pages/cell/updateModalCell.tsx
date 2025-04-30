@@ -26,7 +26,7 @@ const cellSchema = z.object({
   nit: z.string().min(1, "El NIT es obligatorio"),
   nombre: z.string().optional(),
   direccion: z.string().optional(),
-  email: z.string().email("Correo inválido").optional(),
+  email: z.string().optional(),
   status: z.nativeEnum(CellStatusEmun)
 });
 
