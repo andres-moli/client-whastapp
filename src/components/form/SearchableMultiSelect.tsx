@@ -21,7 +21,7 @@ const SearchableMultiSelect: React.FC<SearchableMultiSelectProps> = ({
   className = "",
   defaultValue = [],
 }) => {
-  const [selectedValues, setSelectedValues] = useState<string[]>(defaultValue);
+  const [selectedValues, setSelectedValues] = useState<string[]>(() => defaultValue);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [dropUp, setDropUp] = useState<boolean>(false);
@@ -67,9 +67,12 @@ const SearchableMultiSelect: React.FC<SearchableMultiSelectProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  useEffect(() => {
-    setSelectedValues(defaultValue);
-  }, [defaultValue]);
+  // useEffect(() => {
+  //   if (JSON.stringify(selectedValues) !== JSON.stringify(defaultValue)) {
+  //     setSelectedValues(defaultValue);
+  //   }
+  // }, [defaultValue]);
+  
   
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
