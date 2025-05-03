@@ -5,6 +5,7 @@ query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pa
     updatedAt
     deletedAt
     celular
+    fullName
     region
     nit
     nombre

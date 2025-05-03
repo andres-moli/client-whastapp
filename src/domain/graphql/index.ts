@@ -203,6 +203,7 @@ export type CreateCellInput = {
   region: Scalars['String']['input'];
   status?: CellStatusEmun;
   tipoCliente?: InputMaybe<TypeClientEnum>;
+  verify?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type CreateClientContactInput = {
@@ -252,6 +253,11 @@ export type CreateDummyInput = {
   phone?: InputMaybe<Scalars['String']['input']>;
   secondField: Scalars['DateTime']['input'];
   thirdField: Scalars['Float']['input'];
+};
+
+export type CreateEmailInput = {
+  address: Scalars['String']['input'];
+  cellId: Scalars['ID']['input'];
 };
 
 export type CreateFletesInput = {
@@ -668,6 +674,7 @@ export enum FileModes {
 
 export type FindCellOrderBy = {
   createdAt?: InputMaybe<OrderTypes>;
+  nombre?: InputMaybe<OrderTypes>;
 };
 
 export type FindCellWhere = {
@@ -676,6 +683,7 @@ export type FindCellWhere = {
   celular?: InputMaybe<StringFilter>;
   direccion?: InputMaybe<StringFilter>;
   email?: InputMaybe<StringFilter>;
+  empresa?: InputMaybe<StringFilter>;
   nit?: InputMaybe<StringFilter>;
   nombre?: InputMaybe<StringFilter>;
   region?: InputMaybe<StringFilter>;
@@ -1101,6 +1109,7 @@ export type Mutation = {
   createVisit: Visit;
   createVisitComent: VisitComent;
   createVisitType: VisitType;
+  createWsEmail: WsEmail;
   eliminarConcepto: Scalars['String']['output'];
   enableAndDisableDoubleVerification: Scalars['String']['output'];
   i18nTest: Scalars['String']['output'];
@@ -1141,6 +1150,7 @@ export type Mutation = {
   removeVisit: Visit;
   removeVisitComent: VisitComent;
   removeVisitType: VisitType;
+  removeWsEmail: WsEmail;
   replaceAllRolesFx: Array<RoleFx>;
   resetPassword: User;
   resetSuperAdmin: User;
@@ -1189,6 +1199,7 @@ export type Mutation = {
   updateVisit: Visit;
   updateVisitComent: VisitComent;
   updateVisitType: VisitType;
+  updateWsEmail: WsEmail;
 };
 
 
@@ -1389,6 +1400,11 @@ export type MutationCreateVisitTypeArgs = {
 };
 
 
+export type MutationCreateWsEmailArgs = {
+  createInput: CreateEmailInput;
+};
+
+
 export type MutationEliminarConceptoArgs = {
   eliminarConceptoDto: Scalars['String']['input'];
 };
@@ -1582,6 +1598,11 @@ export type MutationRemoveVisitComentArgs = {
 
 
 export type MutationRemoveVisitTypeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveWsEmailArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1820,6 +1841,11 @@ export type MutationUpdateVisitComentArgs = {
 
 export type MutationUpdateVisitTypeArgs = {
   updateInput: UpdateVisitTypeInput;
+};
+
+
+export type MutationUpdateWsEmailArgs = {
+  updateInput: UpdateEmailInput;
 };
 
 export type Notification = {
@@ -2079,6 +2105,9 @@ export type Query = {
   NotificationGroupsCount: MetadataPagination;
   ProyectoReferencias: Array<ProyectoReferencia>;
   ProyectoReferenciasCount: MetadataPagination;
+  WsEmail: WsEmail;
+  WsEmails: Array<WsEmail>;
+  WsEmailsCount: MetadataPagination;
   approvalJwt: AuthResponse;
   bundle: WsBatch;
   bundles: Array<WsBatch>;
@@ -2262,6 +2291,21 @@ export type QueryProyectoReferenciasArgs = {
 
 
 export type QueryProyectoReferenciasCountArgs = {
+  pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryWsEmailArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryWsEmailsArgs = {
+  pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryWsEmailsCountArgs = {
   pagination?: InputMaybe<Pagination>;
 };
 
@@ -3176,6 +3220,7 @@ export type UpdateCellInput = {
   region?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<CellStatusEmun>;
   tipoCliente?: InputMaybe<TypeClientEnum>;
+  verify?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateClientContactInput = {
@@ -3240,6 +3285,12 @@ export type UpdateDummyInput = {
   phone?: InputMaybe<Scalars['String']['input']>;
   secondField?: InputMaybe<Scalars['DateTime']['input']>;
   thirdField?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type UpdateEmailInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  cellId?: InputMaybe<Scalars['ID']['input']>;
+  id: Scalars['ID']['input'];
 };
 
 export type UpdateFletesInput = {
@@ -3768,7 +3819,9 @@ export type WsCell = {
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   direccion?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
+  emails?: Maybe<Array<WsEmail>>;
   empresa?: Maybe<Scalars['String']['output']>;
+  fullName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   nit?: Maybe<Scalars['String']['output']>;
   nombre?: Maybe<Scalars['String']['output']>;
@@ -3776,7 +3829,18 @@ export type WsCell = {
   status: CellStatusEmun;
   tipoCliente?: Maybe<TypeClientEnum>;
   updatedAt: Scalars['DateTime']['output'];
+  verify?: Maybe<Scalars['Boolean']['output']>;
   wsGroupCells?: Maybe<Array<WsGroupCell>>;
+};
+
+export type WsEmail = {
+  __typename?: 'WsEmail';
+  address: Scalars['String']['output'];
+  cell: WsCell;
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type WsGroup = {
@@ -3929,7 +3993,7 @@ export type CellsQueryVariables = Exact<{
 }>;
 
 
-export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', group: { __typename?: 'WsGroup', id: string, createdAt: any, descripcion?: string | null, nombre: string } }> | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, fullName: string, region: string, nit?: string | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', group: { __typename?: 'WsGroup', id: string, createdAt: any, descripcion?: string | null, nombre: string } }> | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type UpdateCellMutationVariables = Exact<{
   updateInput: UpdateCellInput;
@@ -5214,6 +5278,7 @@ export const CellsDocument = gql`
     updatedAt
     deletedAt
     celular
+    fullName
     region
     nit
     nombre

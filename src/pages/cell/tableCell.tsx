@@ -62,7 +62,14 @@ export default function CellTable() {
                     _or: [{
                       direccion: {
                         _contains: searchTerm
-                      }
+                      },
+                      _or: [
+                        {
+                          empresa: {
+                            _eq: searchTerm
+                          }
+                        }
+                      ]
                     }]
                   }]
                 }],
@@ -72,7 +79,7 @@ export default function CellTable() {
         })
       },
       orderBy: {
-        createdAt: OrderTypes.Desc
+        nombre: OrderTypes.Asc
       },
       pagination: {
         skip: (currentPage - 1) * itemsPerPage,
@@ -143,19 +150,31 @@ export default function CellTable() {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Nit
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
                   Nombre
                 </TableCell>
                 <TableCell
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
+                  Empresa
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                >
+                  Nit
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                >
                   Email
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                >
+                  Ciudad
                 </TableCell>
                 <TableCell
                   isHeader
@@ -180,13 +199,19 @@ export default function CellTable() {
                     {cell.celular}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                    {cell.fullName}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                    {cell.empresa}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     {cell.nit}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {cell.nombre}
+                    {cell.email}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {cell.email}
+                    {cell.city?.name}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     {cell.status}
