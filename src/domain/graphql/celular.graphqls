@@ -8,6 +8,7 @@ query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pa
     fullName
     region
     nit
+    verify
     nombre
     apellido
     direccion

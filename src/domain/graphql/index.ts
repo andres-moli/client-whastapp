@@ -681,12 +681,14 @@ export type FindCellWhere = {
   _and?: InputMaybe<Array<FindCellWhere>>;
   _or?: InputMaybe<Array<FindCellWhere>>;
   celular?: InputMaybe<StringFilter>;
+  city?: InputMaybe<StringFilter>;
   direccion?: InputMaybe<StringFilter>;
   email?: InputMaybe<StringFilter>;
   empresa?: InputMaybe<StringFilter>;
   nit?: InputMaybe<StringFilter>;
   nombre?: InputMaybe<StringFilter>;
   region?: InputMaybe<StringFilter>;
+  verify?: InputMaybe<StringFilter>;
 };
 
 export type FindClientContactOrderBy = {
@@ -3993,7 +3995,7 @@ export type CellsQueryVariables = Exact<{
 }>;
 
 
-export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, fullName: string, region: string, nit?: string | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', group: { __typename?: 'WsGroup', id: string, createdAt: any, descripcion?: string | null, nombre: string } }> | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, fullName: string, region: string, nit?: string | null, verify?: boolean | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', group: { __typename?: 'WsGroup', id: string, createdAt: any, descripcion?: string | null, nombre: string } }> | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type UpdateCellMutationVariables = Exact<{
   updateInput: UpdateCellInput;
@@ -4246,7 +4248,7 @@ export type GroupQueryVariables = Exact<{
 }>;
 
 
-export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', createdAt: any, cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun } }> | null } };
+export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', createdAt: any, cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, verify?: boolean | null, status: CellStatusEmun } }> | null } };
 
 export type RemoveGroupWithCellsMutationVariables = Exact<{
   groupId: Scalars['String']['input'];
@@ -5281,6 +5283,7 @@ export const CellsDocument = gql`
     fullName
     region
     nit
+    verify
     nombre
     apellido
     direccion
@@ -6979,6 +6982,7 @@ export const GroupDocument = gql`
         nombre
         direccion
         email
+        verify
         status
       }
     }

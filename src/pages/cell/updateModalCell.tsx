@@ -9,6 +9,7 @@ import { useUpdateCellMutation, CellStatusEmun, WsCell, useCitiesQuery, useUsers
 import { apolloClient } from "../../main.config";
 import SearchableSelect, { Option } from "../../components/form/selectSeach";
 import SearchableMultiSelect from "../../components/form/SearchableMultiSelect";
+import Checkbox from "../../components/form/input/Checkbox";
 
 const statusOptions: Option[] = [
   { value: CellStatusEmun.Activo, label: "Activo" },
@@ -72,6 +73,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
   const [empresa, setEmpresa] = useState(cell.empresa ?? "");
   const [tipoCliente, setTipoCliente] = useState<TypeClientEnum | undefined>(cell.tipoCliente || undefined);
   const [groupIds, setGroups] = useState<string[]>([]);
+  const [isChecked, setIsChecked] = useState(cell.verify || false);
   
   useEffect(() => {
     if (isOpen) {
@@ -88,6 +90,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       setEmpresa(cell.empresa ?? "");
       setTipoCliente(cell.tipoCliente ?? undefined);
       setApellido(cell.apellido ?? "");
+      setIsChecked(cell.verify || false)
       setGroups(cell.wsGroupCells?.map(wsgc => wsgc.group.id) || [])
       
     }
@@ -138,6 +141,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
               email,
               status,
               apellido,
+              verify: isChecked,
               ciudad: cityId || undefined,
               asesorId: asesorId || undefined,
               asistenteId: asistendId || undefined,
@@ -368,6 +372,14 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
               defaultValue={groupIds}
             />
           }
+        </div>
+        <div className="mt-3">
+        <div className="flex items-center gap-3">
+          <Checkbox checked={isChecked} onChange={setIsChecked} />
+          <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
+            Verificado
+          </span>
+        </div>
         </div>
         {/* Botones del modal */}
         <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-end">
