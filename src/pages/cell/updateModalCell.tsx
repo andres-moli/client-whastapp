@@ -72,7 +72,7 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
   const [asesorId, setAsesorId] = useState(cell.asesor?.id ?? "");
   const [empresa, setEmpresa] = useState(cell.empresa ?? "");
   const [tipoCliente, setTipoCliente] = useState<TypeClientEnum | undefined>(cell.tipoCliente || undefined);
-  const [groupIds, setGroups] = useState<string[]>([]);
+  const [groupIds, setGroups] = useState<string[]>(cell.wsGroupCells?.map(wsgc => wsgc.group.id) || []);
   const [isChecked, setIsChecked] = useState(cell.verify || false);
   
   useEffect(() => {
