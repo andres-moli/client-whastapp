@@ -50,6 +50,8 @@ import {
           cell.celular.toLowerCase().includes(searchTerm) ||
           cell.nombre?.toLowerCase().includes(searchTerm) ||
           cell.email?.toLowerCase().includes(searchTerm) ||
+          cell.empresa?.toLowerCase().includes(searchTerm) ||
+          cell.city?.name?.toLowerCase().includes(searchTerm) ||
           cell.nit?.toLowerCase().includes(searchTerm);
   
         const matchesVerify =
@@ -119,6 +121,8 @@ import {
                   <TableCell className="px-5 py-3 text-start text-theme-xs text-gray-500 dark:text-gray-400">Celular</TableCell>
                   <TableCell className="px-5 py-3 text-start text-theme-xs text-gray-500 dark:text-gray-400">Nombre</TableCell>
                   <TableCell className="px-5 py-3 text-start text-theme-xs text-gray-500 dark:text-gray-400">Email</TableCell>
+                  <TableCell className="px-5 py-3 text-start text-theme-xs text-gray-500 dark:text-gray-400">Empresa</TableCell>
+                  <TableCell className="px-5 py-3 text-start text-theme-xs text-gray-500 dark:text-gray-400">Ciudad</TableCell>
                   <TableCell className="px-5 py-3 text-start text-theme-xs text-gray-500 dark:text-gray-400">Nit</TableCell>
                   <TableCell className="px-5 py-3 text-start text-theme-xs text-gray-500 dark:text-gray-400">Estado</TableCell>
                   <TableCell className="px-5 py-3 text-start text-theme-xs text-gray-500 dark:text-gray-400">Verificado</TableCell>
@@ -131,6 +135,8 @@ import {
                     <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular}</TableCell>
                     <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.nombre}</TableCell>
                     <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.email}</TableCell>
+                    <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.empresa}</TableCell>
+                    <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.city?.name || 'NO TIENE'}</TableCell>
                     <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.nit}</TableCell>
                     <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.status}</TableCell>
                     <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.verify ? "SI" : "NO"}</TableCell>

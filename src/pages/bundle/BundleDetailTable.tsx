@@ -46,6 +46,8 @@ const filteredCells = useMemo(() => {
         detail.celular.celular.toLowerCase().includes(searchTerm) ||
         detail.celular.nombre?.toLowerCase().includes(searchTerm) ||
         detail.celular.email?.toLowerCase().includes(searchTerm) ||
+        detail.celular.empresa?.toLowerCase().includes(searchTerm) ||
+        detail.celular.city?.name?.toLowerCase().includes(searchTerm) ||
         detail.celular?.nit?.toLowerCase().includes(searchTerm);
   
       const matchesStatus =
@@ -159,6 +161,9 @@ return (
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Celular</TableCell>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Nombre</TableCell>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Empresa</TableCell>
+                <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Asistente</TableCell>
+                <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Asesor</TableCell>
+                <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Ciudad</TableCell>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Estado</TableCell>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Error</TableCell>
                 <TableCell className="px-5 py-3 font-medium text-start text-gray-500 text-theme-xs dark:text-gray-400">Acciones</TableCell>
@@ -170,6 +175,9 @@ return (
                 <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.celular}</TableCell>
                 <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.nombre}</TableCell>
                 <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.empresa}</TableCell>
+                <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.asistente?.fullName || 'NO TIENE'}</TableCell>
+                <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.asesor?.fullName || 'NO TIENE'}</TableCell>
+                <TableCell className="px-4 py-3 text-theme-sm dark:text-gray-400">{cell.celular.city?.name || 'NO TIENE'}</TableCell>
                    <TableCell className="px-4 py-3 text-start text-theme-sm">
                      <span
                        className={clsx(

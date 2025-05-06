@@ -3965,7 +3965,7 @@ export type BundleQueryVariables = Exact<{
 }>;
 
 
-export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
+export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
 
 export type SendLoteMessagesByOptionMutationVariables = Exact<{
   sendLoteMessagesByOptionId: Scalars['String']['input'];
@@ -4248,7 +4248,7 @@ export type GroupQueryVariables = Exact<{
 }>;
 
 
-export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', createdAt: any, cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, verify?: boolean | null, status: CellStatusEmun } }> | null } };
+export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', createdAt: any, cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, verify?: boolean | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null } }> | null } };
 
 export type RemoveGroupWithCellsMutationVariables = Exact<{
   groupId: Scalars['String']['input'];
@@ -5106,6 +5106,30 @@ export const BundleDocument = gql`
         direccion
         email
         status
+        empresa
+        city {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          code
+          name
+        }
+        tipoCliente
+        asistente {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
+        asesor {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
         wsGroupCells {
           id
           createdAt
@@ -6984,6 +7008,30 @@ export const GroupDocument = gql`
         email
         verify
         status
+        empresa
+        city {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          code
+          name
+        }
+        tipoCliente
+        asistente {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
+        asesor {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
       }
     }
   }

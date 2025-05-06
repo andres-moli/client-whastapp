@@ -104,6 +104,30 @@ query Bundle($bundleId: ID!) {
         direccion
         email
         status
+        empresa
+        city {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          code
+          name
+        }
+        tipoCliente
+        asistente {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
+        asesor {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
         wsGroupCells {
           id
           createdAt

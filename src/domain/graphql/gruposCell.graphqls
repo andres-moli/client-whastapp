@@ -74,6 +74,30 @@ query Group($groupId: ID!) {
         email
         verify
         status
+                empresa
+        city {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          code
+          name
+        }
+        tipoCliente
+        asistente {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
+        asesor {
+          email
+          identificationType
+          identificationNumber
+          fullName
+          id
+        }
       }
     }
   }
