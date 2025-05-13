@@ -68,6 +68,7 @@ export default function SubClassTable({ subClass, cllasId, refetch }: { subClass
   }, [filteredSubClasses, currentPage, itemsPerPage]);
 
   const onUpdate = (subClass: SubClass) => {
+    subClass
     openModalUpdate();
     // aquí puedes guardar `subClass` en estado o contexto para editar
   };

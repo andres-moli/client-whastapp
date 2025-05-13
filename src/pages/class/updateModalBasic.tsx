@@ -137,6 +137,7 @@ export const UpdateClasModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
             />
           </div>
           <div className="mt-2">
+            {/* @ts-ignore */}
             <SubClassTable subClass={cllass.subclasses || []} key={cllass.id}/>
           </div>
         </div>
