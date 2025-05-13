@@ -4,6 +4,7 @@ import { useUser } from "../../context/UserContext";
 import { PackagePlus, Users, Smartphone } from "lucide-react";
 import Chart from "react-apexcharts";
 import { useMemo } from "react";
+import QRComponent from "../test/qr-tst";
 
 export default function Home() {
   const { user } = useUser();
@@ -127,7 +128,7 @@ export default function Home() {
           </div>
         </Link>
       </div>
-
+      <QRComponent />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Gráfico de Barras */}
         <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow border border-gray-200 dark:border-gray-700">

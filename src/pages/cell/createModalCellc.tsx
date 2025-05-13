@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { Modal } from "../../components/ui/modal";
 import { ToastyErrorGraph } from "../../lib/utils";
-import { useCreateCellMutation, CellStatusEmun, useCitiesQuery, useUsersQuery, TypeClientEnum, useGroupsQuery } from "../../domain/graphql";
+import { useCreateCellMutation, CellStatusEmun, useCitiesQuery, useUsersQuery, TypeClientEnum, useGroupsQuery, CellTpeStatusEmun, useClassesQuery } from "../../domain/graphql";
 import { useUser } from "../../context/UserContext";
 import { apolloClient } from "../../main.config";
 import SearchableSelect, { Option } from "../../components/form/selectSeach";
@@ -16,6 +16,10 @@ import EmailInputWithSuggestions from "../../components/form/input/EmailInputWit
 const statusOptions: Option[] = [
   { value: CellStatusEmun.Activo, label: "Activo" },
   { value: CellStatusEmun.Inactivo, label: "Inactivo" }
+];
+const typeOption: Option[] = [
+  { value: CellTpeStatusEmun.Cliente, label: "Cliente" },
+  { value: CellTpeStatusEmun.Proveedor, label: "Proveedor" }
 ];
 const clientIption: Option[] = [
   { value: TypeClientEnum.ClienteFinal, label: "CLIENTE FINAL" },
@@ -61,6 +65,15 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
     }
   })
 
+  const {data: dataCllass, loading: loagindCllas} = useClassesQuery({
+    variables: {
+      pagination: {
+        skip: 0,
+        take: 9999999
+      }
+    }
+  })
+
   // Estados
   const [celular, setCelular] = useState("");
   const [region, setRegion] = useState("57");
@@ -71,11 +84,13 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
   const [email, setEmail] = useState("");
   const [empresa, setEmpresa] = useState("");
   const [status, setStatus] = useState<CellStatusEmun>(CellStatusEmun.Activo);
+  const [type, setType] = useState<CellTpeStatusEmun>(CellTpeStatusEmun.Cliente);
   const [tipoCliente, setTipoCliente] = useState<TypeClientEnum>();
   const [cityId, setCityId] = useState("");
   const [asistendId, setAsistentedId] = useState("");
   const [asesorId, setAsesorId] = useState("");
   const [groupIds, setGroups] = useState<string[]>([]);
+  const [classIds, setClassIds] = useState<string[]>([]);
 
   const handleCreate = async () => {
     const validation = cellSchema.safeParse({
@@ -127,6 +142,8 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
               empresa: empresa || undefined,
               tipoCliente: tipoCliente || undefined,
               groupIds: groupIds,
+              type,
+              classIds
             }
           }
         });
@@ -162,6 +179,13 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
       label: city.nombre.toUpperCase().trim()
     }
   }).sort((a,b) => a.label.localeCompare(b.label)) || []
+  const classOption: Option[] = dataCllass?.Classes?.map((cla) => {
+    return {
+      value: cla.id,
+      label: cla.name.toUpperCase().trim()
+    }
+  }).sort((a,b) => a.label.localeCompare(b.label)) || []
+  
   useEffect(() => {
     if (!loadingCity && cityOptions.length) {
       console.log(cityOptions)
@@ -351,7 +375,37 @@ export const CreateCellModal: React.FC<CreateCellModalProps> = ({ isOpen, closeM
             />
           }
         </div>
-
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Tipo
+          </label>
+          <SearchableSelect
+            options={typeOption}
+            placeholder="Selecciona un tipo"
+            onChange={(value) => setType(value as CellTpeStatusEmun)}
+            defaultValue={type}
+          />
+        </div>
+        {
+          type === CellTpeStatusEmun.Proveedor && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Selecione clases
+            </label>
+            {
+              loagindCllas 
+              ? 
+              <>Cargando clases</>
+              :
+              <SearchableMultiSelect
+                placeholder="Seleccione uno o varias clases"
+                options={classOption}
+                onChange={setClassIds}
+              />
+            }
+          </div>
+          ) 
+        }
         {/* Botones del modal */}
         <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-end">
           <button

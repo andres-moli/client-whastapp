@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { useNavigate } from "react-router";
-import { OrderTypes, useCellsQuery, useCitiesQuery, useClientsQuery, useClientsUserQuery, useProyectosQuery, useUpdateCellMutation, WsCell } from "../../domain/graphql";
+import { CellTpeStatusEmun, OrderTypes, useCellsQuery, useCitiesQuery, useClientsQuery, useClientsUserQuery, useProyectosQuery, useUpdateCellMutation, WsCell } from "../../domain/graphql";
 import { useUser } from "../../context/UserContext";
 import { formatCurrency } from "../../lib/utils";
 import { Eye, Search, XCircle } from "lucide-react";
@@ -36,6 +36,10 @@ const optionsSelected: Option[] = [
     value: 'TODOS'
   }
 ]
+const typeOption: Option[] = [
+  { value: CellTpeStatusEmun.Cliente, label: "Cliente" },
+  { value: CellTpeStatusEmun.Proveedor, label: "Proveedor" }
+];
 export default function CellTable() {
   const navigate = useNavigate();
   const { user } = useUser();
@@ -233,6 +237,24 @@ export default function CellTable() {
     }
     toast.dismiss(toastId)
   }
+  const filterType = async (type: CellTpeStatusEmun) => {
+    const toastId = toast.loading('Filtrando...')
+    await refetch({
+      where: {
+        type: {
+          _eq: type
+        }
+      },
+      orderBy: {
+        nombre: OrderTypes.Asc
+      },
+      pagination: {
+        skip: (currentPage - 1) * itemsPerPage,
+        take: itemsPerPage
+      }
+    })
+    toast.dismiss(toastId)
+  }
   const filterCity = async (str: string) => {
     const toastId = toast.loading('Filtrando...')
     await refetch({
@@ -274,6 +296,11 @@ export default function CellTable() {
       onChange={(value) => filterVerfy(value)}
     />
     <SearchableSelect
+      options={typeOption}
+      placeholder="Selecciona una opción"
+      onChange={(value) => filterType(value as CellTpeStatusEmun)}
+    />
+    <SearchableSelect
       options={cityOptions}
       placeholder="Selecciona una ciudad"
       onChange={(value) => filterCity(value)}
@@ -308,6 +335,12 @@ export default function CellTable() {
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
                   Celular
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                >
+                  Tipo
                 </TableCell>
                 <TableCell
                   isHeader
@@ -360,6 +393,9 @@ export default function CellTable() {
                 <TableRow key={cell.id}>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     {cell.celular}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                    {cell.type}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     {cell.fullName}

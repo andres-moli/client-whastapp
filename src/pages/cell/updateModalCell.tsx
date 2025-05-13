@@ -5,7 +5,7 @@ import { set, z } from "zod";
 
 import { Modal } from "../../components/ui/modal";
 import { ToastyErrorGraph } from "../../lib/utils";
-import { useUpdateCellMutation, CellStatusEmun, WsCell, useCitiesQuery, useUsersQuery, TypeClientEnum, useGroupsQuery } from "../../domain/graphql";
+import { useUpdateCellMutation, CellStatusEmun, WsCell, useCitiesQuery, useUsersQuery, TypeClientEnum, useGroupsQuery, CellTpeStatusEmun, useClassesQuery } from "../../domain/graphql";
 import { apolloClient } from "../../main.config";
 import SearchableSelect, { Option } from "../../components/form/selectSeach";
 import SearchableMultiSelect from "../../components/form/SearchableMultiSelect";
@@ -20,6 +20,10 @@ const clientIption: Option[] = [
   // { value: TypeClientEnum.Distribuidor, label: "DISTRIBUIDOR" },
   // { value: TypeClientEnum.Instalador, label: "INSTALADOR" },
   { value: TypeClientEnum.Integrador, label: "INTEGRADOR" },
+];
+const typeOption: Option[] = [
+  { value: CellTpeStatusEmun.Cliente, label: "Cliente" },
+  { value: CellTpeStatusEmun.Proveedor, label: "Proveedor" }
 ];
 const cellSchema = z.object({
   celular: z.string().min(1, "El celular es obligatorio"),
@@ -58,6 +62,14 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       }
     }
   })
+  const {data: dataCllass, loading: loagindCllas} = useClassesQuery({
+    variables: {
+      pagination: {
+        skip: 0,
+        take: 9999999
+      }
+    }
+  })
   // Prellenar los estados
   const [celular, setCelular] = useState(cell.celular);
   const [region, setRegion] = useState(cell.region);
@@ -73,7 +85,9 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
   const [empresa, setEmpresa] = useState(cell.empresa ?? "");
   const [tipoCliente, setTipoCliente] = useState<TypeClientEnum | undefined>(cell.tipoCliente || undefined);
   const [groupIds, setGroups] = useState<string[]>(cell.wsGroupCells?.map(wsgc => wsgc.group.id) || []);
+  const [classIds, setClassIds] = useState<string[]>(cell.cellClasses?.map(wccl => wccl.class.id) || []);
   const [isChecked, setIsChecked] = useState(cell.verify || false);
+  const [type, setType] = useState<CellTpeStatusEmun>(()=> cell.type || CellTpeStatusEmun.Cliente);
   
   useEffect(() => {
     if (isOpen) {
@@ -91,7 +105,9 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       setTipoCliente(cell.tipoCliente ?? undefined);
       setApellido(cell.apellido ?? "");
       setIsChecked(cell.verify || false)
+      setType(cell.type || CellTpeStatusEmun.Cliente)
       setGroups(cell.wsGroupCells?.map(wsgc => wsgc.group.id) || [])
+      setClassIds(cell.cellClasses?.map(wccl => wccl.class.id) || [])
       
     }
   }, [isOpen, cell]);
@@ -147,7 +163,9 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
               asistenteId: asistendId || undefined,
               empresa: empresa || undefined,
               tipoCliente: tipoCliente || undefined,
-              groupIds
+              groupIds,
+              type,
+              classIds
             }
           }
         });
@@ -181,6 +199,12 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
     return {
       value: city.id,
       label: city.nombre.toUpperCase().trim()
+    }
+  }).sort((a,b) => a.label.localeCompare(b.label)) || []
+  const classOption: Option[] = dataCllass?.Classes?.map((cla) => {
+    return {
+      value: cla.id,
+      label: cla.name.toUpperCase().trim()
     }
   }).sort((a,b) => a.label.localeCompare(b.label)) || []
   return (
@@ -373,6 +397,38 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
             />
           }
         </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Tipo
+            </label>
+            <SearchableSelect
+              options={typeOption}
+              placeholder="Selecciona un tipo"
+              onChange={(value) => setType(value as CellTpeStatusEmun)}
+              defaultValue={type}
+            />
+          </div>
+          {
+            type === CellTpeStatusEmun.Proveedor && (
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Selecione clases
+              </label>
+              {
+                loagindCllas 
+                ? 
+                <>Cargando clases</>
+                :
+                <SearchableMultiSelect
+                  placeholder="Seleccione uno o varias clases"
+                  options={classOption}
+                  onChange={setClassIds}
+                  defaultValue={classIds}
+                />
+              }
+            </div>
+            ) 
+          }
         <div className="mt-3">
         <div className="flex items-center gap-3">
           <Checkbox checked={isChecked} onChange={setIsChecked} />

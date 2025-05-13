@@ -1,0 +1,87 @@
+mutation CreateClass($createInput: CreateClassInput!) {
+  createClass(createInput: $createInput) {
+    id
+  }
+}
+mutation CreateSubClass($createInput: CreateSubClassInput!) {
+  createSubClass(createInput: $createInput) {
+    id
+  }
+}
+query Classes($orderBy: [FindClassOrderBy!], $where: FindClassWhere, $pagination: Pagination) {
+  Classes(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+    subclasses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
+  }
+  ClassesCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    totalItems
+    itemsPerPage
+    totalPages
+    currentPage
+  }
+}
+query SubClasses($orderBy: [FindSubClassOrderBy!], $where: FindSubClassWhere, $pagination: Pagination) {
+  SubClasses(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+    class {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
+  }
+  SubClassesCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+mutation UpdateClass($updateInput: UpdateClassInput!) {
+  updateClass(updateInput: $updateInput) {
+    id
+  }
+}
+query Class($classId: ID!) {
+  Class(id: $classId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+    subclasses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
+  }
+}

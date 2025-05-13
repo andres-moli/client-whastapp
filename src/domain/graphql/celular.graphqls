@@ -15,6 +15,7 @@ query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pa
     email
     status
     empresa
+    type
     city {
       id
       createdAt
@@ -46,6 +47,31 @@ query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pa
         id
         nombre
       }
+    }
+    cellClasses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      class {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        name
+        description
+        status
+        subclasses {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          name
+          description
+          status
+        }
+      }
+      notes
     }
   }
   CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {

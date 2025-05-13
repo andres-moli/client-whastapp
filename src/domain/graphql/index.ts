@@ -52,11 +52,28 @@ export type AuthResponse = {
   user: User;
 };
 
+export type CellClass = {
+  __typename?: 'CellClass';
+  cell: WsCell;
+  class: Class;
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 /** Estados posibles de un celular */
 export enum CellStatusEmun {
   Activo = 'ACTIVO',
   Inactivo = 'INACTIVO',
   Suspendido = 'SUSPENDIDO'
+}
+
+/** Estados tipos de celular */
+export enum CellTpeStatusEmun {
+  Cliente = 'CLIENTE',
+  Proveedor = 'PROVEEDOR'
 }
 
 export type City = {
@@ -69,6 +86,25 @@ export type City = {
   name: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
+
+export type Class = {
+  __typename?: 'Class';
+  cellClasses?: Maybe<Array<CellClass>>;
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  status: ClassStatus;
+  subclasses?: Maybe<Array<SubClass>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum ClassStatus {
+  Active = 'ACTIVE',
+  Archived = 'ARCHIVED',
+  Inactive = 'INACTIVE'
+}
 
 export type Client = {
   __typename?: 'Client';
@@ -194,6 +230,7 @@ export type CreateCellInput = {
   asistenteId?: InputMaybe<Scalars['String']['input']>;
   celular: Scalars['String']['input'];
   ciudad?: InputMaybe<Scalars['String']['input']>;
+  classIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   direccion?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   empresa?: InputMaybe<Scalars['String']['input']>;
@@ -203,7 +240,14 @@ export type CreateCellInput = {
   region: Scalars['String']['input'];
   status?: CellStatusEmun;
   tipoCliente?: InputMaybe<TypeClientEnum>;
+  type?: InputMaybe<CellTpeStatusEmun>;
   verify?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CreateClassInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  status?: InputMaybe<ClassStatus>;
 };
 
 export type CreateClientContactInput = {
@@ -409,6 +453,20 @@ export type CreateReferenciaInput = {
 export type CreateRoleInput = {
   description: Scalars['String']['input'];
   name: Scalars['String']['input'];
+};
+
+export type CreateSesionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  status?: InputMaybe<SesionEmun>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateSubClassInput = {
+  classId: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  status?: InputMaybe<SubClassStatus>;
 };
 
 export type CreateTaskCommentInput = {
@@ -688,7 +746,20 @@ export type FindCellWhere = {
   nit?: InputMaybe<StringFilter>;
   nombre?: InputMaybe<StringFilter>;
   region?: InputMaybe<StringFilter>;
+  type?: InputMaybe<StringFilter>;
   verify?: InputMaybe<StringFilter>;
+};
+
+export type FindClassOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindClassWhere = {
+  _and?: InputMaybe<Array<FindClassWhere>>;
+  _or?: InputMaybe<Array<FindClassWhere>>;
+  description?: InputMaybe<StringFilter>;
+  name?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
 };
 
 export type FindClientContactOrderBy = {
@@ -838,6 +909,30 @@ export type FindProyectoWhere = {
   name?: InputMaybe<StringFilter>;
   status?: InputMaybe<StringFilter>;
   worker?: InputMaybe<StringFilter>;
+};
+
+export type FindSesionOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindSesionWhere = {
+  _and?: InputMaybe<Array<FindSesionWhere>>;
+  _or?: InputMaybe<Array<FindSesionWhere>>;
+  description?: InputMaybe<StringFilter>;
+  name?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
+};
+
+export type FindSubClassOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindSubClassWhere = {
+  _and?: InputMaybe<Array<FindSubClassWhere>>;
+  _or?: InputMaybe<Array<FindSubClassWhere>>;
+  description?: InputMaybe<StringFilter>;
+  name?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
 };
 
 export type FindTaskCommentTypeOrderBy = {
@@ -1079,6 +1174,7 @@ export type Mutation = {
   createAllPresupuestoToMonth: Scalars['Boolean']['output'];
   createBundle: WsBatch;
   createCell: WsCell;
+  createClass: Class;
   createClient: Client;
   createClientContact: ClientContact;
   createCotizacion: Cotizacion;
@@ -1104,6 +1200,8 @@ export type Mutation = {
   createReferenciaProyecto: ReferenciaProyecto;
   createRole: Role;
   createRoleFx: Array<RoleFx>;
+  createSesion: WsSesion;
+  createSubClass: SubClass;
   createTask: Task;
   createTaskComment: TaskComment;
   createTipoProyecto: TipoProyecto;
@@ -1120,6 +1218,7 @@ export type Mutation = {
   remove: NotificationGroup;
   removeBundle: WsBatch;
   removeCell: WsCell;
+  removeClass: Class;
   removeClient: Client;
   removeClientContact: ClientContact;
   removeCotizacion: Cotizacion;
@@ -1143,6 +1242,8 @@ export type Mutation = {
   removeReferenciaProyecto: ReferenciaProyecto;
   removeRole: Role;
   removeRoleFx: Array<Scalars['String']['output']>;
+  removeSesion: WsSesion;
+  removeSubClass: SubClass;
   removeSubordinate: User;
   removeTask: Task;
   removeTaskComment: TaskComment;
@@ -1168,6 +1269,7 @@ export type Mutation = {
   update: NotificationGroup;
   updateBundle: WsBatch;
   updateCell: WsCell;
+  updateClass: Class;
   updateClient: Client;
   updateClientContact: ClientContact;
   updateConcepto: ConceptoTable;
@@ -1192,6 +1294,8 @@ export type Mutation = {
   updateProyectoReferencia: ProyectoReferencia;
   updateReferenciaProyecto: ReferenciaProyecto;
   updateRole: Role;
+  updateSesion: WsSesion;
+  updateSubClass: SubClass;
   updateTask: Task;
   updateTaskComment: TaskComment;
   updateTipoProyecto: TipoProyecto;
@@ -1249,6 +1353,11 @@ export type MutationCreateBundleArgs = {
 
 export type MutationCreateCellArgs = {
   createInput: CreateCellInput;
+};
+
+
+export type MutationCreateClassArgs = {
+  createInput: CreateClassInput;
 };
 
 
@@ -1367,6 +1476,16 @@ export type MutationCreateRoleFxArgs = {
 };
 
 
+export type MutationCreateSesionArgs = {
+  createInput: CreateSesionInput;
+};
+
+
+export type MutationCreateSubClassArgs = {
+  createInput: CreateSubClassInput;
+};
+
+
 export type MutationCreateTaskArgs = {
   createInput: CreateTaskInput;
 };
@@ -1438,6 +1557,11 @@ export type MutationRemoveBundleArgs = {
 
 
 export type MutationRemoveCellArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveClassArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1555,6 +1679,16 @@ export type MutationRemoveRoleArgs = {
 
 export type MutationRemoveRoleFxArgs = {
   removeRoleFxInput: CreateAndRemoveRoleFxInput;
+};
+
+
+export type MutationRemoveSesionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveSubClassArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1681,6 +1815,11 @@ export type MutationUpdateCellArgs = {
 };
 
 
+export type MutationUpdateClassArgs = {
+  updateInput: UpdateClassInput;
+};
+
+
 export type MutationUpdateClientArgs = {
   updateInput: UpdateClientInput;
 };
@@ -1798,6 +1937,16 @@ export type MutationUpdateReferenciaProyectoArgs = {
 
 export type MutationUpdateRoleArgs = {
   updateInput: UpdateRoleInput;
+};
+
+
+export type MutationUpdateSesionArgs = {
+  updateInput: UpdateSessionInput;
+};
+
+
+export type MutationUpdateSubClassArgs = {
+  updateInput: UpdateSubClassInput;
 };
 
 
@@ -2098,6 +2247,9 @@ export type Query = {
   Cell: WsCell;
   Cells: Array<WsCell>;
   CellsCount: MetadataPagination;
+  Class: Class;
+  Classes: Array<Class>;
+  ClassesCount: MetadataPagination;
   Count: MetadataPagination;
   Fletes: Fletes;
   Fletess: Array<Fletes>;
@@ -2107,6 +2259,9 @@ export type Query = {
   NotificationGroupsCount: MetadataPagination;
   ProyectoReferencias: Array<ProyectoReferencia>;
   ProyectoReferenciasCount: MetadataPagination;
+  SubClass: SubClass;
+  SubClasses: Array<SubClass>;
+  SubClassesCount: MetadataPagination;
   WsEmail: WsEmail;
   WsEmails: Array<WsEmail>;
   WsEmailsCount: MetadataPagination;
@@ -2114,6 +2269,7 @@ export type Query = {
   bundle: WsBatch;
   bundles: Array<WsBatch>;
   bundlesCount: MetadataPagination;
+  cellsByClass: Array<CellClass>;
   cities: Array<City>;
   city: City;
   client: Client;
@@ -2199,6 +2355,9 @@ export type Query = {
   rolesFx: Array<RoleFx>;
   rolesFxCount: MetadataPagination;
   sendEmailRecovryPassword: Scalars['String']['output'];
+  sesion: WsSesion;
+  sesiones: Array<WsSesion>;
+  sesionesCount: MetadataPagination;
   task: Task;
   taskComment: TaskComment;
   tasks: Array<Task>;
@@ -2243,6 +2402,25 @@ export type QueryCellsCountArgs = {
   orderBy?: InputMaybe<Array<FindCellOrderBy>>;
   pagination?: InputMaybe<Pagination>;
   where?: InputMaybe<FindCellWhere>;
+};
+
+
+export type QueryClassArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryClassesArgs = {
+  orderBy?: InputMaybe<Array<FindClassOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindClassWhere>;
+};
+
+
+export type QueryClassesCountArgs = {
+  orderBy?: InputMaybe<Array<FindClassOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindClassWhere>;
 };
 
 
@@ -2297,6 +2475,25 @@ export type QueryProyectoReferenciasCountArgs = {
 };
 
 
+export type QuerySubClassArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerySubClassesArgs = {
+  orderBy?: InputMaybe<Array<FindSubClassOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindSubClassWhere>;
+};
+
+
+export type QuerySubClassesCountArgs = {
+  orderBy?: InputMaybe<Array<FindSubClassOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindSubClassWhere>;
+};
+
+
 export type QueryWsEmailArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2333,6 +2530,12 @@ export type QueryBundlesCountArgs = {
   orderBy?: InputMaybe<Array<FindWsBatchOrderBy>>;
   pagination?: InputMaybe<Pagination>;
   where?: InputMaybe<FindWsBatchWhere>;
+};
+
+
+export type QueryCellsByClassArgs = {
+  classId: Scalars['String']['input'];
+  subClassId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2779,6 +2982,25 @@ export type QuerySendEmailRecovryPasswordArgs = {
 };
 
 
+export type QuerySesionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QuerySesionesArgs = {
+  orderBy?: InputMaybe<Array<FindSesionOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindSesionWhere>;
+};
+
+
+export type QuerySesionesCountArgs = {
+  orderBy?: InputMaybe<Array<FindSesionOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindSesionWhere>;
+};
+
+
 export type QueryTaskArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3007,6 +3229,12 @@ export type SendLoteResult = {
   success: Scalars['Boolean']['output'];
 };
 
+export enum SesionEmun {
+  Fallida = 'FALLIDA',
+  Lista = 'LISTA',
+  Pendiente = 'PENDIENTE'
+}
+
 export type SigninAdminInput = {
   email?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
@@ -3103,6 +3331,24 @@ export type StringFilter = {
   _notstartswith?: InputMaybe<Scalars['String']['input']>;
   _startswith?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type SubClass = {
+  __typename?: 'SubClass';
+  class?: Maybe<Class>;
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  status: SubClassStatus;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum SubClassStatus {
+  Active = 'ACTIVE',
+  Archived = 'ARCHIVED',
+  Inactive = 'INACTIVE'
+}
 
 export type Task = {
   __typename?: 'Task';
@@ -3212,6 +3458,7 @@ export type UpdateCellInput = {
   asistenteId?: InputMaybe<Scalars['String']['input']>;
   celular?: InputMaybe<Scalars['String']['input']>;
   ciudad?: InputMaybe<Scalars['String']['input']>;
+  classIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   direccion?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   empresa?: InputMaybe<Scalars['String']['input']>;
@@ -3222,7 +3469,15 @@ export type UpdateCellInput = {
   region?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<CellStatusEmun>;
   tipoCliente?: InputMaybe<TypeClientEnum>;
+  type?: InputMaybe<CellTpeStatusEmun>;
   verify?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdateClassInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<ClassStatus>;
 };
 
 export type UpdateClientContactInput = {
@@ -3472,10 +3727,26 @@ export type UpdateRoleInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateSessionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<SesionEmun>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateStatusInput = {
   id: Scalars['String']['input'];
   status: StatusVisitEnum;
   token: Scalars['String']['input'];
+};
+
+export type UpdateSubClassInput = {
+  classId?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<SubClassStatus>;
 };
 
 export type UpdateTaskCoomentInput = {
@@ -3814,6 +4085,7 @@ export type WsCell = {
   apellido?: Maybe<Scalars['String']['output']>;
   asesor?: Maybe<User>;
   asistente?: Maybe<User>;
+  cellClasses?: Maybe<Array<CellClass>>;
   celular: Scalars['String']['output'];
   city?: Maybe<City>;
   ciudad?: Maybe<Scalars['String']['output']>;
@@ -3830,6 +4102,7 @@ export type WsCell = {
   region: Scalars['String']['output'];
   status: CellStatusEmun;
   tipoCliente?: Maybe<TypeClientEnum>;
+  type?: Maybe<CellTpeStatusEmun>;
   updatedAt: Scalars['DateTime']['output'];
   verify?: Maybe<Scalars['Boolean']['output']>;
   wsGroupCells?: Maybe<Array<WsGroupCell>>;
@@ -3865,6 +4138,18 @@ export type WsGroupCell = {
   group: WsGroup;
   id: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type WsSesion = {
+  __typename?: 'WsSesion';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  status: SesionEmun;
+  updatedAt: Scalars['DateTime']['output'];
+  user?: Maybe<User>;
 };
 
 export type WssRecipient = {
@@ -3995,7 +4280,7 @@ export type CellsQueryVariables = Exact<{
 }>;
 
 
-export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, fullName: string, region: string, nit?: string | null, verify?: boolean | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', group: { __typename?: 'WsGroup', id: string, createdAt: any, descripcion?: string | null, nombre: string } }> | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, fullName: string, region: string, nit?: string | null, verify?: boolean | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, type?: CellTpeStatusEmun | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', group: { __typename?: 'WsGroup', id: string, createdAt: any, descripcion?: string | null, nombre: string } }> | null, cellClasses?: Array<{ __typename?: 'CellClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, notes?: string | null, class: { __typename?: 'Class', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: ClassStatus, subclasses?: Array<{ __typename?: 'SubClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: SubClassStatus }> | null } }> | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type UpdateCellMutationVariables = Exact<{
   updateInput: UpdateCellInput;
@@ -4010,6 +4295,52 @@ export type CreateCellMutationVariables = Exact<{
 
 
 export type CreateCellMutation = { __typename?: 'Mutation', createCell: { __typename?: 'WsCell', id: string } };
+
+export type CreateClassMutationVariables = Exact<{
+  createInput: CreateClassInput;
+}>;
+
+
+export type CreateClassMutation = { __typename?: 'Mutation', createClass: { __typename?: 'Class', id: string } };
+
+export type CreateSubClassMutationVariables = Exact<{
+  createInput: CreateSubClassInput;
+}>;
+
+
+export type CreateSubClassMutation = { __typename?: 'Mutation', createSubClass: { __typename?: 'SubClass', id: string } };
+
+export type ClassesQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindClassOrderBy> | FindClassOrderBy>;
+  where?: InputMaybe<FindClassWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ClassesQuery = { __typename?: 'Query', Classes: Array<{ __typename?: 'Class', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: ClassStatus, subclasses?: Array<{ __typename?: 'SubClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: SubClassStatus }> | null }>, ClassesCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+
+export type SubClassesQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindSubClassOrderBy> | FindSubClassOrderBy>;
+  where?: InputMaybe<FindSubClassWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type SubClassesQuery = { __typename?: 'Query', SubClasses: Array<{ __typename?: 'SubClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: SubClassStatus, class?: { __typename?: 'Class', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: ClassStatus } | null }>, SubClassesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type UpdateClassMutationVariables = Exact<{
+  updateInput: UpdateClassInput;
+}>;
+
+
+export type UpdateClassMutation = { __typename?: 'Mutation', updateClass: { __typename?: 'Class', id: string } };
+
+export type ClassQueryVariables = Exact<{
+  classId: Scalars['ID']['input'];
+}>;
+
+
+export type ClassQuery = { __typename?: 'Query', Class: { __typename?: 'Class', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: ClassStatus, subclasses?: Array<{ __typename?: 'SubClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: SubClassStatus }> | null } };
 
 export type ClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4234,7 +4565,7 @@ export type GroupsQueryVariables = Exact<{
 }>;
 
 
-export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun } }> | null }>, groupsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, type?: CellTpeStatusEmun | null } }> | null }>, groupsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type UpdateGroupMutationVariables = Exact<{
   updateInput: UpdateGroupInput;
@@ -4248,7 +4579,7 @@ export type GroupQueryVariables = Exact<{
 }>;
 
 
-export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', createdAt: any, cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, verify?: boolean | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null } }> | null } };
+export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null, worker?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', createdAt: any, cell: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, verify?: boolean | null, type?: CellTpeStatusEmun | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null } }> | null } };
 
 export type RemoveGroupWithCellsMutationVariables = Exact<{
   groupId: Scalars['String']['input'];
@@ -4404,6 +4735,29 @@ export type CreateProyectoReferenciaMutationVariables = Exact<{
 
 
 export type CreateProyectoReferenciaMutation = { __typename?: 'Mutation', createProyectoReferencia: { __typename?: 'ProyectoReferencia', id: string } };
+
+export type CreateSesionMutationVariables = Exact<{
+  createInput: CreateSesionInput;
+}>;
+
+
+export type CreateSesionMutation = { __typename?: 'Mutation', createSesion: { __typename?: 'WsSesion', id: string } };
+
+export type UpdateSesionMutationVariables = Exact<{
+  updateInput: UpdateSessionInput;
+}>;
+
+
+export type UpdateSesionMutation = { __typename?: 'Mutation', updateSesion: { __typename?: 'WsSesion', id: string } };
+
+export type SesionesQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindSesionOrderBy> | FindSesionOrderBy>;
+  where?: InputMaybe<FindSesionWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type SesionesQuery = { __typename?: 'Query', sesiones: Array<{ __typename?: 'WsSesion', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description?: string | null, status: SesionEmun, user?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, id: string, fullName: string } | null }>, sesionesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
 
 export type TasksQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindTaskTypeOrderBy> | FindTaskTypeOrderBy>;
@@ -5314,6 +5668,7 @@ export const CellsDocument = gql`
     email
     status
     empresa
+    type
     city {
       id
       createdAt
@@ -5345,6 +5700,31 @@ export const CellsDocument = gql`
         id
         nombre
       }
+    }
+    cellClasses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      class {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        name
+        description
+        status
+        subclasses {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          name
+          description
+          status
+        }
+      }
+      notes
     }
   }
   CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
@@ -5456,6 +5836,286 @@ export function useCreateCellMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateCellMutationHookResult = ReturnType<typeof useCreateCellMutation>;
 export type CreateCellMutationResult = Apollo.MutationResult<CreateCellMutation>;
 export type CreateCellMutationOptions = Apollo.BaseMutationOptions<CreateCellMutation, CreateCellMutationVariables>;
+export const CreateClassDocument = gql`
+    mutation CreateClass($createInput: CreateClassInput!) {
+  createClass(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateClassMutationFn = Apollo.MutationFunction<CreateClassMutation, CreateClassMutationVariables>;
+
+/**
+ * __useCreateClassMutation__
+ *
+ * To run a mutation, you first call `useCreateClassMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateClassMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createClassMutation, { data, loading, error }] = useCreateClassMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateClassMutation(baseOptions?: Apollo.MutationHookOptions<CreateClassMutation, CreateClassMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateClassMutation, CreateClassMutationVariables>(CreateClassDocument, options);
+      }
+export type CreateClassMutationHookResult = ReturnType<typeof useCreateClassMutation>;
+export type CreateClassMutationResult = Apollo.MutationResult<CreateClassMutation>;
+export type CreateClassMutationOptions = Apollo.BaseMutationOptions<CreateClassMutation, CreateClassMutationVariables>;
+export const CreateSubClassDocument = gql`
+    mutation CreateSubClass($createInput: CreateSubClassInput!) {
+  createSubClass(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateSubClassMutationFn = Apollo.MutationFunction<CreateSubClassMutation, CreateSubClassMutationVariables>;
+
+/**
+ * __useCreateSubClassMutation__
+ *
+ * To run a mutation, you first call `useCreateSubClassMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSubClassMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSubClassMutation, { data, loading, error }] = useCreateSubClassMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateSubClassMutation(baseOptions?: Apollo.MutationHookOptions<CreateSubClassMutation, CreateSubClassMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSubClassMutation, CreateSubClassMutationVariables>(CreateSubClassDocument, options);
+      }
+export type CreateSubClassMutationHookResult = ReturnType<typeof useCreateSubClassMutation>;
+export type CreateSubClassMutationResult = Apollo.MutationResult<CreateSubClassMutation>;
+export type CreateSubClassMutationOptions = Apollo.BaseMutationOptions<CreateSubClassMutation, CreateSubClassMutationVariables>;
+export const ClassesDocument = gql`
+    query Classes($orderBy: [FindClassOrderBy!], $where: FindClassWhere, $pagination: Pagination) {
+  Classes(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+    subclasses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
+  }
+  ClassesCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    totalItems
+    itemsPerPage
+    totalPages
+    currentPage
+  }
+}
+    `;
+
+/**
+ * __useClassesQuery__
+ *
+ * To run a query within a React component, call `useClassesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClassesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClassesQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useClassesQuery(baseOptions?: Apollo.QueryHookOptions<ClassesQuery, ClassesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ClassesQuery, ClassesQueryVariables>(ClassesDocument, options);
+      }
+export function useClassesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClassesQuery, ClassesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ClassesQuery, ClassesQueryVariables>(ClassesDocument, options);
+        }
+export function useClassesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ClassesQuery, ClassesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ClassesQuery, ClassesQueryVariables>(ClassesDocument, options);
+        }
+export type ClassesQueryHookResult = ReturnType<typeof useClassesQuery>;
+export type ClassesLazyQueryHookResult = ReturnType<typeof useClassesLazyQuery>;
+export type ClassesSuspenseQueryHookResult = ReturnType<typeof useClassesSuspenseQuery>;
+export type ClassesQueryResult = Apollo.QueryResult<ClassesQuery, ClassesQueryVariables>;
+export const SubClassesDocument = gql`
+    query SubClasses($orderBy: [FindSubClassOrderBy!], $where: FindSubClassWhere, $pagination: Pagination) {
+  SubClasses(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+    class {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
+  }
+  SubClassesCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useSubClassesQuery__
+ *
+ * To run a query within a React component, call `useSubClassesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSubClassesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSubClassesQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useSubClassesQuery(baseOptions?: Apollo.QueryHookOptions<SubClassesQuery, SubClassesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SubClassesQuery, SubClassesQueryVariables>(SubClassesDocument, options);
+      }
+export function useSubClassesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SubClassesQuery, SubClassesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SubClassesQuery, SubClassesQueryVariables>(SubClassesDocument, options);
+        }
+export function useSubClassesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SubClassesQuery, SubClassesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SubClassesQuery, SubClassesQueryVariables>(SubClassesDocument, options);
+        }
+export type SubClassesQueryHookResult = ReturnType<typeof useSubClassesQuery>;
+export type SubClassesLazyQueryHookResult = ReturnType<typeof useSubClassesLazyQuery>;
+export type SubClassesSuspenseQueryHookResult = ReturnType<typeof useSubClassesSuspenseQuery>;
+export type SubClassesQueryResult = Apollo.QueryResult<SubClassesQuery, SubClassesQueryVariables>;
+export const UpdateClassDocument = gql`
+    mutation UpdateClass($updateInput: UpdateClassInput!) {
+  updateClass(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateClassMutationFn = Apollo.MutationFunction<UpdateClassMutation, UpdateClassMutationVariables>;
+
+/**
+ * __useUpdateClassMutation__
+ *
+ * To run a mutation, you first call `useUpdateClassMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClassMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClassMutation, { data, loading, error }] = useUpdateClassMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateClassMutation(baseOptions?: Apollo.MutationHookOptions<UpdateClassMutation, UpdateClassMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateClassMutation, UpdateClassMutationVariables>(UpdateClassDocument, options);
+      }
+export type UpdateClassMutationHookResult = ReturnType<typeof useUpdateClassMutation>;
+export type UpdateClassMutationResult = Apollo.MutationResult<UpdateClassMutation>;
+export type UpdateClassMutationOptions = Apollo.BaseMutationOptions<UpdateClassMutation, UpdateClassMutationVariables>;
+export const ClassDocument = gql`
+    query Class($classId: ID!) {
+  Class(id: $classId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+    subclasses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
+  }
+}
+    `;
+
+/**
+ * __useClassQuery__
+ *
+ * To run a query within a React component, call `useClassQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClassQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClassQuery({
+ *   variables: {
+ *      classId: // value for 'classId'
+ *   },
+ * });
+ */
+export function useClassQuery(baseOptions: Apollo.QueryHookOptions<ClassQuery, ClassQueryVariables> & ({ variables: ClassQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ClassQuery, ClassQueryVariables>(ClassDocument, options);
+      }
+export function useClassLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClassQuery, ClassQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ClassQuery, ClassQueryVariables>(ClassDocument, options);
+        }
+export function useClassSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ClassQuery, ClassQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ClassQuery, ClassQueryVariables>(ClassDocument, options);
+        }
+export type ClassQueryHookResult = ReturnType<typeof useClassQuery>;
+export type ClassLazyQueryHookResult = ReturnType<typeof useClassLazyQuery>;
+export type ClassSuspenseQueryHookResult = ReturnType<typeof useClassSuspenseQuery>;
+export type ClassQueryResult = Apollo.QueryResult<ClassQuery, ClassQueryVariables>;
 export const ClientsDocument = gql`
     query Clients {
   clients {
@@ -6899,6 +7559,7 @@ export const GroupsDocument = gql`
         direccion
         email
         status
+        type
       }
     }
   }
@@ -7007,6 +7668,7 @@ export const GroupDocument = gql`
         direccion
         email
         verify
+        type
         status
         empresa
         city {
@@ -8527,6 +9189,133 @@ export function useCreateProyectoReferenciaMutation(baseOptions?: Apollo.Mutatio
 export type CreateProyectoReferenciaMutationHookResult = ReturnType<typeof useCreateProyectoReferenciaMutation>;
 export type CreateProyectoReferenciaMutationResult = Apollo.MutationResult<CreateProyectoReferenciaMutation>;
 export type CreateProyectoReferenciaMutationOptions = Apollo.BaseMutationOptions<CreateProyectoReferenciaMutation, CreateProyectoReferenciaMutationVariables>;
+export const CreateSesionDocument = gql`
+    mutation CreateSesion($createInput: CreateSesionInput!) {
+  createSesion(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateSesionMutationFn = Apollo.MutationFunction<CreateSesionMutation, CreateSesionMutationVariables>;
+
+/**
+ * __useCreateSesionMutation__
+ *
+ * To run a mutation, you first call `useCreateSesionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSesionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSesionMutation, { data, loading, error }] = useCreateSesionMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateSesionMutation(baseOptions?: Apollo.MutationHookOptions<CreateSesionMutation, CreateSesionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSesionMutation, CreateSesionMutationVariables>(CreateSesionDocument, options);
+      }
+export type CreateSesionMutationHookResult = ReturnType<typeof useCreateSesionMutation>;
+export type CreateSesionMutationResult = Apollo.MutationResult<CreateSesionMutation>;
+export type CreateSesionMutationOptions = Apollo.BaseMutationOptions<CreateSesionMutation, CreateSesionMutationVariables>;
+export const UpdateSesionDocument = gql`
+    mutation UpdateSesion($updateInput: UpdateSessionInput!) {
+  updateSesion(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateSesionMutationFn = Apollo.MutationFunction<UpdateSesionMutation, UpdateSesionMutationVariables>;
+
+/**
+ * __useUpdateSesionMutation__
+ *
+ * To run a mutation, you first call `useUpdateSesionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSesionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSesionMutation, { data, loading, error }] = useUpdateSesionMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateSesionMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSesionMutation, UpdateSesionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSesionMutation, UpdateSesionMutationVariables>(UpdateSesionDocument, options);
+      }
+export type UpdateSesionMutationHookResult = ReturnType<typeof useUpdateSesionMutation>;
+export type UpdateSesionMutationResult = Apollo.MutationResult<UpdateSesionMutation>;
+export type UpdateSesionMutationOptions = Apollo.BaseMutationOptions<UpdateSesionMutation, UpdateSesionMutationVariables>;
+export const SesionesDocument = gql`
+    query Sesiones($orderBy: [FindSesionOrderBy!], $where: FindSesionWhere, $pagination: Pagination) {
+  sesiones(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+    user {
+      email
+      identificationType
+      identificationNumber
+      id
+      fullName
+    }
+  }
+  sesionesCount {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useSesionesQuery__
+ *
+ * To run a query within a React component, call `useSesionesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSesionesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSesionesQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useSesionesQuery(baseOptions?: Apollo.QueryHookOptions<SesionesQuery, SesionesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SesionesQuery, SesionesQueryVariables>(SesionesDocument, options);
+      }
+export function useSesionesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SesionesQuery, SesionesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SesionesQuery, SesionesQueryVariables>(SesionesDocument, options);
+        }
+export function useSesionesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SesionesQuery, SesionesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SesionesQuery, SesionesQueryVariables>(SesionesDocument, options);
+        }
+export type SesionesQueryHookResult = ReturnType<typeof useSesionesQuery>;
+export type SesionesLazyQueryHookResult = ReturnType<typeof useSesionesLazyQuery>;
+export type SesionesSuspenseQueryHookResult = ReturnType<typeof useSesionesSuspenseQuery>;
+export type SesionesQueryResult = Apollo.QueryResult<SesionesQuery, SesionesQueryVariables>;
 export const TasksDocument = gql`
     query Tasks($orderBy: [FindTaskTypeOrderBy!], $where: FindTaskTypeWhere, $pagination: Pagination) {
   tasks(orderBy: $orderBy, where: $where, pagination: $pagination) {

@@ -30,6 +30,7 @@ query Groups($orderBy: [FindGroupOrderBy!], $where: FindGroupWhere, $pagination:
         direccion
         email
         status
+        type
       }
     }
   }
@@ -73,6 +74,7 @@ query Group($groupId: ID!) {
         direccion
         email
         verify
+        type
         status
                 empresa
         city {

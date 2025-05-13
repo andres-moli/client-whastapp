@@ -24,6 +24,9 @@ import BundlePage from "./pages/bundle";
 import { UpdateBundlePage } from "./pages/bundle/updateModalBundle";
 import { UpdateGroupPage } from "./pages/group/updateModalGroup";
 import { CreateGroupPage } from "./pages/group/CreateGroupPage";
+import ClassPage from "./pages/class";
+import EditClassPage from "./pages/class/EditClassPage";
+import SessionPage from "./pages/sesion";
 
 export default function App() {
   return (
@@ -41,6 +44,9 @@ export default function App() {
             <Route index path="/cells" element={<CellPage />} />
             <Route index path="/bundles" element={<BundlePage />} />
             <Route index path="/bundle/:id" element={<UpdateBundlePage />} />
+            <Route index path="/class" element={<ClassPage />} />
+            <Route index path="/class/:id" element={<EditClassPage />} />
+            <Route index path="/sesion" element={<SessionPage />} />
             
             
             {/* Others Page */}

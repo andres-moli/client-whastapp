@@ -44,7 +44,7 @@ export const UpdateBundlePage = () => {
       setName(bundle.nombre);
       setDescription(bundle?.descripcion || '');
       setMessage(bundle.message || '');
-      setNameGroup(bundle.group.nombre || '');
+      setNameGroup(bundle.group?.nombre || 'Sin Grupo');
       setEstado(bundle.estado);
       setFile(bundle.file || undefined);
       //@ts-ignore

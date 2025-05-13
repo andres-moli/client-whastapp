@@ -1,0 +1,34 @@
+mutation CreateSesion($createInput: CreateSesionInput!) {
+  createSesion(createInput: $createInput) {
+    id
+  }
+}
+mutation UpdateSesion($updateInput: UpdateSessionInput!) {
+  updateSesion(updateInput: $updateInput) {
+    id
+  }
+}
+query Sesiones($orderBy: [FindSesionOrderBy!], $where: FindSesionWhere, $pagination: Pagination) {
+  sesiones(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    name
+    description
+    status
+    user {
+      email
+      identificationType
+      identificationNumber
+      id
+      fullName
+    }
+  }
+  sesionesCount {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
