@@ -1,0 +1,40 @@
+mutation CreateFichaTecnica($createInput: CreateFichaTecnicaInput!) {
+  createFichaTecnica(createInput: $createInput) {
+    id
+  }
+}
+mutation UpdateFichaTecnica($updateInput: UpdateFichaTecnicaInput!) {
+  updateFichaTecnica(updateInput: $updateInput) {
+    id
+  }
+}
+query FichaTecnicas($orderBy: [FindFichaTecnicaOrderBy!], $where: FindFichaTecnicaWhere, $pagination: Pagination) {
+  fichaTecnicas(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    referencia
+    description
+    status
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      chunkSize
+      fileUrl
+      url
+    }
+  }
+  fichaTecnicasCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}

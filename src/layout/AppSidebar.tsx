@@ -59,6 +59,11 @@ const navItems: NavItem[] = [
     name: "Sesiones",
     icon: <UserCog2 />, 
     path: 'sesion'
+  }, 
+  {
+    name: "Fichas",
+    icon: <BoxCubeIcon />,
+    path: 'ficha'
   }
   // {
   //   name: "Tables",

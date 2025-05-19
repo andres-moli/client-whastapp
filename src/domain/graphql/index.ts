@@ -304,6 +304,13 @@ export type CreateEmailInput = {
   cellId: Scalars['ID']['input'];
 };
 
+export type CreateFichaTecnicaInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  fileId: Scalars['ID']['input'];
+  referencia: Scalars['String']['input'];
+  status: FichaTecnicaEnum;
+};
+
 export type CreateFletesInput = {
   backComision: Scalars['Float']['input'];
   carrier: Scalars['String']['input'];
@@ -566,7 +573,7 @@ export type CreateWsBatchDto = {
   createdByUserAtId?: InputMaybe<Scalars['String']['input']>;
   descripcion?: InputMaybe<Scalars['String']['input']>;
   fileId?: InputMaybe<Scalars['String']['input']>;
-  groupId: Scalars['String']['input'];
+  groupId?: InputMaybe<Scalars['String']['input']>;
   message: Scalars['String']['input'];
   nombre: Scalars['String']['input'];
   variables?: InputMaybe<Array<KeyValuePairInput>>;
@@ -709,6 +716,23 @@ export type FacturaPorClienteDto = {
   tem_vended?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type FichaTecnica = {
+  __typename?: 'FichaTecnica';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  file: FileInfo;
+  id: Scalars['ID']['output'];
+  referencia: Scalars['String']['output'];
+  status: FichaTecnicaEnum;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum FichaTecnicaEnum {
+  Active = 'ACTIVE',
+  Inactive = 'INACTIVE'
+}
+
 export type FileInfo = {
   __typename?: 'FileInfo';
   chunkSize?: Maybe<Scalars['Float']['output']>;
@@ -842,6 +866,18 @@ export type FindDummyWhere = {
   secondField?: InputMaybe<DateFilter>;
   thirdField?: InputMaybe<NumberFilter>;
   type?: InputMaybe<FindDummyTypeWhere>;
+};
+
+export type FindFichaTecnicaOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindFichaTecnicaWhere = {
+  _and?: InputMaybe<Array<FindFichaTecnicaWhere>>;
+  _or?: InputMaybe<Array<FindFichaTecnicaWhere>>;
+  description?: InputMaybe<StringFilter>;
+  referencia?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
 };
 
 export type FindFletesOrderBy = {
@@ -1182,6 +1218,7 @@ export type Mutation = {
   createDocumentType: DocumentType;
   createDummiesX: Array<Dummy>;
   createDummy: Dummy;
+  createFichaTecnica: FichaTecnica;
   createFletes: Fletes;
   createGroup: WsGroup;
   createMarcaProyecto: MarcaProyecto;
@@ -1224,6 +1261,7 @@ export type Mutation = {
   removeCotizacion: Cotizacion;
   removeDocumentType: DocumentType;
   removeDummy: Dummy;
+  removeFichaTecnica: FichaTecnica;
   removeFletes: Fletes;
   removeGroup: WsGroup;
   removeGroupWithCells: WsGroupCell;
@@ -1277,6 +1315,7 @@ export type Mutation = {
   updateDetalleCotizacion: DetalleCotizacion;
   updateDocumentType: DocumentType;
   updateDummy: Dummy;
+  updateFichaTecnica: FichaTecnica;
   updateFletes: Fletes;
   updateGroup: WsGroup;
   updateMarcaProyecto: MarcaProyecto;
@@ -1383,6 +1422,11 @@ export type MutationCreateDocumentTypeArgs = {
 
 export type MutationCreateDummyArgs = {
   createInput: CreateDummyInput;
+};
+
+
+export type MutationCreateFichaTecnicaArgs = {
+  createInput: CreateFichaTecnicaInput;
 };
 
 
@@ -1587,6 +1631,11 @@ export type MutationRemoveDocumentTypeArgs = {
 
 
 export type MutationRemoveDummyArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveFichaTecnicaArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1852,6 +1901,11 @@ export type MutationUpdateDocumentTypeArgs = {
 
 export type MutationUpdateDummyArgs = {
   updateInput: UpdateDummyInput;
+};
+
+
+export type MutationUpdateFichaTecnicaArgs = {
+  updateInput: UpdateFichaTecnicaInput;
 };
 
 
@@ -2293,6 +2347,9 @@ export type Query = {
   dummies: Array<Dummy>;
   dummiesCount: MetadataPagination;
   dummy: Dummy;
+  fichaTecnica: FichaTecnica;
+  fichaTecnicas: Array<FichaTecnica>;
+  fichaTecnicasCount: MetadataPagination;
   file: FileInfo;
   findAll: Array<UserKey>;
   findAllFacturaCliente: Array<FletesWithDocument>;
@@ -2671,6 +2728,25 @@ export type QueryDummiesCountArgs = {
 
 export type QueryDummyArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryFichaTecnicaArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryFichaTecnicasArgs = {
+  orderBy?: InputMaybe<Array<FindFichaTecnicaOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindFichaTecnicaWhere>;
+};
+
+
+export type QueryFichaTecnicasCountArgs = {
+  orderBy?: InputMaybe<Array<FindFichaTecnicaOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindFichaTecnicaWhere>;
 };
 
 
@@ -3550,6 +3626,14 @@ export type UpdateEmailInput = {
   id: Scalars['ID']['input'];
 };
 
+export type UpdateFichaTecnicaInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  fileId?: InputMaybe<Scalars['ID']['input']>;
+  id: Scalars['ID']['input'];
+  referencia?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<FichaTecnicaEnum>;
+};
+
 export type UpdateFletesInput = {
   backComision?: InputMaybe<Scalars['Float']['input']>;
   carrier?: InputMaybe<Scalars['String']['input']>;
@@ -4044,7 +4128,7 @@ export type WsBatch = {
   error?: Maybe<Scalars['String']['output']>;
   estado: WsBatchStatus;
   file?: Maybe<FileInfo>;
-  group: WsGroup;
+  group?: Maybe<WsGroup>;
   id: Scalars['ID']['output'];
   message: Scalars['String']['output'];
   nombre: Scalars['String']['output'];
@@ -4236,7 +4320,7 @@ export type BundlesQueryVariables = Exact<{
 }>;
 
 
-export type BundlesQuery = { __typename?: 'Query', bundles: Array<{ __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }>, bundlesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+export type BundlesQuery = { __typename?: 'Query', bundles: Array<{ __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group?: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null } | null, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }>, bundlesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
 
 export type SendLoteMessagesMutationVariables = Exact<{
   sendLoteMessagesId: Scalars['String']['input'];
@@ -4250,7 +4334,7 @@ export type BundleQueryVariables = Exact<{
 }>;
 
 
-export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null }, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
+export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group?: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null } | null, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
 
 export type SendLoteMessagesByOptionMutationVariables = Exact<{
   sendLoteMessagesByOptionId: Scalars['String']['input'];
@@ -4482,6 +4566,29 @@ export type UpdateDetalleCotizacionMutationVariables = Exact<{
 
 
 export type UpdateDetalleCotizacionMutation = { __typename?: 'Mutation', updateDetalleCotizacion: { __typename?: 'DetalleCotizacion', id: string } };
+
+export type CreateFichaTecnicaMutationVariables = Exact<{
+  createInput: CreateFichaTecnicaInput;
+}>;
+
+
+export type CreateFichaTecnicaMutation = { __typename?: 'Mutation', createFichaTecnica: { __typename?: 'FichaTecnica', id: string } };
+
+export type UpdateFichaTecnicaMutationVariables = Exact<{
+  updateInput: UpdateFichaTecnicaInput;
+}>;
+
+
+export type UpdateFichaTecnicaMutation = { __typename?: 'Mutation', updateFichaTecnica: { __typename?: 'FichaTecnica', id: string } };
+
+export type FichaTecnicasQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindFichaTecnicaOrderBy> | FindFichaTecnicaOrderBy>;
+  where?: InputMaybe<FindFichaTecnicaWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type FichaTecnicasQuery = { __typename?: 'Query', fichaTecnicas: Array<{ __typename?: 'FichaTecnica', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, referencia: string, description?: string | null, status: FichaTecnicaEnum, file: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } }>, fichaTecnicasCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
 
 export type FindAllFacturaClienteQueryVariables = Exact<{
   input: FacturaPorClienteDto;
@@ -7034,6 +7141,139 @@ export function useUpdateDetalleCotizacionMutation(baseOptions?: Apollo.Mutation
 export type UpdateDetalleCotizacionMutationHookResult = ReturnType<typeof useUpdateDetalleCotizacionMutation>;
 export type UpdateDetalleCotizacionMutationResult = Apollo.MutationResult<UpdateDetalleCotizacionMutation>;
 export type UpdateDetalleCotizacionMutationOptions = Apollo.BaseMutationOptions<UpdateDetalleCotizacionMutation, UpdateDetalleCotizacionMutationVariables>;
+export const CreateFichaTecnicaDocument = gql`
+    mutation CreateFichaTecnica($createInput: CreateFichaTecnicaInput!) {
+  createFichaTecnica(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateFichaTecnicaMutationFn = Apollo.MutationFunction<CreateFichaTecnicaMutation, CreateFichaTecnicaMutationVariables>;
+
+/**
+ * __useCreateFichaTecnicaMutation__
+ *
+ * To run a mutation, you first call `useCreateFichaTecnicaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateFichaTecnicaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createFichaTecnicaMutation, { data, loading, error }] = useCreateFichaTecnicaMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateFichaTecnicaMutation(baseOptions?: Apollo.MutationHookOptions<CreateFichaTecnicaMutation, CreateFichaTecnicaMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateFichaTecnicaMutation, CreateFichaTecnicaMutationVariables>(CreateFichaTecnicaDocument, options);
+      }
+export type CreateFichaTecnicaMutationHookResult = ReturnType<typeof useCreateFichaTecnicaMutation>;
+export type CreateFichaTecnicaMutationResult = Apollo.MutationResult<CreateFichaTecnicaMutation>;
+export type CreateFichaTecnicaMutationOptions = Apollo.BaseMutationOptions<CreateFichaTecnicaMutation, CreateFichaTecnicaMutationVariables>;
+export const UpdateFichaTecnicaDocument = gql`
+    mutation UpdateFichaTecnica($updateInput: UpdateFichaTecnicaInput!) {
+  updateFichaTecnica(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateFichaTecnicaMutationFn = Apollo.MutationFunction<UpdateFichaTecnicaMutation, UpdateFichaTecnicaMutationVariables>;
+
+/**
+ * __useUpdateFichaTecnicaMutation__
+ *
+ * To run a mutation, you first call `useUpdateFichaTecnicaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateFichaTecnicaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateFichaTecnicaMutation, { data, loading, error }] = useUpdateFichaTecnicaMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateFichaTecnicaMutation(baseOptions?: Apollo.MutationHookOptions<UpdateFichaTecnicaMutation, UpdateFichaTecnicaMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateFichaTecnicaMutation, UpdateFichaTecnicaMutationVariables>(UpdateFichaTecnicaDocument, options);
+      }
+export type UpdateFichaTecnicaMutationHookResult = ReturnType<typeof useUpdateFichaTecnicaMutation>;
+export type UpdateFichaTecnicaMutationResult = Apollo.MutationResult<UpdateFichaTecnicaMutation>;
+export type UpdateFichaTecnicaMutationOptions = Apollo.BaseMutationOptions<UpdateFichaTecnicaMutation, UpdateFichaTecnicaMutationVariables>;
+export const FichaTecnicasDocument = gql`
+    query FichaTecnicas($orderBy: [FindFichaTecnicaOrderBy!], $where: FindFichaTecnicaWhere, $pagination: Pagination) {
+  fichaTecnicas(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    referencia
+    description
+    status
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      chunkSize
+      fileUrl
+      url
+    }
+  }
+  fichaTecnicasCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useFichaTecnicasQuery__
+ *
+ * To run a query within a React component, call `useFichaTecnicasQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFichaTecnicasQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFichaTecnicasQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useFichaTecnicasQuery(baseOptions?: Apollo.QueryHookOptions<FichaTecnicasQuery, FichaTecnicasQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FichaTecnicasQuery, FichaTecnicasQueryVariables>(FichaTecnicasDocument, options);
+      }
+export function useFichaTecnicasLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FichaTecnicasQuery, FichaTecnicasQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FichaTecnicasQuery, FichaTecnicasQueryVariables>(FichaTecnicasDocument, options);
+        }
+export function useFichaTecnicasSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FichaTecnicasQuery, FichaTecnicasQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FichaTecnicasQuery, FichaTecnicasQueryVariables>(FichaTecnicasDocument, options);
+        }
+export type FichaTecnicasQueryHookResult = ReturnType<typeof useFichaTecnicasQuery>;
+export type FichaTecnicasLazyQueryHookResult = ReturnType<typeof useFichaTecnicasLazyQuery>;
+export type FichaTecnicasSuspenseQueryHookResult = ReturnType<typeof useFichaTecnicasSuspenseQuery>;
+export type FichaTecnicasQueryResult = Apollo.QueryResult<FichaTecnicasQuery, FichaTecnicasQueryVariables>;
 export const FindAllFacturaClienteDocument = gql`
     query FindAllFacturaCliente($input: FacturaPorClienteDto!) {
   findAllFacturaCliente(input: $input) {

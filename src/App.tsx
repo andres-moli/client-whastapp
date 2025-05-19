@@ -27,6 +27,7 @@ import { CreateGroupPage } from "./pages/group/CreateGroupPage";
 import ClassPage from "./pages/class";
 import EditClassPage from "./pages/class/EditClassPage";
 import SessionPage from "./pages/sesion";
+import FichaPage from "./pages/ficha";
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
             <Route index path="/class" element={<ClassPage />} />
             <Route index path="/class/:id" element={<EditClassPage />} />
             <Route index path="/sesion" element={<SessionPage />} />
+            <Route index path="/ficha" element={<FichaPage />} />
             
             
             {/* Others Page */}
