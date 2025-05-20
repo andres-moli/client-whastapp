@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 import { FichaTecnica, OrderTypes, useClientsQuery, useClientsUserQuery, useFichaTecnicasQuery, useProyectosQuery } from "../../domain/graphql";
 import { useUser } from "../../context/UserContext";
 import { formatCurrency } from "../../lib/utils";
-import { Eye, FileIcon, Search } from "lucide-react";
+import { Eye, FileIcon, FileWarning, Search } from "lucide-react";
 import { Pagination } from "../../components/ui/table/pagination";
 import { useState, useEffect, useMemo } from "react";
 import { useModal } from "../../hooks/useModal";
@@ -27,7 +27,7 @@ export default function FichaTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [fichaTecnica, setFichaTecnica] = useState<FichaTecnica | null>(null);
-
+  const [hasFileFilter, setHasFileFilter] = useState<'all' | 'yes' | 'no'>('all');
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -49,9 +49,15 @@ export default function FichaTable() {
                 description: {
                   _contains: searchTerm
                 }
-              }]
-            },
-          ]
+              }],
+// ...(hasFileFilter === 'yes'
+//   ? [{ file: {  _neq: null } }]
+//   : hasFileFilter === 'no'
+//   ? [{ file:  { _eq: null } }]
+//   : []),
+
+              },
+          ],
         })
       },
       orderBy: {
@@ -99,6 +105,16 @@ export default function FichaTable() {
             className="pl-10 w-full"
             onChange={handleSearchChange}
           />
+            <select
+              className="text-sm border rounded-md px-3 py-2 bg-white dark:bg-slate-800 dark:text-white"
+              onChange={(e) => setHasFileFilter(e.target.value as 'all' | 'yes' | 'no')}
+              value={hasFileFilter}
+            >
+              <option value="all">Todos</option>
+              <option value="yes">Con archivo</option>
+              <option value="no">Sin archivo</option>
+            </select>
+
         </div>
         <ButtonTable onClick={() => openModal()}>
           Crear Ficha
@@ -158,12 +174,18 @@ export default function FichaTable() {
                     {ficha.status}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    <FileIcon
-                      className="h-4 w-4 text-gray-400 cursor-pointer"
-                      onClick={() => {
-                        window.open(ficha.file?.url, "_blank"); 
-                      }}
-                    />
+                    {
+                      ficha.file ?
+                      <FileIcon
+                        className="h-4 w-4 text-gray-400 cursor-pointer"
+                        onClick={() => {
+                          window.open(ficha.file?.url, "_blank"); 
+                        }}
+                      />
+                      :
+                      <FileWarning  className="h-4 w-4 text-gray-400 red" />
+                    }
+
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                     <Eye

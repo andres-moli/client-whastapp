@@ -721,7 +721,7 @@ export type FichaTecnica = {
   createdAt: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  file: FileInfo;
+  file?: Maybe<FileInfo>;
   id: Scalars['ID']['output'];
   referencia: Scalars['String']['output'];
   status: FichaTecnicaEnum;
@@ -876,6 +876,7 @@ export type FindFichaTecnicaWhere = {
   _and?: InputMaybe<Array<FindFichaTecnicaWhere>>;
   _or?: InputMaybe<Array<FindFichaTecnicaWhere>>;
   description?: InputMaybe<StringFilter>;
+  file?: InputMaybe<StringFilter>;
   referencia?: InputMaybe<StringFilter>;
   status?: InputMaybe<StringFilter>;
 };
@@ -4588,7 +4589,7 @@ export type FichaTecnicasQueryVariables = Exact<{
 }>;
 
 
-export type FichaTecnicasQuery = { __typename?: 'Query', fichaTecnicas: Array<{ __typename?: 'FichaTecnica', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, referencia: string, description?: string | null, status: FichaTecnicaEnum, file: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } }>, fichaTecnicasCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+export type FichaTecnicasQuery = { __typename?: 'Query', fichaTecnicas: Array<{ __typename?: 'FichaTecnica', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, referencia: string, description?: string | null, status: FichaTecnicaEnum, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }>, fichaTecnicasCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
 
 export type FindAllFacturaClienteQueryVariables = Exact<{
   input: FacturaPorClienteDto;
