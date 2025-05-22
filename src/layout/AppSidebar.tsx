@@ -51,7 +51,7 @@ const navItems: NavItem[] = [
     path: 'bundles'
   },
   {
-    name: "Clases",
+    name: "Clases proovedores",
     icon: <CircleSlash />,
     path:"class"
   },
@@ -61,7 +61,7 @@ const navItems: NavItem[] = [
     path: 'sesion'
   }, 
   {
-    name: "Fichas",
+    name: "Fichas Tecnicas",
     icon: <BoxCubeIcon />,
     path: 'ficha'
   }

@@ -3400,6 +3400,8 @@ export type StringFilter = {
   _endswith?: InputMaybe<Scalars['String']['input']>;
   _eq?: InputMaybe<Scalars['String']['input']>;
   _in?: InputMaybe<Array<Scalars['String']['input']>>;
+  _isNotNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
   _like?: InputMaybe<Scalars['String']['input']>;
   _neq?: InputMaybe<Scalars['String']['input']>;
   _notcontains?: InputMaybe<Scalars['String']['input']>;

@@ -90,7 +90,7 @@ export default function EditClassPage() {
 
       apolloClient.cache.evict({ fieldName: "Classes" });
       toast.success("Clase actualizada correctamente");
-      navigate("/clases"); // opcional: redirigir
+      navigate("/class"); // opcional: redirigir
     } catch (err) {
       ToastyErrorGraph(err as any);
     }

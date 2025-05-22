@@ -10,9 +10,9 @@ import { useNavigate } from "react-router";
 import { FichaTecnica, OrderTypes, useClientsQuery, useClientsUserQuery, useFichaTecnicasQuery, useProyectosQuery } from "../../domain/graphql";
 import { useUser } from "../../context/UserContext";
 import { formatCurrency } from "../../lib/utils";
-import { Eye, FileIcon, FileWarning, Search } from "lucide-react";
+import { AlertTriangleIcon, Eye, FileIcon, FileQuestion, FileWarning, Search } from "lucide-react";
 import { Pagination } from "../../components/ui/table/pagination";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, use } from "react";
 import { useModal } from "../../hooks/useModal";
 import { CreateBasicModal } from "./createModalFicha";
 import { debounce } from "lodash";
@@ -36,30 +36,30 @@ export default function FichaTable() {
     setItemsPerPage(newItemsPerPage);
     setCurrentPage(1);
   };
+  const whereFilter = useMemo(() => {
+    const filters: any[] = [];
+
+    if (searchTerm) {
+      filters.push({
+        _or: [
+          { referencia: { _contains: searchTerm } },
+          { description: { _contains: searchTerm } },
+        ],
+      });
+    }
+
+    if (hasFileFilter === 'yes') {
+      filters.push({ file: { _isNotNull: true } });
+    } else if (hasFileFilter === 'no') {
+      filters.push({ file: { _isNull: true } });
+    }
+
+    return filters.length > 0 ? { _and: filters } : undefined;
+  }, [searchTerm, hasFileFilter]);
 
   const { data, loading, refetch } = useFichaTecnicasQuery({
     variables: {
-      where: {
-        ...(searchTerm && {
-          _and: [
-            { 
-              referencia: 
-              { _contains: searchTerm } ,
-              _or: [{
-                description: {
-                  _contains: searchTerm
-                }
-              }],
-// ...(hasFileFilter === 'yes'
-//   ? [{ file: {  _neq: null } }]
-//   : hasFileFilter === 'no'
-//   ? [{ file:  { _eq: null } }]
-//   : []),
-
-              },
-          ],
-        })
-      },
+      where: whereFilter,
       orderBy: {
         createdAt: OrderTypes.Desc
       },
@@ -69,6 +69,7 @@ export default function FichaTable() {
       }
     }
   });
+
 
   // Debounce search to avoid too many requests
   const debouncedSearch = useMemo(
@@ -97,25 +98,28 @@ export default function FichaTable() {
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex justify-between items-center p-4">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Buscar por referencia o descripción..."
-            className="pl-10 w-full"
-            onChange={handleSearchChange}
-          />
-            <select
-              className="text-sm border rounded-md px-3 py-2 bg-white dark:bg-slate-800 dark:text-white"
-              onChange={(e) => setHasFileFilter(e.target.value as 'all' | 'yes' | 'no')}
-              value={hasFileFilter}
-            >
-              <option value="all">Todos</option>
-              <option value="yes">Con archivo</option>
-              <option value="no">Sin archivo</option>
-            </select>
+<div className="flex items-center gap-2 w-full max-w-md">
+  <div className="relative flex-1">
+    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+    <Input
+      type="text"
+      placeholder="Buscar por referencia o descripción..."
+      className="pl-10 w-full"
+      onChange={handleSearchChange}
+    />
+  </div>
 
-        </div>
+  <select
+    className="text-sm border rounded-md px-3 py-2 bg-white dark:bg-slate-800 dark:text-white"
+    onChange={(e) => setHasFileFilter(e.target.value as 'all' | 'yes' | 'no')}
+    value={hasFileFilter}
+  >
+    <option value="all">Todos</option>
+    <option value="yes">Con archivo</option>
+    <option value="no">Sin archivo</option>
+  </select>
+</div>
+
         <ButtonTable onClick={() => openModal()}>
           Crear Ficha
         </ButtonTable>
@@ -183,7 +187,7 @@ export default function FichaTable() {
                         }}
                       />
                       :
-                      <FileWarning  className="h-4 w-4 text-gray-400 red" />
+                      <AlertTriangleIcon className="h-4 w-4 text-orange-500" />
                     }
 
                   </TableCell>
