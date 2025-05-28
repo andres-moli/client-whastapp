@@ -141,6 +141,12 @@ export default function FichaTable() {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
+                  Archivo
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                >
                   Descripción
                 </TableCell>
                 <TableCell
@@ -148,12 +154,6 @@ export default function FichaTable() {
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
                   Estado
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  Archivo
                 </TableCell>
                 <TableCell
                   isHeader
@@ -168,14 +168,12 @@ export default function FichaTable() {
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
               {data?.fichaTecnicas.map((ficha) => (
                 <TableRow key={ficha.id}>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                  <TableCell onClick={() => {
+                    if(ficha.file){
+                      window.open(ficha.file?.url, "_blank"); 
+                    }
+                    }} className={`${ficha.file ? 'underline decoration-black-500 cursor-pointer' : ''} px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400`}>
                     {ficha.referencia}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {ficha.description}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {ficha.status}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     {
@@ -189,7 +187,12 @@ export default function FichaTable() {
                       :
                       <AlertTriangleIcon className="h-4 w-4 text-orange-500" />
                     }
-
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                    {ficha.description}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                    {ficha.status}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                     <Eye
