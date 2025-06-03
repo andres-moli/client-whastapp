@@ -10,6 +10,7 @@ import { Plus, Trash } from "lucide-react";
 import { IconPicker } from "../../components/form/IconPicker";
 import { AppData, AboutData, GalleryItem, Service, Brand, Feature, Testimonial, TeamMember, ContactData } from "./types";
 import handleUploadImage from "../../lib/uptloadFile";
+import { toast } from "sonner";
 
 const fakeUploadImage = async (file: File): Promise<string> => {
   const fileInfo = await handleUploadImage(file)
@@ -18,17 +19,17 @@ const fakeUploadImage = async (file: File): Promise<string> => {
 };
 
 const fetchCurrentData = async (): Promise<AppData> => {
-  const res = await axios.get("http://localhost:3002/about");
+  const res = await axios.get(`${import.meta.env.VITE_APP_GRAPH}about`);
   return res.data.data;
 };
 
 const saveNewVersion = async (data: AppData) => {
   const versionCode = Math.random().toString().substring(2, 7);
-  await axios.post("http://localhost:3002/about", {
+  await axios.post(`${import.meta.env.VITE_APP_GRAPH}about`, {
     version: versionCode,
     data,
   });
-  alert(`Guardado exitosamente como versión ${versionCode}`);
+  toast.success(`Guardado exitosamente como versión ${versionCode}`);
 };
 
 export default function AdminPage() {
