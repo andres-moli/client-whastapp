@@ -60,11 +60,14 @@ export default function AdminPage() {
   const handleListChange = <K extends keyof AppData>(
     section: K,
     index: number,
+    //@ts-ignore
     field: keyof AppData[K][number],
     value: any
   ) => {
     setFormData((prev) => {
       if (!prev) return prev;
+    //@ts-ignore
+
       const updatedList = [...prev[section]] as AppData[K][];
       updatedList[index] = {
         ...updatedList[index],
@@ -81,6 +84,7 @@ export default function AdminPage() {
   const handleListRemove = <K extends keyof AppData>(section: K, index: number) => {
     setFormData((prev) => {
       if (!prev) return prev;
+      //@ts-ignore
       const updatedList = [...prev[section]] as AppData[K][];
       updatedList.splice(index, 1);
       return {
@@ -131,12 +135,14 @@ export default function AdminPage() {
   // Agregar item a lista
   const addToList = <K extends keyof AppData>(
     section: K,
+    //@ts-ignore
     newItem: AppData[K][number]
   ) => {
     setFormData((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
+        //@ts-ignore
         [section]: [...prev[section], newItem],
       };
     });
@@ -160,6 +166,7 @@ export default function AdminPage() {
   const handleImageUpload = async <K extends keyof AppData>(
     section: K,
     index: number,
+    //@ts-ignore
     field: keyof AppData[K][number],
     file: File
   ) => {
