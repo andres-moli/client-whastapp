@@ -30,6 +30,7 @@ const handleUploadImage = async (file: File) => {
         // setProgress(percent);
       },
     });
+    toast.success('Archivo subido con éxito')
     return response?.data;
   } catch (error) {
     console.log('Error subiendo imagen:', error);

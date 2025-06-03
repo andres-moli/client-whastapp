@@ -19,7 +19,7 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
-import { CircleSlash, PhoneCallIcon, UserCog2 } from "lucide-react";
+import { CircleSlash, PhoneCallIcon, UserCog2, WholeWord } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -64,7 +64,13 @@ const navItems: NavItem[] = [
     name: "Fichas Tecnicas",
     icon: <BoxCubeIcon />,
     path: 'ficha'
+  },
+  {
+    name: "Web",
+    icon: <WholeWord />,
+    path: 'web'
   }
+  
   // {
   //   name: "Tables",
   //   icon: <TableIcon />,

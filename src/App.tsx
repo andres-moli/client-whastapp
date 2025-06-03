@@ -28,6 +28,7 @@ import ClassPage from "./pages/class";
 import EditClassPage from "./pages/class/EditClassPage";
 import SessionPage from "./pages/sesion";
 import FichaPage from "./pages/ficha";
+import AdminPage from "./pages/web";
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
             <Route index path="/class/:id" element={<EditClassPage />} />
             <Route index path="/sesion" element={<SessionPage />} />
             <Route index path="/ficha" element={<FichaPage />} />
+            <Route index path="/web" element={<AdminPage />} />
             
             
             {/* Others Page */}
