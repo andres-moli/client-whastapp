@@ -88,7 +88,9 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
   const [classIds, setClassIds] = useState<string[]>(cell.cellClasses?.map(wccl => wccl.class.id) || []);
   const [isChecked, setIsChecked] = useState(cell.verify || false);
   const [type, setType] = useState<CellTpeStatusEmun>(()=> cell.type || CellTpeStatusEmun.Cliente);
-  
+  const [extraEmails, setExtraEmails] = useState<string[]>(cell.emails?.map((cell) => cell.address) || []);
+  const [newExtraEmail, setNewExtraEmail] = useState("");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   useEffect(() => {
     if (isOpen) {
       setCelular(cell.celular);
@@ -108,11 +110,16 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
       setType(cell.type || CellTpeStatusEmun.Cliente)
       setGroups(cell.wsGroupCells?.map(wsgc => wsgc.group.id) || [])
       setClassIds(cell.cellClasses?.map(wccl => wccl.class.id) || [])
-      
+      setExtraEmails(cell.emails?.map((cell) => cell.address) || [])
     }
   }, [isOpen, cell]);
 
   const handleUpdate = async () => {
+    const invalidEmails = extraEmails.filter(email => !emailRegex.test(email));
+    if (invalidEmails.length > 0) {
+      toast.error(`Correos inválidos: ${invalidEmails.join(", ")}`);
+      return;
+    }
     const validation = cellSchema.safeParse({
       celular,
       region,
@@ -165,7 +172,8 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
               tipoCliente: tipoCliente || undefined,
               groupIds,
               type,
-              classIds
+              classIds,
+              emailsDto: extraEmails
             }
           }
         });
@@ -436,6 +444,45 @@ export const UpdateCellModal: React.FC<UpdateCellModalProps> = ({ isOpen, closeM
             Verificado
           </span>
         </div>
+        </div>
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Correos adicionales
+          </label>
+          <div className="flex gap-2 mt-1">
+            <input
+              type="email"
+              placeholder="Agregar correo adicional"
+              value={newExtraEmail}
+              onChange={(e) => setNewExtraEmail(e.target.value)}
+              className="dark:bg-dark-900 flex-1 h-11 appearance-none rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            />
+            <button
+              type="button"
+              className="bg-brand-500 hover:bg-brand-600 text-white px-3 py-2 rounded-md text-sm"
+              onClick={() => {
+                if (newExtraEmail && !extraEmails.includes(newExtraEmail)) {
+                  setExtraEmails([...extraEmails, newExtraEmail]);
+                  setNewExtraEmail("");
+                }
+              }}
+            >
+              Agregar
+            </button>
+          </div>
+          <ul className="mt-2 space-y-1">
+            {extraEmails.map((email, index) => (
+              <li key={index} className="flex items-center justify-between text-sm text-gray-800 dark:text-white/90 bg-gray-100 dark:bg-dark-800 px-3 py-1 rounded-md">
+                <span>{email}</span>
+                <button
+                  onClick={() => setExtraEmails(extraEmails.filter((_, i) => i !== index))}
+                  className="text-red-500 hover:text-red-700 text-xs"
+                >
+                  Eliminar
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
         {/* Botones del modal */}
         <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-end">

@@ -73,6 +73,13 @@ query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pa
       }
       notes
     }
+    emails {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      address
+    }
   }
   CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
     totalItems

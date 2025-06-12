@@ -178,16 +178,27 @@ export type Cotizacion = {
   detalle?: Maybe<Array<DetalleCotizacion>>;
   emailCliente: Scalars['String']['output'];
   fecha: Scalars['DateTime']['output'];
+  fechaRecordatorio?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   nitCliente: Scalars['String']['output'];
   nombreCliente: Scalars['String']['output'];
   nombreVendedor: Scalars['String']['output'];
   numeroCotizacion: Scalars['String']['output'];
+  plazo?: Maybe<Scalars['Float']['output']>;
   proyecto?: Maybe<Proyectos>;
+  recordatorioEnviado: Scalars['Boolean']['output'];
   status?: Maybe<CotizacionStatusEnum>;
   updatedAt: Scalars['DateTime']['output'];
   valor: Scalars['Float']['output'];
   vendedor: Scalars['String']['output'];
+  whatsappEnviado: Scalars['Boolean']['output'];
+};
+
+export type CotizacionResendByNumber = {
+  apellido?: InputMaybe<Scalars['String']['input']>;
+  cell: Scalars['String']['input'];
+  nombre?: InputMaybe<Scalars['String']['input']>;
+  numeroCotizacion: Scalars['String']['input'];
 };
 
 export type CotizacionSeachInput = {
@@ -197,6 +208,7 @@ export type CotizacionSeachInput = {
 
 export enum CotizacionStatusEnum {
   Aceptada = 'ACEPTADA',
+  Enviada = 'ENVIADA',
   Ganada = 'GANADA',
   Perdida = 'PERDIDA',
   Revisada = 'REVISADA'
@@ -233,6 +245,7 @@ export type CreateCellInput = {
   classIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   direccion?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  emailsDto?: InputMaybe<Array<Scalars['String']['input']>>;
   empresa?: InputMaybe<Scalars['String']['input']>;
   groupIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   nit?: InputMaybe<Scalars['String']['input']>;
@@ -572,10 +585,12 @@ export type CreateWsBatchDto = {
   celularesIds: Array<Scalars['String']['input']>;
   createdByUserAtId?: InputMaybe<Scalars['String']['input']>;
   descripcion?: InputMaybe<Scalars['String']['input']>;
+  fileHtmlId?: InputMaybe<Scalars['String']['input']>;
   fileId?: InputMaybe<Scalars['String']['input']>;
   groupId?: InputMaybe<Scalars['String']['input']>;
   message: Scalars['String']['input'];
   nombre: Scalars['String']['input'];
+  type?: InputMaybe<TypeBundleEnum>;
   variables?: InputMaybe<Array<KeyValuePairInput>>;
 };
 
@@ -1205,6 +1220,7 @@ export type Mutation = {
   addCellToGroup: WsGroupCell;
   addUserRole: User;
   assignSubordinate: User;
+  bundleMailSend: SendLoteResult;
   codeConfirmation: User;
   crearConcepto: ConceptoTable;
   create: RoleFx;
@@ -1294,6 +1310,7 @@ export type Mutation = {
   removeVisitType: VisitType;
   removeWsEmail: WsEmail;
   replaceAllRolesFx: Array<RoleFx>;
+  resendCotizacionByNumber: Scalars['Boolean']['output'];
   resetPassword: User;
   resetSuperAdmin: User;
   saveDetalleCotizacion: Scalars['Boolean']['output'];
@@ -1368,6 +1385,11 @@ export type MutationAddUserRoleArgs = {
 export type MutationAssignSubordinateArgs = {
   managerId: Scalars['String']['input'];
   subordinateId: Scalars['String']['input'];
+};
+
+
+export type MutationBundleMailSendArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -1795,6 +1817,11 @@ export type MutationRemoveWsEmailArgs = {
 
 export type MutationReplaceAllRolesFxArgs = {
   replaceAllRoleFxInput: CreateAndRemoveRoleFxInput;
+};
+
+
+export type MutationResendCotizacionByNumberArgs = {
+  input: CotizacionResendByNumber;
 };
 
 
@@ -3487,6 +3514,11 @@ export type TipoProyecto = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export enum TypeBundleEnum {
+  Emails = 'EMAILS',
+  Whastapp = 'WHASTAPP'
+}
+
 export enum TypeClientEnum {
   ClienteFinal = 'CLIENTE_FINAL',
   Distribuidor = 'DISTRIBUIDOR',
@@ -3523,11 +3555,13 @@ export type UpdateBundleInput = {
   createdByUserAtId?: InputMaybe<Scalars['String']['input']>;
   deleteFile?: InputMaybe<Scalars['Boolean']['input']>;
   descripcion?: InputMaybe<Scalars['String']['input']>;
+  fileHtmlId?: InputMaybe<Scalars['String']['input']>;
   fileId?: InputMaybe<Scalars['String']['input']>;
   groupId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   message?: InputMaybe<Scalars['String']['input']>;
   nombre?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<TypeBundleEnum>;
   variables?: InputMaybe<Array<KeyValuePairInput>>;
 };
 
@@ -3540,6 +3574,7 @@ export type UpdateCellInput = {
   classIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   direccion?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  emailsDto?: InputMaybe<Array<Scalars['String']['input']>>;
   empresa?: InputMaybe<Scalars['String']['input']>;
   groupIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   id: Scalars['ID']['input'];
@@ -4131,10 +4166,12 @@ export type WsBatch = {
   error?: Maybe<Scalars['String']['output']>;
   estado: WsBatchStatus;
   file?: Maybe<FileInfo>;
+  fileHtml?: Maybe<FileInfo>;
   group?: Maybe<WsGroup>;
   id: Scalars['ID']['output'];
   message: Scalars['String']['output'];
   nombre: Scalars['String']['output'];
+  type: TypeBundleEnum;
   updatedAt: Scalars['DateTime']['output'];
   variables?: Maybe<Array<KeyValuePair>>;
 };
@@ -4323,7 +4360,7 @@ export type BundlesQueryVariables = Exact<{
 }>;
 
 
-export type BundlesQuery = { __typename?: 'Query', bundles: Array<{ __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group?: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null } | null, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }>, bundlesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+export type BundlesQuery = { __typename?: 'Query', bundles: Array<{ __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, type: TypeBundleEnum, message: string, descripcion?: string | null, estado: WsBatchStatus, group?: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null } | null, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }>, bundlesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
 
 export type SendLoteMessagesMutationVariables = Exact<{
   sendLoteMessagesId: Scalars['String']['input'];
@@ -4337,7 +4374,7 @@ export type BundleQueryVariables = Exact<{
 }>;
 
 
-export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, group?: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null } | null, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
+export type BundleQuery = { __typename?: 'Query', bundle: { __typename?: 'WsBatch', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, message: string, descripcion?: string | null, estado: WsBatchStatus, type: TypeBundleEnum, group?: { __typename?: 'WsGroup', nombre: string, descripcion?: string | null } | null, createdByUserAt?: { __typename?: 'User', fullName: string, email: string, identificationNumber?: string | null } | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, detalles?: Array<{ __typename?: 'WsBatchDetail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, estado: WsBatchDetailStatus, error?: string | null, celular: { __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, region: string, nit?: string | null, nombre?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, group: { __typename?: 'WsGroup', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nombre: string, descripcion?: string | null } }> | null } }> | null } };
 
 export type SendLoteMessagesByOptionMutationVariables = Exact<{
   sendLoteMessagesByOptionId: Scalars['String']['input'];
@@ -4360,6 +4397,13 @@ export type SendLoteMessagesByIdMutationVariables = Exact<{
 
 export type SendLoteMessagesByIdMutation = { __typename?: 'Mutation', sendLoteMessagesById: { __typename?: 'SendLoteResult', success: boolean, message: string, error?: string | null } };
 
+export type BundleMailSendMutationVariables = Exact<{
+  bundleMailSendId: Scalars['String']['input'];
+}>;
+
+
+export type BundleMailSendMutation = { __typename?: 'Mutation', bundleMailSend: { __typename?: 'SendLoteResult', success: boolean, message: string, error?: string | null } };
+
 export type CellsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindCellOrderBy> | FindCellOrderBy>;
   where?: InputMaybe<FindCellWhere>;
@@ -4367,7 +4411,7 @@ export type CellsQueryVariables = Exact<{
 }>;
 
 
-export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, fullName: string, region: string, nit?: string | null, verify?: boolean | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, type?: CellTpeStatusEmun | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', group: { __typename?: 'WsGroup', id: string, createdAt: any, descripcion?: string | null, nombre: string } }> | null, cellClasses?: Array<{ __typename?: 'CellClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, notes?: string | null, class: { __typename?: 'Class', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: ClassStatus, subclasses?: Array<{ __typename?: 'SubClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: SubClassStatus }> | null } }> | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
+export type CellsQuery = { __typename?: 'Query', Cells: Array<{ __typename?: 'WsCell', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, celular: string, fullName: string, region: string, nit?: string | null, verify?: boolean | null, nombre?: string | null, apellido?: string | null, direccion?: string | null, email?: string | null, status: CellStatusEmun, empresa?: string | null, type?: CellTpeStatusEmun | null, tipoCliente?: TypeClientEnum | null, city?: { __typename?: 'City', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, code: number, name: string } | null, asistente?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, asesor?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, fullName: string, id: string } | null, wsGroupCells?: Array<{ __typename?: 'WsGroupCell', group: { __typename?: 'WsGroup', id: string, createdAt: any, descripcion?: string | null, nombre: string } }> | null, cellClasses?: Array<{ __typename?: 'CellClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, notes?: string | null, class: { __typename?: 'Class', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: ClassStatus, subclasses?: Array<{ __typename?: 'SubClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: SubClassStatus }> | null } }> | null, emails?: Array<{ __typename?: 'WsEmail', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, address: string }> | null }>, CellsCount: { __typename?: 'MetadataPagination', totalItems?: number | null, itemsPerPage?: number | null, totalPages?: number | null, currentPage?: number | null } };
 
 export type UpdateCellMutationVariables = Exact<{
   updateInput: UpdateCellInput;
@@ -5416,6 +5460,7 @@ export const BundlesDocument = gql`
     updatedAt
     deletedAt
     nombre
+    type
     message
     descripcion
     estado
@@ -5531,6 +5576,7 @@ export const BundleDocument = gql`
     message
     descripcion
     estado
+    type
     group {
       nombre
       descripcion
@@ -5760,6 +5806,41 @@ export function useSendLoteMessagesByIdMutation(baseOptions?: Apollo.MutationHoo
 export type SendLoteMessagesByIdMutationHookResult = ReturnType<typeof useSendLoteMessagesByIdMutation>;
 export type SendLoteMessagesByIdMutationResult = Apollo.MutationResult<SendLoteMessagesByIdMutation>;
 export type SendLoteMessagesByIdMutationOptions = Apollo.BaseMutationOptions<SendLoteMessagesByIdMutation, SendLoteMessagesByIdMutationVariables>;
+export const BundleMailSendDocument = gql`
+    mutation BundleMailSend($bundleMailSendId: String!) {
+  bundleMailSend(id: $bundleMailSendId) {
+    success
+    message
+    error
+  }
+}
+    `;
+export type BundleMailSendMutationFn = Apollo.MutationFunction<BundleMailSendMutation, BundleMailSendMutationVariables>;
+
+/**
+ * __useBundleMailSendMutation__
+ *
+ * To run a mutation, you first call `useBundleMailSendMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useBundleMailSendMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [bundleMailSendMutation, { data, loading, error }] = useBundleMailSendMutation({
+ *   variables: {
+ *      bundleMailSendId: // value for 'bundleMailSendId'
+ *   },
+ * });
+ */
+export function useBundleMailSendMutation(baseOptions?: Apollo.MutationHookOptions<BundleMailSendMutation, BundleMailSendMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<BundleMailSendMutation, BundleMailSendMutationVariables>(BundleMailSendDocument, options);
+      }
+export type BundleMailSendMutationHookResult = ReturnType<typeof useBundleMailSendMutation>;
+export type BundleMailSendMutationResult = Apollo.MutationResult<BundleMailSendMutation>;
+export type BundleMailSendMutationOptions = Apollo.BaseMutationOptions<BundleMailSendMutation, BundleMailSendMutationVariables>;
 export const CellsDocument = gql`
     query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pagination) {
   Cells(orderBy: $orderBy, where: $where, pagination: $pagination) {
@@ -5835,6 +5916,13 @@ export const CellsDocument = gql`
         }
       }
       notes
+    }
+    emails {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      address
     }
   }
   CellsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {

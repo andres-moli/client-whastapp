@@ -7,10 +7,10 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { useNavigate } from "react-router";
-import { OrderTypes, useBundlesQuery, useClientsQuery, useClientsUserQuery, useProyectosQuery, useSendLoteMessagesMutation, WsBatch, WsBatchStatus } from "../../domain/graphql";
+import { OrderTypes, TypeBundleEnum, useBundleMailSendMutation, useBundlesQuery, useClientsQuery, useClientsUserQuery, useProyectosQuery, useSendLoteMessagesMutation, WsBatch, WsBatchStatus } from "../../domain/graphql";
 import { useUser } from "../../context/UserContext";
 import { formatCurrency, ToastyErrorGraph } from "../../lib/utils";
-import { Eye, Search, SendIcon } from "lucide-react";
+import { Eye, Mail, Search, SendIcon } from "lucide-react";
 import { Pagination } from "../../components/ui/table/pagination";
 import { useState, useEffect, useMemo } from "react";
 import { useModal } from "../../hooks/useModal";
@@ -31,7 +31,7 @@ export default function BundleTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [bundleSelected, setBundleSelected] = useState<WsBatch>();
   const [sendBundle] = useSendLoteMessagesMutation()
-
+  const [sendBundleMail] = useBundleMailSendMutation();
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -126,6 +126,46 @@ export default function BundleTable() {
           Swal.fire({
             title: "No se pudo enviar el lote",
             text: res.data?.sendLoteMessages.message,
+            icon: "error",
+            confirmButtonText: "Aceptar"
+          });
+          return
+        }
+      }
+    } catch (err) {
+      ToastyErrorGraph(err as any);
+    }
+  }
+  const onsendMail = async (bundleId: string) => {
+    try {
+      const confirm = await Swal.fire({
+        title: "¿Enviar lote por correo?",
+        text: "¿Deseas enviar este lote por correo?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, Enviar",
+        cancelButtonText: "Cancelar"
+      });
+      if(confirm.isConfirmed) {
+        const res = await sendBundleMail({
+          variables: {
+            bundleMailSendId: bundleId
+          }
+        });
+        refetch()
+        if(res.data?.bundleMailSend.success) {
+          Swal.fire({
+            title: "Éxito",
+            text: "Lote enviado correctamente por correo",
+            icon: "success",
+            confirmButtonText: "Aceptar"
+          });
+          return
+        } 
+        else {
+          Swal.fire({
+            title: "No se pudo enviar el lote por correo",
+            text: res.data?.bundleMailSend.message,
             icon: "error",
             confirmButtonText: "Aceptar"
           });
@@ -255,10 +295,21 @@ export default function BundleTable() {
                       //@ts-ignore
                       onClick={() => onUpdate(bundle)}
                     />
-                    <SendIcon
-                      className="cursor-pointer"
-                      onClick={() => onSend(bundle.id)}
-                    />
+                    {
+                      bundle.type === TypeBundleEnum.Whastapp 
+                      ?
+                        <SendIcon
+                        className="cursor-pointer"
+                        onClick={() => onSend(bundle.id)}
+                      />
+                      : 
+                      <Mail
+                        className="cursor-pointer"
+                        onClick={() => {
+                          onsendMail(bundle.id)
+                        }}
+                      />
+                    }
                   </TableCell>
                 </TableRow>
               ))}

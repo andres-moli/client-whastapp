@@ -66,8 +66,8 @@ const navItems: NavItem[] = [
     path: 'ficha'
   },
   {
-    name: "Web",
-    icon: <WholeWord />,
+    name: "Sitio Web",
+    icon: <PageIcon />,
     path: 'web'
   }
   

@@ -15,6 +15,7 @@ query Bundles($orderBy: [FindWsBatchOrderBy!], $where: FindWsBatchWhere, $pagina
     updatedAt
     deletedAt
     nombre
+    type
     message
     descripcion
     estado
@@ -65,6 +66,7 @@ query Bundle($bundleId: ID!) {
     message
     descripcion
     estado
+    type
     group {
       nombre
       descripcion
@@ -163,6 +165,13 @@ query FindBundleInStop {
 }
 mutation SendLoteMessagesById($bundleId: String!, $cellId: String!) {
   sendLoteMessagesById(bundleId: $bundleId, cellId: $cellId) {
+    success
+    message
+    error
+  }
+}
+mutation BundleMailSend($bundleMailSendId: String!) {
+  bundleMailSend(id: $bundleMailSendId) {
     success
     message
     error

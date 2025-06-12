@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
 import { ToastyErrorGraph } from "../../lib/utils";
-import { useUpdateBundleMutation, useBundleQuery, WsBatchDetail, WsBatchStatus, FileInfo, ResendOption, useSendLoteMessagesByOptionMutation, WsCell, useSendLoteMessagesByIdMutation } from "../../domain/graphql";
+import { useUpdateBundleMutation, useBundleQuery, WsBatchDetail, WsBatchStatus, FileInfo, ResendOption, useSendLoteMessagesByOptionMutation, WsCell, useSendLoteMessagesByIdMutation, TypeBundleEnum } from "../../domain/graphql";
 import { apolloClient } from "../../main.config";
 import TextArea from "../../components/form/input/TextArea";
 import { WhatsAppMessageEditor } from "../../components/form/WhatsAppMessageEditor";
@@ -39,6 +39,7 @@ export const UpdateBundlePage = () => {
   const [inputKey, setInputKey] = useState(Date.now()); // Forzar reinicio
   const [fileNew, setFileNew] = useState<React.ChangeEvent<HTMLInputElement>>();
   const [progress, setProgress] = useState<{ current: number; total: number; percentage: number } | null>(null);
+  const [tipoLote, setTipoLote] = useState<TypeBundleEnum>(TypeBundleEnum.Whastapp);
   useEffect(() => {
     if (bundle) {
       setName(bundle.nombre);
@@ -47,13 +48,14 @@ export const UpdateBundlePage = () => {
       setNameGroup(bundle.group?.nombre || 'Sin Grupo');
       setEstado(bundle.estado);
       setFile(bundle.file || undefined);
+      setTipoLote(bundle.type || TypeBundleEnum.Whastapp);
       //@ts-ignore
       setDetail(bundle.detalles || []);
     }
   }, [bundle]);
   useEffect(() => {
     if (!id) return;
-  
+
     // 1. Recuperar estado anterior del localStorage
     const savedProgress = localStorage.getItem(`progress-${id}`);
     if (savedProgress) {
@@ -64,7 +66,7 @@ export const UpdateBundlePage = () => {
         console.error("Error parsing saved progress", e);
       }
     }
-  
+
     const savedLogs = localStorage.getItem(`logs-${id}`);
     if (savedLogs) {
       try {
@@ -80,13 +82,13 @@ export const UpdateBundlePage = () => {
       transports: ["websocket"],
       query: { bundleId: id },
     });
-  
+
     setSocket(newSocket);
-  
+
     newSocket.on("connect", () => {
       console.log("📡 Conectado al socket");
       newSocket.emit('subscribe', { bundleId: id });
-      
+
       // 3. Verificar si hay progreso guardado para sincronizar
       if (savedProgress) {
         const parsedProgress = JSON.parse(savedProgress);
@@ -94,32 +96,32 @@ export const UpdateBundlePage = () => {
         setProgress(parsedProgress);
       }
     });
-  
+
     newSocket.on("log", (data: { message: string }) => {
       refetch()
       console.log("📡 Log recibido:", data.message);
       setLogs((prevLogs) => {
         const newLogs = [...prevLogs, data.message];
-        
+
         // Guardar en localStorage
         localStorage.setItem(`logs-${id}`, JSON.stringify(newLogs));
-        
+
         return newLogs;
       });
     });
-  
+
     newSocket.on("progress", (progress: { current: number; total: number; percentage: number }) => {
       console.log(`Progreso: ${progress.current}/${progress.total} (${progress.percentage}%)`);
       setProgress(progress);
-      
+
       // Guardar en localStorage
       localStorage.setItem(`progress-${id}`, JSON.stringify(progress));
     });
-  
+
     // 4. Limpieza al desmontar el componente
     return () => {
       newSocket.disconnect();
-      
+
       // Opcional: Limpiar localStorage cuando el proceso esté completo
       if (progress?.percentage === 100) {
         localStorage.removeItem(`progress-${id}`);
@@ -127,7 +129,7 @@ export const UpdateBundlePage = () => {
       }
     };
   }, [id]);
-  
+
   // 5. Efecto adicional para limpiar datos obsoletos
   useEffect(() => {
     return () => {
@@ -138,7 +140,7 @@ export const UpdateBundlePage = () => {
       }
     };
   }, [progress, id]);
-  
+
   const handleSendOneCell = async (cellId: string, cellNumber: string) => {
     let toastId: string | number | undefined = undefined;
     try {
@@ -167,10 +169,10 @@ export const UpdateBundlePage = () => {
           toast.error("Error: " + res.errors[0].message);
           return;
         }
-        if(res.data?.sendLoteMessagesById.success) {
+        if (res.data?.sendLoteMessagesById.success) {
           toast.success("Mensaje enviado exitosamente");
         }
-        if(!res.data?.sendLoteMessagesById.success){
+        if (!res.data?.sendLoteMessagesById.success) {
           toast.error("Error: " + res.data?.sendLoteMessagesById.message);
         }
         refetch();
@@ -194,11 +196,11 @@ export const UpdateBundlePage = () => {
 
       if (!confirm.isConfirmed) return;
       let fileId: null | string = null
-      if(fileNew){
-        if(fileNew?.target?.files?.[0]){
+      if (fileNew) {
+        if (fileNew?.target?.files?.[0]) {
           const dataFile = await handleUploadImage(fileNew?.target?.files?.[0])
           fileId = dataFile?.id || ''
-        }else {
+        } else {
           toast.error('No se selecionaste un archivo para subir')
           return
         }
@@ -237,14 +239,14 @@ export const UpdateBundlePage = () => {
         confirmButtonText: "Sí, Enviar",
         cancelButtonText: "Cancelar"
       });
-      if(confirm.isConfirmed) {
+      if (confirm.isConfirmed) {
         const res = await resendLoteMessages({
           variables: {
             option,
             sendLoteMessagesByOptionId: bundle?.id!,
           },
         });
-        if(res.data?.sendLoteMessagesByOption.success) {
+        if (res.data?.sendLoteMessagesByOption.success) {
           await refetch();
           Swal.fire({
             title: "Éxito",
@@ -253,7 +255,7 @@ export const UpdateBundlePage = () => {
             confirmButtonText: "Aceptar"
           });
           return
-        } 
+        }
         else {
           Swal.fire({
             title: "No se pudo enviar el lote",
@@ -277,7 +279,7 @@ export const UpdateBundlePage = () => {
         }
       }
     });
-    if(res.errors) {
+    if (res.errors) {
       toast.error("Error al eliminar el archivo: " + res.errors[0].message);
       return;
     }
@@ -295,173 +297,180 @@ export const UpdateBundlePage = () => {
 
   return (
     <div>
-    <PageMeta
-      title={loading ? 'cargando...' : `Actualizar lote ${bundle.nombre}`}
-      description="This is React.js Blank Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
-    />
-    <PageBreadcrumb pageTitle="Lotes detalle " />
-    <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
-    <h3 className="mb-4 font-semibold text-gray-800 text-theme-xl dark:text-white/90 sm:text-2xl">
-      Detalle del lote
-    </h3>
+      <PageMeta
+        title={loading ? 'cargando...' : `Actualizar lote ${bundle.nombre}`}
+        description="This is React.js Blank Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+      />
+      <PageBreadcrumb pageTitle="Lotes detalle " />
+      <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
+        <h3 className="mb-4 font-semibold text-gray-800 text-theme-xl dark:text-white/90 sm:text-2xl">
+          Detalle del lote
+        </h3>
 
-      <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-        Nombre del lote
-      </label>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-      />
+        <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+          Nombre del lote
+        </label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+        />
 
-      <label className="mt-4 mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-        Descripción del lote
-      </label>
-      <TextArea
-        rows={4}
-        value={description}
-        onChange={(e) => setDescription(e)}
-        className="dark:bg-dark-900 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-      />
+        <label className="mt-4 mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+          Descripción del lote
+        </label>
+        <TextArea
+          rows={4}
+          value={description}
+          onChange={(e) => setDescription(e)}
+          className="dark:bg-dark-900 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+        />
 
-      <label className="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-300">Grupo</label>
-      <input
-        type="text"
-        value={nameGroup}
-        disabled
-        className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-      />
-      <label className="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-300">Estado</label>
-      <input
-        type="text"
-        value={estado}
-        disabled
-        className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-      />
-      {file && (
-        <div className="mt-2 flex items-center gap-2">
-          <a
-            href={file.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-700 text-sm flex items-center gap-1"
-          >
-            <FileIcon /> {file.fileName}
-          </a>
+        <label className="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-300">Grupo</label>
+        <input
+          type="text"
+          value={nameGroup}
+          disabled
+          className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+        />
+        <label className="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-300">Estado</label>
+        <input
+          type="text"
+          value={estado}
+          disabled
+          className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+        />
+        {file && (
+          <div className="mt-2 flex items-center gap-2">
+            <a
+              href={file.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:text-blue-700 text-sm flex items-center gap-1"
+            >
+              <FileIcon /> {file.fileName}
+            </a>
+            <button
+              className="text-red-500 hover:underline text-xs"
+              onClick={() => {
+                Swal.fire({
+                  title: "¿Eliminar archivo?",
+                  text: "Esta acción eliminará el archivo adjunto del lote.",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonText: "Sí, eliminar",
+                  cancelButtonText: "Cancelar",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    deleteFile();
+                  }
+                });
+              }}
+            >
+              Eliminar archivo
+            </button>
+          </div>
+        )}
+        {
+          !file && (
+            <div className="mt-2 flex items-center gap-2">
+              <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                Subir archivo
+              </label>
+              {file && (
+                <Trash2Icon className="mb-1.5 block cursor-pointer" onClick={onDeleteFile} />
+              )}
+              <FileInput
+                key={inputKey.toString()} // Cambia la key para forzar el reinicio
+                onChange={(e) => setFileNew(e)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+              />
+            </div>
+          )
+        }
+        {
+          tipoLote === TypeBundleEnum.Whastapp &&
+          (
+            <>
+              <div className="mt-4">
+                <WhatsAppMessageEditor
+                  value={message}
+                  onChange={setMessage}
+                />
+              </div>
+              {
+                estado === WsBatchStatus.EnProceso && (
+                  <>
+                    <div className="mt-4">
+                      <ProgressBar progress={progress || undefined} />
+                    </div>
+                  </>
+                )
+              }
+              <div className="mt-6">
+                <h4 className="mb-2 font-medium text-gray-800 dark:text-white/80">Logs en tiempo real</h4>
+                <div className="max-h-64 overflow-y-auto rounded border border-gray-300 p-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                  {logs.length === 0 ? (
+                    <p className="text-gray-400 italic">No hay logs aún...</p>
+                  ) : (
+                    logs.map((log, index) => (
+                      <p key={index} className="mb-1">{log}</p>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button
+                  className="bg-brand-500 hover:bg-brand-600 text-white"
+                  onClick={() => handleResend(ResendOption.Todos)}
+                >
+                  Enviar todos
+                </Button>
+
+                <Button
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                  onClick={() => handleResend(ResendOption.Fallidos)}
+                >
+                  Enviar fallidos
+                </Button>
+
+                <Button
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                  onClick={() => handleResend(ResendOption.Pendientes)}
+                >
+                  Enviar pendientes
+                </Button>
+                <Button
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  onClick={() => handleResend(ResendOption.FallidosPendientes)}
+                >
+                  Enviar fallidos y pendientes
+                </Button>
+              </div>
+              <div className="mt-6">
+                <BundleDetailTable detail={detail} handleSendOneCell={handleSendOneCell} />
+              </div>
+            </>
+          )
+        }
+        <div className="flex items-center gap-3 mt-6">
           <button
-            className="text-red-500 hover:underline text-xs"
-            onClick={() => {
-              Swal.fire({
-                title: "¿Eliminar archivo?",
-                text: "Esta acción eliminará el archivo adjunto del lote.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Sí, eliminar",
-                cancelButtonText: "Cancelar",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  deleteFile();
-                }
-              });
-            }}
+            onClick={() => navigate("/bundles")}
+            className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
           >
-            Eliminar archivo
+            Cancelar
+          </button>
+          <button
+            onClick={handleUpdate}
+            className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600"
+          >
+            Actualizar Lote
           </button>
         </div>
-      )}
-      {
-        !file && (
-          <div className="mt-2 flex items-center gap-2">
-            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              Subir archivo
-            </label>
-            {file && (
-              <Trash2Icon className="mb-1.5 block cursor-pointer" onClick={onDeleteFile} />
-            )}
-            <FileInput
-              key={inputKey.toString()} // Cambia la key para forzar el reinicio
-              onChange={(e) => setFileNew(e)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-            />
-          </div>
-        )
-      }
-
-      <div className="mt-4">
-        <WhatsAppMessageEditor 
-          value={message}
-          onChange={setMessage}
-        />
-      </div>
-      {
-        estado === WsBatchStatus.EnProceso && (
-          <>
-          <div className="mt-4">
-            <ProgressBar  progress={progress || undefined} />
-          </div>
-          </>
-        )
-      }
-                <div className="mt-6">
-            <h4 className="mb-2 font-medium text-gray-800 dark:text-white/80">Logs en tiempo real</h4>
-            <div className="max-h-64 overflow-y-auto rounded border border-gray-300 p-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-              {logs.length === 0 ? (
-                <p className="text-gray-400 italic">No hay logs aún...</p>
-              ) : (
-                logs.map((log, index) => (
-                  <p key={index} className="mb-1">{log}</p>
-                ))
-              )}
-            </div>
-          </div>
-    <div className="mt-4 flex flex-wrap gap-2">
-      <Button 
-        className="bg-brand-500 hover:bg-brand-600 text-white"
-        onClick={() => handleResend(ResendOption.Todos)}
-      >
-        Enviar todos
-      </Button>
-
-      <Button 
-        className="bg-red-500 hover:bg-red-600 text-white"
-        onClick={() => handleResend(ResendOption.Fallidos)}
-      >
-        Enviar fallidos
-      </Button>
-
-      <Button 
-        className="bg-yellow-500 hover:bg-yellow-600 text-white"
-        onClick={() => handleResend(ResendOption.Pendientes)}
-      >
-        Enviar pendientes
-      </Button>
-      <Button
-        className="bg-orange-500 hover:bg-orange-600 text-white"
-        onClick={() => handleResend(ResendOption.FallidosPendientes)}
-      >
-        Enviar fallidos y pendientes
-      </Button>
-    </div>
-      <div className="mt-6">
-        <BundleDetailTable  detail={detail}  handleSendOneCell={handleSendOneCell}/>
-      </div>
-      <div className="flex items-center gap-3 mt-6">
-        <button
-          onClick={() => navigate("/bundles")}
-          className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
-        >
-          Cancelar
-        </button>
-        <button
-          onClick={handleUpdate}
-          className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600"
-        >
-          Actualizar Lote
-        </button>
       </div>
     </div>
-  </div>
 
   );
 };
