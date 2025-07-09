@@ -7,10 +7,10 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { useNavigate } from "react-router";
-import { OrderTypes, TypeBundleEnum, useBundleMailSendMutation, useBundlesQuery, useClientsQuery, useClientsUserQuery, useProyectosQuery, useSendLoteMessagesMutation, WsBatch, WsBatchStatus } from "../../domain/graphql";
+import { OrderTypes, TypeBundleEnum, useBundleMailSendMutation, useBundlesQuery, useClientsQuery, useClientsUserQuery, useProyectosQuery, useRemoveBundleMutation, useSendLoteMessagesMutation, useUpdateBundleMutation, WsBatch, WsBatchStatus } from "../../domain/graphql";
 import { useUser } from "../../context/UserContext";
 import { formatCurrency, ToastyErrorGraph } from "../../lib/utils";
-import { Eye, Mail, Search, SendIcon } from "lucide-react";
+import { Eye, Mail, Search, SendIcon, Trash2 } from "lucide-react";
 import { Pagination } from "../../components/ui/table/pagination";
 import { useState, useEffect, useMemo } from "react";
 import { useModal } from "../../hooks/useModal";
@@ -32,6 +32,7 @@ export default function BundleTable() {
   const [bundleSelected, setBundleSelected] = useState<WsBatch>();
   const [sendBundle] = useSendLoteMessagesMutation()
   const [sendBundleMail] = useBundleMailSendMutation();
+  const [removeBundle] = useRemoveBundleMutation()
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -176,6 +177,41 @@ export default function BundleTable() {
       ToastyErrorGraph(err as any);
     }
   }
+  const onDeleteBundle = async (bundleId: string) => {
+    try{
+    const confirm = await Swal.fire({
+        title: "¿Eliminar lote?",
+        text: "¿Deseas eliminar lote?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, Enviar",
+        cancelButtonText: "Cancelar"
+      });
+      if(confirm.isConfirmed) {
+        const res = await removeBundle({
+          variables: {
+            removeBundleId: bundleId
+          }
+        });
+        if(res.data?.removeBundle) {
+          Swal.fire({
+            title: "Éxito",
+            text: "Lote eliminado correctamente",
+            icon: "success",
+            confirmButtonText: "Aceptar"
+          });
+          refetch()
+          return
+        } 
+        if(res.errors){
+          toast.error('Uppss hubo un error al borrar el lote')
+          return
+        }
+      }
+    } catch (err) {
+      ToastyErrorGraph(err as any);
+    }
+  }
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex justify-between items-center p-4">
@@ -310,6 +346,9 @@ export default function BundleTable() {
                         }}
                       />
                     }
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                    <Trash2 className="cursor-pointer" onClick={() => onDeleteBundle(bundle.id)}></Trash2>
                   </TableCell>
                 </TableRow>
               ))}

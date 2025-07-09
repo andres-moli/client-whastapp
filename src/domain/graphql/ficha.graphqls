@@ -38,3 +38,8 @@ query FichaTecnicas($orderBy: [FindFichaTecnicaOrderBy!], $where: FindFichaTecni
     totalPages
   }
 }
+mutation RemoveFichaTecnica($removeFichaTecnicaId: ID!) {
+  removeFichaTecnica(id: $removeFichaTecnicaId) {
+    id
+  }
+}

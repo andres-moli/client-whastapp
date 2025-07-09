@@ -177,3 +177,8 @@ mutation BundleMailSend($bundleMailSendId: String!) {
     error
   }
 }
+mutation RemoveBundle($removeBundleId: ID!) {
+  removeBundle(id: $removeBundleId) {
+    id
+  }
+}

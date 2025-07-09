@@ -7,10 +7,10 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { useNavigate } from "react-router";
-import { FichaTecnica, OrderTypes, useClientsQuery, useClientsUserQuery, useFichaTecnicasQuery, useProyectosQuery } from "../../domain/graphql";
+import { FichaTecnica, OrderTypes, useClientsQuery, useClientsUserQuery, useFichaTecnicasQuery, useProyectosQuery, useRemoveFichaTecnicaMutation } from "../../domain/graphql";
 import { useUser } from "../../context/UserContext";
-import { formatCurrency } from "../../lib/utils";
-import { AlertTriangleIcon, Eye, FileIcon, FileQuestion, FileWarning, Search } from "lucide-react";
+import { formatCurrency, ToastyErrorGraph } from "../../lib/utils";
+import { AlertTriangleIcon, Eye, FileIcon, FileQuestion, FileWarning, Search, Trash2 } from "lucide-react";
 import { Pagination } from "../../components/ui/table/pagination";
 import { useState, useEffect, useMemo, use } from "react";
 import { useModal } from "../../hooks/useModal";
@@ -18,6 +18,7 @@ import { CreateBasicModal } from "./createModalFicha";
 import { debounce } from "lodash";
 import Input from "../../components/form/input/InputField";
 import { UpdateFichaModal } from "./updateModalFicha";
+import { toast } from "sonner";
 
 export default function FichaTable() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function FichaTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [fichaTecnica, setFichaTecnica] = useState<FichaTecnica | null>(null);
   const [hasFileFilter, setHasFileFilter] = useState<'all' | 'yes' | 'no'>('all');
+  const [removedFicha] = useRemoveFichaTecnicaMutation()
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -93,6 +95,28 @@ export default function FichaTable() {
   const update = (ficha: FichaTecnica) => {
     setFichaTecnica(ficha);
     openModal();
+  }
+
+  const onRemoveFicha = async (id: string) => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar esta ficha?")) {  
+      try {
+        const res = await removedFicha({
+          variables: {
+            removeFichaTecnicaId: id
+          }
+        });
+        if(res.data?.removeFichaTecnica) {
+          toast.success("Ficha eliminada correctamente");
+          refetch();
+        }
+        if(res.errors) {
+          toast.error("Error al eliminar la ficha");
+        }
+      } catch (error) {
+        ToastyErrorGraph(error as any);
+        console.error("Error al eliminar la ficha:", error);
+      }
+    }
   }
 
   return (
@@ -198,6 +222,12 @@ export default function FichaTable() {
                     <Eye
                       className="cursor-pointer"
                       onClick={() => update(ficha)}
+                    />
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                    <Trash2
+                      className="ml-2 cursor-pointer"
+                      onClick={() => onRemoveFicha(ficha.id)}
                     />
                   </TableCell>
                 </TableRow>

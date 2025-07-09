@@ -16,6 +16,7 @@ import { ProgressBar } from "./loadingProcess";
 import Button from "../../components/ui/button/Button";
 import FileInput from "../../components/form/input/FileInput";
 import handleUploadImage from "../../lib/uptloadFile";
+import { FaStop } from "react-icons/fa";
 
 export const UpdateBundlePage = () => {
   const navigate = useNavigate();
@@ -292,6 +293,39 @@ export const UpdateBundlePage = () => {
     setInputKey(Date.now()); // Cambia la key para reiniciar el input
     toast.success('Archivo eliminado con exitó')
   }
+  const onStopBundle = async () => {
+    try { 
+      const confirm = await Swal.fire({
+        title: "¿Detener lote?",
+        text: "¿Estás seguro de que deseas detener este lote?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, detener",
+        cancelButtonText: "Cancelar"
+      });
+
+      if (!confirm.isConfirmed) return;
+
+      const res = await update({
+        variables: {
+          updateInput: {
+            id: bundle?.id!,
+            estado: WsBatchStatus.Pausado
+          }
+        }
+      });
+
+      if (res.errors) {
+        toast.error("Error al detener el lote: " + res.errors[0].message);
+        return;
+      }
+
+      toast.success("Lote detenido correctamente");
+      refetch();
+    } catch (err) {
+      ToastyErrorGraph(err as any); 
+    }
+  };
   if (loading) return <p className="p-4">Cargando información del lote...</p>;
   if (!bundle) return <p className="p-4 text-red-600">No se encontró el lote.</p>;
 
@@ -341,6 +375,14 @@ export const UpdateBundlePage = () => {
           disabled
           className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
         />
+        {
+          data.bundle.estado === WsBatchStatus.EnProceso && (
+            <Button className="mt-4 bg-red-500 hover:bg-red-600 text-white" onClick={onStopBundle}>
+              <span className="animate-spin mr-2"><FaStop></FaStop></span>
+              Pausar lote
+            </Button>
+          )
+        }
         {file && (
           <div className="mt-2 flex items-center gap-2">
             <a

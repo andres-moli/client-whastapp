@@ -179,6 +179,8 @@ export type Cotizacion = {
   emailCliente: Scalars['String']['output'];
   fecha: Scalars['DateTime']['output'];
   fechaRecordatorio?: Maybe<Scalars['DateTime']['output']>;
+  fechaVersion?: Maybe<Scalars['DateTime']['output']>;
+  fechaVersionString?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   nitCliente: Scalars['String']['output'];
   nombreCliente: Scalars['String']['output'];
@@ -482,6 +484,17 @@ export type CreateSesionInput = {
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateStockInput = {
+  cantidadActual?: InputMaybe<Scalars['Float']['input']>;
+  clase?: InputMaybe<Scalars['String']['input']>;
+  isDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  nombreClase?: InputMaybe<Scalars['String']['input']>;
+  nombreReferencia?: InputMaybe<Scalars['String']['input']>;
+  referencia?: InputMaybe<Scalars['String']['input']>;
+  stcMax?: InputMaybe<Scalars['Float']['input']>;
+  stcMin?: InputMaybe<Scalars['Float']['input']>;
+};
+
 export type CreateSubClassInput = {
   classId: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -633,6 +646,7 @@ export type DetalleCotizacion = {
   descripcion: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   referencia: Scalars['String']['output'];
+  tiempo_entrega?: Maybe<Scalars['String']['output']>;
   total: Scalars['Float']['output'];
   unidadMedida: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -842,6 +856,7 @@ export type FindCotizacionWhere = {
   nombreCliente?: InputMaybe<StringFilter>;
   numeroCotizacion?: InputMaybe<StringFilter>;
   proyecto?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
   vendedor?: InputMaybe<StringFilter>;
 };
 
@@ -973,6 +988,16 @@ export type FindSesionWhere = {
   description?: InputMaybe<StringFilter>;
   name?: InputMaybe<StringFilter>;
   status?: InputMaybe<StringFilter>;
+};
+
+export type FindStockTypeOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindStockTypeWhere = {
+  _and?: InputMaybe<Array<FindStockTypeWhere>>;
+  _or?: InputMaybe<Array<FindStockTypeWhere>>;
+  createdAt?: InputMaybe<DateFilter>;
 };
 
 export type FindSubClassOrderBy = {
@@ -1255,6 +1280,7 @@ export type Mutation = {
   createRole: Role;
   createRoleFx: Array<RoleFx>;
   createSesion: WsSesion;
+  createStock: Stock;
   createSubClass: SubClass;
   createTask: Task;
   createTaskComment: TaskComment;
@@ -1298,6 +1324,7 @@ export type Mutation = {
   removeRole: Role;
   removeRoleFx: Array<Scalars['String']['output']>;
   removeSesion: WsSesion;
+  removeStock: Stock;
   removeSubClass: SubClass;
   removeSubordinate: User;
   removeTask: Task;
@@ -1352,10 +1379,12 @@ export type Mutation = {
   updateReferenciaProyecto: ReferenciaProyecto;
   updateRole: Role;
   updateSesion: WsSesion;
+  updateStock: Stock;
   updateSubClass: SubClass;
   updateTask: Task;
   updateTaskComment: TaskComment;
   updateTipoProyecto: TipoProyecto;
+  updateToStock: ResponseDto;
   updateUser: User;
   updateUserInformation: User;
   updateUserPassword: User;
@@ -1545,6 +1574,11 @@ export type MutationCreateRoleFxArgs = {
 
 export type MutationCreateSesionArgs = {
   createInput: CreateSesionInput;
+};
+
+
+export type MutationCreateStockArgs = {
+  createInput: CreateStockInput;
 };
 
 
@@ -1755,6 +1789,11 @@ export type MutationRemoveRoleFxArgs = {
 
 
 export type MutationRemoveSesionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveStockArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2024,6 +2063,11 @@ export type MutationUpdateRoleArgs = {
 
 export type MutationUpdateSesionArgs = {
   updateInput: UpdateSessionInput;
+};
+
+
+export type MutationUpdateStockArgs = {
+  updateInput: UpdateStockInput;
 };
 
 
@@ -2443,6 +2487,9 @@ export type Query = {
   sesion: WsSesion;
   sesiones: Array<WsSesion>;
   sesionesCount: MetadataPagination;
+  stock: Stock;
+  stocks: Array<Stock>;
+  stocksCount: MetadataPagination;
   task: Task;
   taskComment: TaskComment;
   tasks: Array<Task>;
@@ -3105,6 +3152,25 @@ export type QuerySesionesCountArgs = {
 };
 
 
+export type QueryStockArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryStocksArgs = {
+  orderBy?: InputMaybe<Array<FindStockTypeOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindStockTypeWhere>;
+};
+
+
+export type QueryStocksCountArgs = {
+  orderBy?: InputMaybe<Array<FindStockTypeOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindStockTypeWhere>;
+};
+
+
 export type QueryTaskArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3277,6 +3343,15 @@ export enum ResendOption {
   Todos = 'TODOS'
 }
 
+/** Respuesta global estándar */
+export type ResponseDto = {
+  __typename?: 'ResponseDto';
+  /** Mensaje informativo de la operación */
+  message: Scalars['String']['output'];
+  /** Indica si la operación fue exitosa */
+  success: Scalars['Boolean']['output'];
+};
+
 export type Role = {
   __typename?: 'Role';
   createdAt: Scalars['DateTime']['output'];
@@ -3422,6 +3497,23 @@ export enum StatusVisitEnum {
   Reprogrammed = 'reprogrammed'
 }
 
+export type Stock = {
+  __typename?: 'Stock';
+  cantidadActual: Scalars['Float']['output'];
+  clase: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  fichaTecnica?: Maybe<FileInfo>;
+  id: Scalars['ID']['output'];
+  isDeleted?: Maybe<Scalars['Boolean']['output']>;
+  nombreClase: Scalars['String']['output'];
+  nombreReferencia: Scalars['String']['output'];
+  referencia: Scalars['String']['output'];
+  stcMax: Scalars['Float']['output'];
+  stcMin: Scalars['Float']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type StringFilter = {
   _contains?: InputMaybe<Scalars['String']['input']>;
   _endswith?: InputMaybe<Scalars['String']['input']>;
@@ -3555,6 +3647,7 @@ export type UpdateBundleInput = {
   createdByUserAtId?: InputMaybe<Scalars['String']['input']>;
   deleteFile?: InputMaybe<Scalars['Boolean']['input']>;
   descripcion?: InputMaybe<Scalars['String']['input']>;
+  estado?: InputMaybe<WsBatchStatus>;
   fileHtmlId?: InputMaybe<Scalars['String']['input']>;
   fileId?: InputMaybe<Scalars['String']['input']>;
   groupId?: InputMaybe<Scalars['String']['input']>;
@@ -3861,6 +3954,18 @@ export type UpdateStatusInput = {
   id: Scalars['String']['input'];
   status: StatusVisitEnum;
   token: Scalars['String']['input'];
+};
+
+export type UpdateStockInput = {
+  cantidadActual?: InputMaybe<Scalars['Float']['input']>;
+  clase?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  isDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  nombreClase?: InputMaybe<Scalars['String']['input']>;
+  nombreReferencia?: InputMaybe<Scalars['String']['input']>;
+  referencia?: InputMaybe<Scalars['String']['input']>;
+  stcMax?: InputMaybe<Scalars['Float']['input']>;
+  stcMin?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type UpdateSubClassInput = {
@@ -4404,6 +4509,13 @@ export type BundleMailSendMutationVariables = Exact<{
 
 export type BundleMailSendMutation = { __typename?: 'Mutation', bundleMailSend: { __typename?: 'SendLoteResult', success: boolean, message: string, error?: string | null } };
 
+export type RemoveBundleMutationVariables = Exact<{
+  removeBundleId: Scalars['ID']['input'];
+}>;
+
+
+export type RemoveBundleMutation = { __typename?: 'Mutation', removeBundle: { __typename?: 'WsBatch', id: string } };
+
 export type CellsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindCellOrderBy> | FindCellOrderBy>;
   where?: InputMaybe<FindCellWhere>;
@@ -4636,6 +4748,13 @@ export type FichaTecnicasQueryVariables = Exact<{
 
 
 export type FichaTecnicasQuery = { __typename?: 'Query', fichaTecnicas: Array<{ __typename?: 'FichaTecnica', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, referencia: string, description?: string | null, status: FichaTecnicaEnum, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }>, fichaTecnicasCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type RemoveFichaTecnicaMutationVariables = Exact<{
+  removeFichaTecnicaId: Scalars['ID']['input'];
+}>;
+
+
+export type RemoveFichaTecnicaMutation = { __typename?: 'Mutation', removeFichaTecnica: { __typename?: 'FichaTecnica', id: string } };
 
 export type FindAllFacturaClienteQueryVariables = Exact<{
   input: FacturaPorClienteDto;
@@ -5841,6 +5960,39 @@ export function useBundleMailSendMutation(baseOptions?: Apollo.MutationHookOptio
 export type BundleMailSendMutationHookResult = ReturnType<typeof useBundleMailSendMutation>;
 export type BundleMailSendMutationResult = Apollo.MutationResult<BundleMailSendMutation>;
 export type BundleMailSendMutationOptions = Apollo.BaseMutationOptions<BundleMailSendMutation, BundleMailSendMutationVariables>;
+export const RemoveBundleDocument = gql`
+    mutation RemoveBundle($removeBundleId: ID!) {
+  removeBundle(id: $removeBundleId) {
+    id
+  }
+}
+    `;
+export type RemoveBundleMutationFn = Apollo.MutationFunction<RemoveBundleMutation, RemoveBundleMutationVariables>;
+
+/**
+ * __useRemoveBundleMutation__
+ *
+ * To run a mutation, you first call `useRemoveBundleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveBundleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeBundleMutation, { data, loading, error }] = useRemoveBundleMutation({
+ *   variables: {
+ *      removeBundleId: // value for 'removeBundleId'
+ *   },
+ * });
+ */
+export function useRemoveBundleMutation(baseOptions?: Apollo.MutationHookOptions<RemoveBundleMutation, RemoveBundleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveBundleMutation, RemoveBundleMutationVariables>(RemoveBundleDocument, options);
+      }
+export type RemoveBundleMutationHookResult = ReturnType<typeof useRemoveBundleMutation>;
+export type RemoveBundleMutationResult = Apollo.MutationResult<RemoveBundleMutation>;
+export type RemoveBundleMutationOptions = Apollo.BaseMutationOptions<RemoveBundleMutation, RemoveBundleMutationVariables>;
 export const CellsDocument = gql`
     query Cells($orderBy: [FindCellOrderBy!], $where: FindCellWhere, $pagination: Pagination) {
   Cells(orderBy: $orderBy, where: $where, pagination: $pagination) {
@@ -7365,6 +7517,39 @@ export type FichaTecnicasQueryHookResult = ReturnType<typeof useFichaTecnicasQue
 export type FichaTecnicasLazyQueryHookResult = ReturnType<typeof useFichaTecnicasLazyQuery>;
 export type FichaTecnicasSuspenseQueryHookResult = ReturnType<typeof useFichaTecnicasSuspenseQuery>;
 export type FichaTecnicasQueryResult = Apollo.QueryResult<FichaTecnicasQuery, FichaTecnicasQueryVariables>;
+export const RemoveFichaTecnicaDocument = gql`
+    mutation RemoveFichaTecnica($removeFichaTecnicaId: ID!) {
+  removeFichaTecnica(id: $removeFichaTecnicaId) {
+    id
+  }
+}
+    `;
+export type RemoveFichaTecnicaMutationFn = Apollo.MutationFunction<RemoveFichaTecnicaMutation, RemoveFichaTecnicaMutationVariables>;
+
+/**
+ * __useRemoveFichaTecnicaMutation__
+ *
+ * To run a mutation, you first call `useRemoveFichaTecnicaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveFichaTecnicaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeFichaTecnicaMutation, { data, loading, error }] = useRemoveFichaTecnicaMutation({
+ *   variables: {
+ *      removeFichaTecnicaId: // value for 'removeFichaTecnicaId'
+ *   },
+ * });
+ */
+export function useRemoveFichaTecnicaMutation(baseOptions?: Apollo.MutationHookOptions<RemoveFichaTecnicaMutation, RemoveFichaTecnicaMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveFichaTecnicaMutation, RemoveFichaTecnicaMutationVariables>(RemoveFichaTecnicaDocument, options);
+      }
+export type RemoveFichaTecnicaMutationHookResult = ReturnType<typeof useRemoveFichaTecnicaMutation>;
+export type RemoveFichaTecnicaMutationResult = Apollo.MutationResult<RemoveFichaTecnicaMutation>;
+export type RemoveFichaTecnicaMutationOptions = Apollo.BaseMutationOptions<RemoveFichaTecnicaMutation, RemoveFichaTecnicaMutationVariables>;
 export const FindAllFacturaClienteDocument = gql`
     query FindAllFacturaCliente($input: FacturaPorClienteDto!) {
   findAllFacturaCliente(input: $input) {
