@@ -80,7 +80,7 @@ export default function ClassesPage() {
       <div className="flex items-center mb-6 gap-4">
         {selectedClass ? (
           <Button
-            onClick={() => setSelectedClass(null)}
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2"
           >
             <ArrowLeft size={18} />
@@ -89,6 +89,8 @@ export default function ClassesPage() {
         ) : (
           <Button
             className="flex items-center gap-2"
+            onClick={() => navigate(-1)}
+            
           >
             <ArrowLeft size={18} />
             Volver

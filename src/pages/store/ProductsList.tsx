@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-import { Loader2, ShoppingCart, Eye, Search } from "lucide-react";
+import { Loader2, ShoppingCart, Eye, Search, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { OrderTypes, useProductsQuery } from "../../domain/graphql";
 import Button from "../../components/ui/button/Button";
@@ -81,7 +81,15 @@ export default function ProductList() {
   const totalPages = Math.ceil((data?.productsCount.totalItems ?? 0) / itemsPerPage);
 
   return (
-    <div className="p-4 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 max-w-12xl mx-auto space-y-6">
+    <Button
+      onClick={() => navigate(-1)}
+      className="flex items-center gap-2"
+    >
+      <ArrowLeft size={18} />
+      Volver
+    </Button>
+
 {/* Panel de filtros */}
 <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md space-y-3 text-sm">
   {/* Buscador */}

@@ -34,8 +34,11 @@ export default function ProductDetail() {
     { id: 3, user: "Laura Martínez", rating: 3, comment: "Cumple lo esperado, pero nada sobresaliente." },
   ];
   const averageRating = reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length;
+  const onDocument = (link: string) => {
+    window.open(link, "_blank", "noopener,noreferrer");
+  }
   return (
-    <div className="max-w-6xl mx-auto p-4 space-y-6">
+    <div className="max-w-10xl mx-auto p-4 space-y-6">
       <PageMeta
         title={`${ loading ? 'Cargando...' : product.title}`}
         description="This is React.js Blank Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
@@ -179,7 +182,7 @@ export default function ProductDetail() {
           {/* Ficha técnica */}
           <div>
             <h2 className="text-lg font-semibold mb-2">Ficha técnica</h2>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => onDocument('https://intranet.cytech.net.co:3002/public/1759180819859-aac9c2bb-c5d2-45d6-a8fd-2462df72fced.pdf')} className="flex items-center gap-2">
               <FileText size={16} />
               Ver documento
             </Button>

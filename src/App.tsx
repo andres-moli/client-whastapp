@@ -36,6 +36,8 @@ import ProductList from "./pages/store/ProductsList";
 import ProductDetail from "./pages/store/ProductDetails";
 import UpdateProduct from "./pages/products/UpdateProducts";
 import DashboardStore from "./pages/store/Home";
+import StoreHeader from "./layout/StoreHeader";
+import LoginStore from "./pages/store/LoginStore";
 
 export default function App() {
   return (
@@ -45,6 +47,15 @@ export default function App() {
         <Routes>
           {/* Dashboard Layout */}
           <Route path="/looger/:token"  element={<LoagerPage />}/>
+          <Route path="/login" element={<LoginStore />} />
+
+          <Route element={<StoreHeader />}>
+            <Route index path="/home-store" element={<DashboardStore />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/catalog" element={<CatalogPage />} />
+            <Route path="/catalog/:classId" element={<ProductList />} />
+          </Route>
+
           <Route element={<AppLayout />}>
             <Route index path="/" element={<Home />} />
             <Route index path="/groups" element={<GroupPage />} />
@@ -63,10 +74,6 @@ export default function App() {
             <Route path="/products" element={<ProductPage />} />
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/edit-products/:id" element={<UpdateProduct />} />
-            <Route path="/catalog" element={<CatalogPage />} />
-            <Route path="/catalog/:classId" element={<ProductList />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route index path="/home-store" element={<DashboardStore />} />
 
 
             {/* Others Page */}
