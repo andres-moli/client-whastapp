@@ -29,6 +29,13 @@ import EditClassPage from "./pages/class/EditClassPage";
 import SessionPage from "./pages/sesion";
 import FichaPage from "./pages/ficha";
 import AdminPage from "./pages/web";
+import ProductPage from "./pages/products";
+import CreateProduct from "./pages/products/createProducts";
+import CatalogPage from "./pages/store/ClassesPage";
+import ProductList from "./pages/store/ProductsList";
+import ProductDetail from "./pages/store/ProductDetails";
+import UpdateProduct from "./pages/products/UpdateProducts";
+import DashboardStore from "./pages/store/Home";
 
 export default function App() {
   return (
@@ -52,7 +59,16 @@ export default function App() {
             <Route index path="/ficha" element={<FichaPage />} />
             <Route index path="/web" element={<AdminPage />} />
             
-            
+            {/* STORE */}
+            <Route path="/products" element={<ProductPage />} />
+            <Route path="/create-product" element={<CreateProduct />} />
+            <Route path="/edit-products/:id" element={<UpdateProduct />} />
+            <Route path="/catalog" element={<CatalogPage />} />
+            <Route path="/catalog/:classId" element={<ProductList />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route index path="/home-store" element={<DashboardStore />} />
+
+
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />
             <Route path="/blank" element={<Blank />} />

@@ -19,7 +19,7 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
-import { CircleSlash, PhoneCallIcon, UserCog2, WholeWord } from "lucide-react";
+import { CircleSlash, PhoneCallIcon, Store, UserCog2, WholeWord } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -69,21 +69,25 @@ const navItems: NavItem[] = [
     name: "Sitio Web",
     icon: <PageIcon />,
     path: 'web'
-  }
-  
-  // {
-  //   name: "Tables",
-  //   icon: <TableIcon />,
-  //   subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  // },
-  // {
-  //   name: "Pages",
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     { name: "Blank Page", path: "/blank", pro: false },
-  //     { name: "404 Error", path: "/error-404", pro: false },
-  //   ],
-  // },
+  },
+  {
+    name: "Tienda",
+    icon: <Store />,
+    subItems: [
+      {
+        name: "Productos",
+        path: 'products',
+      }, 
+      {
+        name: "Catalogo",
+        path: 'catalog',
+      }, 
+      {
+        name: "Inicio Tienda",
+        path: 'home-store',
+      }
+    ],
+  },
 ];
 
 

@@ -58,3 +58,6 @@ query PresupuestoVentaPorUsuario($userId: String!) {
     comparacionCumplimientoAcumulado
   }
 }
+mutation DeleteFile($deleteFileId: ID!) {
+  deleteFile(id: $deleteFileId)
+}

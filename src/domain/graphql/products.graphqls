@@ -1,0 +1,113 @@
+mutation CreateProduct($createInput: CreateProductInput!) {
+  createProduct(createInput: $createInput) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    reference
+    title
+    description
+    basePrice
+    active
+  }
+}
+
+query Product($productId: ID!) {
+  product(id: $productId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    reference
+    title
+    description
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      chunkSize
+      fileUrl
+      url
+    }
+    photos {
+      id
+      file {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        fileName
+        fileExtension
+        fileMode
+        fileMongoId
+        chunkSize
+        fileUrl
+        url
+      }
+      createdAt
+      updatedAt
+      deletedAt
+    }
+    basePrice
+    active
+    priceRules {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      clientType
+      percentage
+    }
+    subclasses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      description
+      status
+    }
+  }
+}
+query Products($orderBy: [FindProductOrderBy!], $where: FindProductWhere, $pagination: Pagination) {
+  products(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    reference
+    title
+    description
+    basePrice
+    active
+    file {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      chunkSize
+      fileUrl
+      url
+    }
+  }
+  productsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+mutation UpdateProduct($updateInput: UpdateProductInput!) {
+  updateProduct(updateInput: $updateInput) {
+    id
+  }
+}
