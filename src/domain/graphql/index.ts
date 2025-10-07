@@ -52,6 +52,12 @@ export type AuthResponse = {
   user: User;
 };
 
+export type BooleanFilter = {
+  _eq?: InputMaybe<Scalars['Boolean']['input']>;
+  _in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  _neq?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type Cart = {
   __typename?: 'Cart';
   active: Scalars['Boolean']['output'];
@@ -182,6 +188,12 @@ export enum ClientType {
   Aa = 'AA',
   Aaa = 'AAA'
 }
+
+export type ClienteResponseSingIn = {
+  __typename?: 'ClienteResponseSingIn';
+  access_token: Scalars['String']['output'];
+  client: StoreClient;
+};
 
 export type CodeConfirmationInput = {
   code: Scalars['String']['input'];
@@ -443,7 +455,7 @@ export type CreateNotificationInput = {
 };
 
 export type CreateOrderInput = {
-  cartId: Scalars['ID']['input'];
+  dummy?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type CreatePageLinkInput = {
@@ -462,6 +474,26 @@ export type CreateParametersInput = {
   valueFileId?: InputMaybe<Scalars['ID']['input']>;
   valueInt?: InputMaybe<Scalars['Float']['input']>;
   valueString?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreatePaymentInput = {
+  addressLine1: Scalars['String']['input'];
+  addressLine2?: InputMaybe<Scalars['String']['input']>;
+  amount: Scalars['Float']['input'];
+  bankCode?: InputMaybe<Scalars['String']['input']>;
+  city: Scalars['String']['input'];
+  country: Scalars['String']['input'];
+  currency: Scalars['String']['input'];
+  customerDoc?: InputMaybe<Scalars['String']['input']>;
+  customerDoctype?: InputMaybe<Scalars['String']['input']>;
+  customerEmail: Scalars['String']['input'];
+  customerName: Scalars['String']['input'];
+  customerPhone?: InputMaybe<Scalars['String']['input']>;
+  customerType?: InputMaybe<Scalars['Int']['input']>;
+  orderId: Scalars['String']['input'];
+  paymentMethod: Scalars['String']['input'];
+  postalCode: Scalars['String']['input'];
+  state: Scalars['String']['input'];
 };
 
 export type CreatePositionInput = {
@@ -565,10 +597,11 @@ export type CreateStockInput = {
 
 export type CreateStoreClientInput = {
   clientKind: ClientKind;
-  clientType: ClientType;
   email: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  nit: Scalars['String']['input'];
+  password: Scalars['String']['input'];
   phone?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1035,8 +1068,11 @@ export type FindOrderOrderBy = {
 export type FindOrderWhere = {
   _and?: InputMaybe<Array<FindOrderWhere>>;
   _or?: InputMaybe<Array<FindOrderWhere>>;
+  client?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateFilter>;
   id?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
+  total?: InputMaybe<NumberFilter>;
 };
 
 export type FindPresupuestoOrderBy = {
@@ -1052,6 +1088,28 @@ export type FindPresupuestoWhere = {
   worker?: InputMaybe<StringFilter>;
 };
 
+export type FindProductFeaturedOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+  discountAmount?: InputMaybe<OrderTypes>;
+  discountPercentage?: InputMaybe<OrderTypes>;
+  endDate?: InputMaybe<OrderTypes>;
+  productId?: InputMaybe<OrderTypes>;
+  startDate?: InputMaybe<OrderTypes>;
+  type?: InputMaybe<OrderTypes>;
+};
+
+export type FindProductFeaturedWhere = {
+  _and?: InputMaybe<Array<FindProductFeaturedWhere>>;
+  _or?: InputMaybe<Array<FindProductFeaturedWhere>>;
+  active?: InputMaybe<BooleanFilter>;
+  discountAmount?: InputMaybe<NumberFilter>;
+  discountPercentage?: InputMaybe<NumberFilter>;
+  endDate?: InputMaybe<StringFilter>;
+  product?: InputMaybe<StringFilter>;
+  startDate?: InputMaybe<StringFilter>;
+  type?: InputMaybe<StringFilter>;
+};
+
 export type FindProductOrderBy = {
   basePrice?: InputMaybe<OrderTypes>;
   reference?: InputMaybe<OrderTypes>;
@@ -1063,6 +1121,7 @@ export type FindProductWhere = {
   _or?: InputMaybe<Array<FindProductWhere>>;
   basePrice?: InputMaybe<NumberFilter>;
   reference?: InputMaybe<StringFilter>;
+  subclasses?: InputMaybe<StringFilter>;
   title?: InputMaybe<StringFilter>;
 };
 
@@ -1378,9 +1437,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   acceptOrDeclineVisit: Scalars['String']['output'];
   addCellToGroup: WsGroupCell;
+  addOrUpdateCartItem: Cart;
   addUserRole: User;
   assignSubordinate: User;
   bundleMailSend: SendLoteResult;
+  clearCart: Scalars['Boolean']['output'];
   codeConfirmation: User;
   crearConcepto: ConceptoTable;
   create: RoleFx;
@@ -1410,6 +1471,7 @@ export type Mutation = {
   createPositionInput: Position;
   createPresupuesto: Presupuesto;
   createProduct: Product;
+  createProductFeatured: ProductFeatured;
   createProfile: Profile;
   createProyectComment: ProyectComment;
   createProyecto: Proyectos;
@@ -1428,6 +1490,8 @@ export type Mutation = {
   createVisit: Visit;
   createVisitComent: VisitComent;
   createVisitType: VisitType;
+  /** Crea una transacción en Wompi y devuelve el link del checkout */
+  createWompiPayment: ResponsePasarelaModel;
   createWsEmail: WsEmail;
   deleteFile: Scalars['Boolean']['output'];
   eliminarConcepto: Scalars['String']['output'];
@@ -1438,6 +1502,7 @@ export type Mutation = {
   remove: NotificationGroup;
   removeBundle: WsBatch;
   removeCart: Cart;
+  removeCartItem: Cart;
   removeCell: WsCell;
   removeClass: Class;
   removeClient: Client;
@@ -1459,6 +1524,7 @@ export type Mutation = {
   removePosition: Position;
   removePresupuesto: Presupuesto;
   removeProduct: Product;
+  removeProductFeatured: ProductFeatured;
   removeProfile: Profile;
   removeProyectComment: ProyectComment;
   removeProyecto: Proyectos;
@@ -1490,6 +1556,7 @@ export type Mutation = {
   sendLoteMessagesById: SendLoteResult;
   sendLoteMessagesByOption: SendLoteResult;
   signInAdmin: AuthResponse;
+  signInClient?: Maybe<ClienteResponseSingIn>;
   signUpWithDocument: AuthResponse;
   signUpWithEmail: AuthResponse;
   signin: AuthResponse;
@@ -1508,6 +1575,7 @@ export type Mutation = {
   updateFichaTecnica: FichaTecnica;
   updateFletes: Fletes;
   updateGroup: WsGroup;
+  updateItemQuantity: Cart;
   updateMarcaProyecto: MarcaProyecto;
   updateMultiKeyRegister: MultikeyRegister;
   updateNotification: Notification;
@@ -1519,6 +1587,7 @@ export type Mutation = {
   updatePositionInput: Position;
   updatePresupuesto: Presupuesto;
   updateProduct: Product;
+  updateProductFeatured: ProductFeatured;
   updateProfile: Profile;
   updateProyectComment: ProyectComment;
   updateProyecto: Proyectos;
@@ -1551,6 +1620,12 @@ export type MutationAcceptOrDeclineVisitArgs = {
 export type MutationAddCellToGroupArgs = {
   cellId: Scalars['String']['input'];
   groupId: Scalars['String']['input'];
+};
+
+
+export type MutationAddOrUpdateCartItemArgs = {
+  productId: Scalars['String']['input'];
+  quantity: Scalars['Float']['input'];
 };
 
 
@@ -1700,6 +1775,11 @@ export type MutationCreateProductArgs = {
 };
 
 
+export type MutationCreateProductFeaturedArgs = {
+  createInput: ProductFeaturedBaseInput;
+};
+
+
 export type MutationCreateProfileArgs = {
   createInput: CreateProfileInput;
 };
@@ -1790,6 +1870,11 @@ export type MutationCreateVisitTypeArgs = {
 };
 
 
+export type MutationCreateWompiPaymentArgs = {
+  input: CreatePaymentInput;
+};
+
+
 export type MutationCreateWsEmailArgs = {
   createInput: CreateEmailInput;
 };
@@ -1832,6 +1917,11 @@ export type MutationRemoveBundleArgs = {
 
 export type MutationRemoveCartArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveCartItemArgs = {
+  productId: Scalars['String']['input'];
 };
 
 
@@ -1937,6 +2027,11 @@ export type MutationRemovePresupuestoArgs = {
 
 
 export type MutationRemoveProductArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveProductFeaturedArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2094,6 +2189,12 @@ export type MutationSignInAdminArgs = {
 };
 
 
+export type MutationSignInClientArgs = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+
 export type MutationSignUpWithDocumentArgs = {
   signupInput: SignupInput;
 };
@@ -2184,6 +2285,12 @@ export type MutationUpdateGroupArgs = {
 };
 
 
+export type MutationUpdateItemQuantityArgs = {
+  productId: Scalars['String']['input'];
+  quantity: Scalars['Float']['input'];
+};
+
+
 export type MutationUpdateMarcaProyectoArgs = {
   updateInput: UpdateMarcaInput;
 };
@@ -2236,6 +2343,11 @@ export type MutationUpdatePresupuestoArgs = {
 
 export type MutationUpdateProductArgs = {
   updateInput: UpdateProductInput;
+};
+
+
+export type MutationUpdateProductFeaturedArgs = {
+  updateInput: UpdateProductFeaturedInput;
 };
 
 
@@ -2488,15 +2600,36 @@ export type Parameter = {
 
 export type Payment = {
   __typename?: 'Payment';
+  addressLine1: Scalars['String']['output'];
+  addressLine2?: Maybe<Scalars['String']['output']>;
   amount: Scalars['Float']['output'];
+  bankCode?: Maybe<Scalars['String']['output']>;
+  city: Scalars['String']['output'];
+  country: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
+  customerEmail: Scalars['String']['output'];
+  customerName: Scalars['String']['output'];
+  customerPhone?: Maybe<Scalars['String']['output']>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   order: Order;
+  paymentMethod: Scalars['String']['output'];
+  postalCode: Scalars['String']['output'];
   provider: Scalars['String']['output'];
+  state: Scalars['String']['output'];
   status: Scalars['String']['output'];
   transactionId: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type PaymentStatus = {
+  __typename?: 'PaymentStatus';
+  amount: Scalars['Float']['output'];
+  createdAt?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  paymentMethod?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
 export enum PersonTypes {
@@ -2562,6 +2695,7 @@ export type Product = {
   __typename?: 'Product';
   active: Scalars['Boolean']['output'];
   basePrice: Scalars['Float']['output'];
+  calculatedPrice?: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description: Scalars['String']['output'];
@@ -2574,6 +2708,50 @@ export type Product = {
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
+
+export type ProductFeatured = {
+  __typename?: 'ProductFeatured';
+  /** Indica si el destaque está activo */
+  active: Scalars['Boolean']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Monto fijo de descuento en la moneda base */
+  discountAmount?: Maybe<Scalars['Float']['output']>;
+  /** Porcentaje de descuento (0-100) */
+  discountPercentage?: Maybe<Scalars['Float']['output']>;
+  /** Fecha de fin del destaque */
+  endDate?: Maybe<Scalars['DateTime']['output']>;
+  finalPrice: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  product: Product;
+  /** Fecha de inicio del destaque */
+  startDate?: Maybe<Scalars['DateTime']['output']>;
+  /** Tipo de destaque del producto */
+  type: ProductFeaturedType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ProductFeaturedBaseInput = {
+  /** Indica si está activo */
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Monto fijo de descuento */
+  discountAmount?: InputMaybe<Scalars['Float']['input']>;
+  /** Porcentaje de descuento (0-100) */
+  discountPercentage?: InputMaybe<Scalars['Float']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  productId: Scalars['ID']['input'];
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Tipo de destaque */
+  type: ProductFeaturedType;
+};
+
+/** Tipos de destaque disponibles para los productos destacados */
+export enum ProductFeaturedType {
+  Nuevo = 'NUEVO',
+  Oferta = 'OFERTA',
+  Principal = 'PRINCIPAL',
+  TopVentas = 'TOP_VENTAS'
+}
 
 export type ProductPhoto = {
   __typename?: 'ProductPhoto';
@@ -2726,7 +2904,10 @@ export type Query = {
   fichaTecnicasCount: MetadataPagination;
   file: FileInfo;
   findAll: Array<UserKey>;
+  findAllByClass: Array<Product>;
+  findAllByClassCount?: Maybe<MetadataPagination>;
   findAllFacturaCliente: Array<FletesWithDocument>;
+  findAllPayment: Array<Payment>;
   findAllVisitDashboard: VisitDashboardModel;
   findBundleInStop?: Maybe<WsBatch>;
   findOne: UserKey;
@@ -2736,6 +2917,7 @@ export type Query = {
   findUtilidadReal: UtilidadRealModel;
   functionalities: FunctionalityModel;
   getDataDashboard: Array<DashboardDataModal>;
+  getPaymentStatus: PaymentStatus;
   getVentasTop20Clientes: Array<VentasTrabajadorCliente>;
   group: WsGroup;
   groups: Array<WsGroup>;
@@ -2769,6 +2951,9 @@ export type Query = {
   presupuestos: Array<Presupuesto>;
   presupuestosCount: MetadataPagination;
   product: Product;
+  productFeatured: ProductFeatured;
+  productFeatureds: Array<ProductFeatured>;
+  productFeaturedsCount: MetadataPagination;
   products: Array<Product>;
   productsCount: MetadataPagination;
   profile: Profile;
@@ -2784,6 +2969,7 @@ export type Query = {
   referenciaProyecto: ReferenciaProyecto;
   referenciaProyectos: Array<ReferenciaProyecto>;
   referenciaProyectosCount: MetadataPagination;
+  relatedProducts: Array<Product>;
   revalidate: AuthResponse;
   role: Role;
   roleFx: RoleFx;
@@ -2796,6 +2982,7 @@ export type Query = {
   sesiones: Array<WsSesion>;
   sesionesCount: MetadataPagination;
   stock: Stock;
+  stockByReferencia?: Maybe<Stock>;
   stocks: Array<Stock>;
   stocksCount: MetadataPagination;
   storeClient: StoreClient;
@@ -3167,8 +3354,29 @@ export type QueryFindAllArgs = {
 };
 
 
+export type QueryFindAllByClassArgs = {
+  orderBy?: InputMaybe<Array<FindProductOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  subClassId?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<FindProductWhere>;
+};
+
+
+export type QueryFindAllByClassCountArgs = {
+  orderBy?: InputMaybe<Array<FindProductOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  subClassId?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<FindProductWhere>;
+};
+
+
 export type QueryFindAllFacturaClienteArgs = {
   input: FacturaPorClienteDto;
+};
+
+
+export type QueryFindAllPaymentArgs = {
+  orderId: Scalars['String']['input'];
 };
 
 
@@ -3199,6 +3407,11 @@ export type QueryFindUtilidadRealArgs = {
 
 export type QueryGetDataDashboardArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryGetPaymentStatusArgs = {
+  transactionId: Scalars['String']['input'];
 };
 
 
@@ -3379,9 +3592,29 @@ export type QueryProductArgs = {
 };
 
 
+export type QueryProductFeaturedArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryProductFeaturedsArgs = {
+  orderBy?: InputMaybe<Array<FindProductFeaturedOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindProductFeaturedWhere>;
+};
+
+
+export type QueryProductFeaturedsCountArgs = {
+  orderBy?: InputMaybe<Array<FindProductFeaturedOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindProductFeaturedWhere>;
+};
+
+
 export type QueryProductsArgs = {
   orderBy?: InputMaybe<Array<FindProductOrderBy>>;
   pagination?: InputMaybe<Pagination>;
+  subClassId?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<FindProductWhere>;
 };
 
@@ -3389,6 +3622,7 @@ export type QueryProductsArgs = {
 export type QueryProductsCountArgs = {
   orderBy?: InputMaybe<Array<FindProductOrderBy>>;
   pagination?: InputMaybe<Pagination>;
+  subClassId?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<FindProductWhere>;
 };
 
@@ -3466,6 +3700,13 @@ export type QueryReferenciaProyectosCountArgs = {
 };
 
 
+export type QueryRelatedProductsArgs = {
+  excludeProductId?: InputMaybe<Scalars['ID']['input']>;
+  limit?: Scalars['Float']['input'];
+  subclassIds: Array<Scalars['ID']['input']>;
+};
+
+
 export type QueryRoleArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3522,6 +3763,11 @@ export type QuerySesionesCountArgs = {
 
 export type QueryStockArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryStockByReferenciaArgs = {
+  referencia: Scalars['String']['input'];
 };
 
 
@@ -3739,6 +3985,12 @@ export type ResponseDto = {
   success: Scalars['Boolean']['output'];
 };
 
+export type ResponsePasarelaModel = {
+  __typename?: 'ResponsePasarelaModel';
+  transactionId: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+};
+
 export type Role = {
   __typename?: 'Role';
   createdAt: Scalars['DateTime']['output'];
@@ -3910,7 +4162,8 @@ export type StoreClient = {
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  lastName: Scalars['String']['output'];
+  lastName?: Maybe<Scalars['String']['output']>;
+  nit: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -4252,7 +4505,7 @@ export type UpdateNotificationInput = {
 };
 
 export type UpdateOrderInput = {
-  cartId?: InputMaybe<Scalars['ID']['input']>;
+  dummy?: InputMaybe<Scalars['ID']['input']>;
   id: Scalars['ID']['input'];
   status?: InputMaybe<OrderStatus>;
 };
@@ -4287,6 +4540,22 @@ export type UpdatePresupuestoInput = {
   mes?: InputMaybe<Scalars['Float']['input']>;
   valor?: InputMaybe<Scalars['Float']['input']>;
   workerId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateProductFeaturedInput = {
+  /** Indica si está activo */
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Monto fijo de descuento */
+  discountAmount?: InputMaybe<Scalars['Float']['input']>;
+  /** Porcentaje de descuento (0-100) */
+  discountPercentage?: InputMaybe<Scalars['Float']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  /** ID del producto al que se aplica el destaque */
+  id: Scalars['ID']['input'];
+  productId?: InputMaybe<Scalars['ID']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Tipo de destaque */
+  type?: InputMaybe<ProductFeaturedType>;
 };
 
 export type UpdateProductInput = {
@@ -4399,11 +4668,12 @@ export type UpdateStockInput = {
 
 export type UpdateStoreClientInput = {
   clientKind?: InputMaybe<ClientKind>;
-  clientType?: InputMaybe<ClientType>;
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   lastName?: InputMaybe<Scalars['String']['input']>;
+  nit?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -5405,6 +5675,36 @@ export type UpdateProductMutationVariables = Exact<{
 
 
 export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct: { __typename?: 'Product', id: string } };
+
+export type CreateProductFeaturedMutationVariables = Exact<{
+  createInput: ProductFeaturedBaseInput;
+}>;
+
+
+export type CreateProductFeaturedMutation = { __typename?: 'Mutation', createProductFeatured: { __typename?: 'ProductFeatured', id: string } };
+
+export type UpdateProductFeaturedMutationVariables = Exact<{
+  updateInput: UpdateProductFeaturedInput;
+}>;
+
+
+export type UpdateProductFeaturedMutation = { __typename?: 'Mutation', updateProductFeatured: { __typename?: 'ProductFeatured', id: string } };
+
+export type ProductFeaturedsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindProductFeaturedOrderBy> | FindProductFeaturedOrderBy>;
+  where?: InputMaybe<FindProductFeaturedWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type ProductFeaturedsQuery = { __typename?: 'Query', productFeatureds: Array<{ __typename?: 'ProductFeatured', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, type: ProductFeaturedType, discountPercentage?: number | null, discountAmount?: number | null, startDate?: any | null, endDate?: any | null, active: boolean, finalPrice: number }>, productFeaturedsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type RemoveProductFeaturedMutationVariables = Exact<{
+  removeProductFeaturedId: Scalars['ID']['input'];
+}>;
+
+
+export type RemoveProductFeaturedMutation = { __typename?: 'Mutation', removeProductFeatured: { __typename?: 'ProductFeatured', id: string } };
 
 export type CreateProyectoMutationVariables = Exact<{
   createInput: CreateProyectosInput;
@@ -9395,6 +9695,163 @@ export function useUpdateProductMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateProductMutationHookResult = ReturnType<typeof useUpdateProductMutation>;
 export type UpdateProductMutationResult = Apollo.MutationResult<UpdateProductMutation>;
 export type UpdateProductMutationOptions = Apollo.BaseMutationOptions<UpdateProductMutation, UpdateProductMutationVariables>;
+export const CreateProductFeaturedDocument = gql`
+    mutation CreateProductFeatured($createInput: ProductFeaturedBaseInput!) {
+  createProductFeatured(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateProductFeaturedMutationFn = Apollo.MutationFunction<CreateProductFeaturedMutation, CreateProductFeaturedMutationVariables>;
+
+/**
+ * __useCreateProductFeaturedMutation__
+ *
+ * To run a mutation, you first call `useCreateProductFeaturedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateProductFeaturedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createProductFeaturedMutation, { data, loading, error }] = useCreateProductFeaturedMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateProductFeaturedMutation(baseOptions?: Apollo.MutationHookOptions<CreateProductFeaturedMutation, CreateProductFeaturedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateProductFeaturedMutation, CreateProductFeaturedMutationVariables>(CreateProductFeaturedDocument, options);
+      }
+export type CreateProductFeaturedMutationHookResult = ReturnType<typeof useCreateProductFeaturedMutation>;
+export type CreateProductFeaturedMutationResult = Apollo.MutationResult<CreateProductFeaturedMutation>;
+export type CreateProductFeaturedMutationOptions = Apollo.BaseMutationOptions<CreateProductFeaturedMutation, CreateProductFeaturedMutationVariables>;
+export const UpdateProductFeaturedDocument = gql`
+    mutation UpdateProductFeatured($updateInput: UpdateProductFeaturedInput!) {
+  updateProductFeatured(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateProductFeaturedMutationFn = Apollo.MutationFunction<UpdateProductFeaturedMutation, UpdateProductFeaturedMutationVariables>;
+
+/**
+ * __useUpdateProductFeaturedMutation__
+ *
+ * To run a mutation, you first call `useUpdateProductFeaturedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProductFeaturedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProductFeaturedMutation, { data, loading, error }] = useUpdateProductFeaturedMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateProductFeaturedMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProductFeaturedMutation, UpdateProductFeaturedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateProductFeaturedMutation, UpdateProductFeaturedMutationVariables>(UpdateProductFeaturedDocument, options);
+      }
+export type UpdateProductFeaturedMutationHookResult = ReturnType<typeof useUpdateProductFeaturedMutation>;
+export type UpdateProductFeaturedMutationResult = Apollo.MutationResult<UpdateProductFeaturedMutation>;
+export type UpdateProductFeaturedMutationOptions = Apollo.BaseMutationOptions<UpdateProductFeaturedMutation, UpdateProductFeaturedMutationVariables>;
+export const ProductFeaturedsDocument = gql`
+    query ProductFeatureds($orderBy: [FindProductFeaturedOrderBy!], $where: FindProductFeaturedWhere, $pagination: Pagination) {
+  productFeatureds(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    type
+    discountPercentage
+    discountAmount
+    startDate
+    endDate
+    active
+    finalPrice
+  }
+  productFeaturedsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useProductFeaturedsQuery__
+ *
+ * To run a query within a React component, call `useProductFeaturedsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProductFeaturedsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProductFeaturedsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useProductFeaturedsQuery(baseOptions?: Apollo.QueryHookOptions<ProductFeaturedsQuery, ProductFeaturedsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ProductFeaturedsQuery, ProductFeaturedsQueryVariables>(ProductFeaturedsDocument, options);
+      }
+export function useProductFeaturedsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProductFeaturedsQuery, ProductFeaturedsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ProductFeaturedsQuery, ProductFeaturedsQueryVariables>(ProductFeaturedsDocument, options);
+        }
+export function useProductFeaturedsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ProductFeaturedsQuery, ProductFeaturedsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ProductFeaturedsQuery, ProductFeaturedsQueryVariables>(ProductFeaturedsDocument, options);
+        }
+export type ProductFeaturedsQueryHookResult = ReturnType<typeof useProductFeaturedsQuery>;
+export type ProductFeaturedsLazyQueryHookResult = ReturnType<typeof useProductFeaturedsLazyQuery>;
+export type ProductFeaturedsSuspenseQueryHookResult = ReturnType<typeof useProductFeaturedsSuspenseQuery>;
+export type ProductFeaturedsQueryResult = Apollo.QueryResult<ProductFeaturedsQuery, ProductFeaturedsQueryVariables>;
+export const RemoveProductFeaturedDocument = gql`
+    mutation RemoveProductFeatured($removeProductFeaturedId: ID!) {
+  removeProductFeatured(id: $removeProductFeaturedId) {
+    id
+  }
+}
+    `;
+export type RemoveProductFeaturedMutationFn = Apollo.MutationFunction<RemoveProductFeaturedMutation, RemoveProductFeaturedMutationVariables>;
+
+/**
+ * __useRemoveProductFeaturedMutation__
+ *
+ * To run a mutation, you first call `useRemoveProductFeaturedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveProductFeaturedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeProductFeaturedMutation, { data, loading, error }] = useRemoveProductFeaturedMutation({
+ *   variables: {
+ *      removeProductFeaturedId: // value for 'removeProductFeaturedId'
+ *   },
+ * });
+ */
+export function useRemoveProductFeaturedMutation(baseOptions?: Apollo.MutationHookOptions<RemoveProductFeaturedMutation, RemoveProductFeaturedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveProductFeaturedMutation, RemoveProductFeaturedMutationVariables>(RemoveProductFeaturedDocument, options);
+      }
+export type RemoveProductFeaturedMutationHookResult = ReturnType<typeof useRemoveProductFeaturedMutation>;
+export type RemoveProductFeaturedMutationResult = Apollo.MutationResult<RemoveProductFeaturedMutation>;
+export type RemoveProductFeaturedMutationOptions = Apollo.BaseMutationOptions<RemoveProductFeaturedMutation, RemoveProductFeaturedMutationVariables>;
 export const CreateProyectoDocument = gql`
     mutation CreateProyecto($createInput: CreateProyectosInput!) {
   createProyecto(createInput: $createInput) {

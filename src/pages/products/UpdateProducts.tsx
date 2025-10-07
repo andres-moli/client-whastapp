@@ -15,6 +15,8 @@ import {
 import { apolloClient } from "../../main.config";
 import handleUploadImage from "../../lib/uptloadFile";
 import { formatCurrency } from "../../lib/utils";
+import TableProductFeatured from "./TableProductFeacture";
+import PageMeta from "../../components/common/PageMeta";
 
 // Schema de validación
 const productSchema = z.object({
@@ -226,6 +228,7 @@ export default function UpdateProduct() {
 
   return (
     <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7">
+      <PageMeta title={productData?.product.title || 'Producto'} description=""/>
       <h3 className="mb-4 font-semibold text-gray-800 text-theme-xl">
         Actualizar producto
       </h3>
@@ -412,6 +415,13 @@ export default function UpdateProduct() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="mt-4">
+        {
+          id && (
+            <TableProductFeatured id={id} key={id}/>
+          )
+        }
       </div>
       <button
         onClick={handleSubmit}

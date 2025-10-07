@@ -111,3 +111,39 @@ mutation UpdateProduct($updateInput: UpdateProductInput!) {
     id
   }
 }
+mutation CreateProductFeatured($createInput: ProductFeaturedBaseInput!) {
+  createProductFeatured(createInput: $createInput) {
+    id
+  }
+}
+mutation UpdateProductFeatured($updateInput: UpdateProductFeaturedInput!) {
+  updateProductFeatured(updateInput: $updateInput) {
+    id
+  }
+}
+query ProductFeatureds($orderBy: [FindProductFeaturedOrderBy!], $where: FindProductFeaturedWhere, $pagination: Pagination) {
+  productFeatureds(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    type
+    discountPercentage
+    discountAmount
+    startDate
+    endDate
+    active
+    finalPrice
+  }
+  productFeaturedsCount(orderBy: $orderBy, where: $where, pagination: $pagination)  {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+mutation RemoveProductFeatured($removeProductFeaturedId: ID!) {
+  removeProductFeatured(id: $removeProductFeaturedId) {
+    id
+  }
+}
