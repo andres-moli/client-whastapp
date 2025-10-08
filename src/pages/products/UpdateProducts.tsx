@@ -83,7 +83,7 @@ export default function UpdateProduct() {
       setDescription(p.description || "");
       setBasePrice(p.basePrice || 0);
       setActive(p.active ?? true);
-      setFileIds(p.photos?.map((ph) => ph.file?.id!).filter(Boolean) || []);
+      setFileIds(p.photos?.map((ph) => ph.id).filter(Boolean) || []);
       setMainPhoto(p.file?.id || null);
       setRulePrice(
         p.priceRules?.map((r) => ({
@@ -91,6 +91,16 @@ export default function UpdateProduct() {
           percentage: r.percentage,
         })) || []
       );
+      setFileInfos(
+        p.photos?.reduce((acc, photo) => {
+          acc[photo.id] = {
+            url: photo.file?.url,
+            name: photo.file?.fileName,
+          };
+          return acc;
+        }, {} as Record<string, any>) || {}
+      );
+
       setSelectedSubclasses(p.subclasses || []);
     }
   }, [productData]);
@@ -225,7 +235,7 @@ export default function UpdateProduct() {
   };
 
   if (loadingProduct) return <div>Cargando producto...</div>;
-
+  console.log(fileIds,fileInfos)
   return (
     <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7">
       <PageMeta title={productData?.product.title || 'Producto'} description=""/>

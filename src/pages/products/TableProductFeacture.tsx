@@ -23,6 +23,7 @@ import { CloseIcon } from "../../icons";
 import { CreateProductFeaturedModal } from "./CreateProductFeaturedModal";
 import { useModal } from "../../hooks/useModal";
 import { TableBase } from "../../components/tables/BasicTables/TableBase";
+import Swal from "sweetalert2";
 
 export default function TableProductFeatured({ id } : {id: string}) {
   const navigate = useNavigate();
@@ -89,7 +90,13 @@ export default function TableProductFeatured({ id } : {id: string}) {
 
   // 🗑️ Eliminar destacado
   const onRemoveFeatured = async (id: string) => {
-    if (window.confirm("¿Seguro que deseas eliminar este destacado?")) {
+    const fire = await Swal.fire({
+      title: "Eliminar esta destacada",
+      text: "¿Estás seguro?",
+      icon: "warning",
+      showCancelButton: true,
+    })
+    if (fire.isConfirmed) {
       try {
         const res = await removeFeatured({
           variables: { removeProductFeaturedId: id },
