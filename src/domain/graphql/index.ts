@@ -602,6 +602,7 @@ export type CreateStockInput = {
 
 export type CreateStoreClientInput = {
   clientKind: ClientKind;
+  clientType: ClientType;
   email: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
   identificationType: UserDocumentTypes;
@@ -1446,6 +1447,7 @@ export type Mutation = {
   acceptOrDeclineVisit: Scalars['String']['output'];
   addCellToGroup: WsGroupCell;
   addOrUpdateCartItem: Cart;
+  addRelatedProduct: Product;
   addUserRole: User;
   assignSubordinate: User;
   bundleMailSend: SendLoteResult;
@@ -1538,6 +1540,7 @@ export type Mutation = {
   removeProyecto: Proyectos;
   removeProyectoReferencia: ProyectoReferencia;
   removeReferenciaProyecto: ReferenciaProyecto;
+  removeRelatedProduct: Product;
   removeRole: Role;
   removeRoleFx: Array<Scalars['String']['output']>;
   removeSesion: WsSesion;
@@ -1634,6 +1637,12 @@ export type MutationAddCellToGroupArgs = {
 export type MutationAddOrUpdateCartItemArgs = {
   productId: Scalars['String']['input'];
   quantity: Scalars['Float']['input'];
+};
+
+
+export type MutationAddRelatedProductArgs = {
+  productId: Scalars['String']['input'];
+  relatedProductId: Scalars['String']['input'];
 };
 
 
@@ -2066,6 +2075,12 @@ export type MutationRemoveProyectoReferenciaArgs = {
 
 export type MutationRemoveReferenciaProyectoArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveRelatedProductArgs = {
+  productId: Scalars['String']['input'];
+  relatedProductId: Scalars['String']['input'];
 };
 
 
@@ -2720,6 +2735,8 @@ export type Product = {
   photos?: Maybe<Array<ProductPhoto>>;
   priceRules?: Maybe<Array<PriceRule>>;
   reference: Scalars['String']['output'];
+  /** Productos relacionados */
+  relatedProducts?: Maybe<Array<Product>>;
   subclasses?: Maybe<Array<SubClass>>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -4691,6 +4708,7 @@ export type UpdateStockInput = {
 
 export type UpdateStoreClientInput = {
   clientKind?: InputMaybe<ClientKind>;
+  clientType?: InputMaybe<ClientType>;
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
@@ -5747,7 +5765,7 @@ export type ProductQueryVariables = Exact<{
 }>;
 
 
-export type ProductQuery = { __typename?: 'Query', product: { __typename?: 'Product', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, reference: string, title: string, description: string, basePrice: number, active: boolean, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, photos?: Array<{ __typename?: 'ProductPhoto', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }> | null, priceRules?: Array<{ __typename?: 'PriceRule', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, clientType: ClientType, percentage: number }> | null, subclasses?: Array<{ __typename?: 'SubClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: SubClassStatus }> | null } };
+export type ProductQuery = { __typename?: 'Query', product: { __typename?: 'Product', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, reference: string, title: string, description: string, basePrice: number, active: boolean, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null, photos?: Array<{ __typename?: 'ProductPhoto', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null }> | null, priceRules?: Array<{ __typename?: 'PriceRule', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, clientType: ClientType, percentage: number }> | null, subclasses?: Array<{ __typename?: 'SubClass', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description: string, status: SubClassStatus }> | null, relatedProducts?: Array<{ __typename?: 'Product', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, reference: string, title: string, description: string, basePrice: number, active: boolean, isDiscount: boolean, discountPercentage?: number | null }> | null } };
 
 export type ProductsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindProductOrderBy> | FindProductOrderBy>;
@@ -5794,6 +5812,22 @@ export type RemoveProductFeaturedMutationVariables = Exact<{
 
 
 export type RemoveProductFeaturedMutation = { __typename?: 'Mutation', removeProductFeatured: { __typename?: 'ProductFeatured', id: string } };
+
+export type AddRelatedProductMutationVariables = Exact<{
+  productId: Scalars['String']['input'];
+  relatedProductId: Scalars['String']['input'];
+}>;
+
+
+export type AddRelatedProductMutation = { __typename?: 'Mutation', addRelatedProduct: { __typename?: 'Product', id: string } };
+
+export type RemoveRelatedProductMutationVariables = Exact<{
+  productId: Scalars['String']['input'];
+  relatedProductId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveRelatedProductMutation = { __typename?: 'Mutation', removeRelatedProduct: { __typename?: 'Product', id: string } };
 
 export type CreateProyectoMutationVariables = Exact<{
   createInput: CreateProyectosInput;
@@ -10237,6 +10271,19 @@ export const ProductDocument = gql`
       description
       status
     }
+    relatedProducts {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      reference
+      title
+      description
+      basePrice
+      active
+      isDiscount
+      discountPercentage
+    }
   }
 }
     `;
@@ -10532,6 +10579,74 @@ export function useRemoveProductFeaturedMutation(baseOptions?: Apollo.MutationHo
 export type RemoveProductFeaturedMutationHookResult = ReturnType<typeof useRemoveProductFeaturedMutation>;
 export type RemoveProductFeaturedMutationResult = Apollo.MutationResult<RemoveProductFeaturedMutation>;
 export type RemoveProductFeaturedMutationOptions = Apollo.BaseMutationOptions<RemoveProductFeaturedMutation, RemoveProductFeaturedMutationVariables>;
+export const AddRelatedProductDocument = gql`
+    mutation AddRelatedProduct($productId: String!, $relatedProductId: String!) {
+  addRelatedProduct(productId: $productId, relatedProductId: $relatedProductId) {
+    id
+  }
+}
+    `;
+export type AddRelatedProductMutationFn = Apollo.MutationFunction<AddRelatedProductMutation, AddRelatedProductMutationVariables>;
+
+/**
+ * __useAddRelatedProductMutation__
+ *
+ * To run a mutation, you first call `useAddRelatedProductMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddRelatedProductMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addRelatedProductMutation, { data, loading, error }] = useAddRelatedProductMutation({
+ *   variables: {
+ *      productId: // value for 'productId'
+ *      relatedProductId: // value for 'relatedProductId'
+ *   },
+ * });
+ */
+export function useAddRelatedProductMutation(baseOptions?: Apollo.MutationHookOptions<AddRelatedProductMutation, AddRelatedProductMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddRelatedProductMutation, AddRelatedProductMutationVariables>(AddRelatedProductDocument, options);
+      }
+export type AddRelatedProductMutationHookResult = ReturnType<typeof useAddRelatedProductMutation>;
+export type AddRelatedProductMutationResult = Apollo.MutationResult<AddRelatedProductMutation>;
+export type AddRelatedProductMutationOptions = Apollo.BaseMutationOptions<AddRelatedProductMutation, AddRelatedProductMutationVariables>;
+export const RemoveRelatedProductDocument = gql`
+    mutation RemoveRelatedProduct($productId: String!, $relatedProductId: String!) {
+  removeRelatedProduct(productId: $productId, relatedProductId: $relatedProductId) {
+    id
+  }
+}
+    `;
+export type RemoveRelatedProductMutationFn = Apollo.MutationFunction<RemoveRelatedProductMutation, RemoveRelatedProductMutationVariables>;
+
+/**
+ * __useRemoveRelatedProductMutation__
+ *
+ * To run a mutation, you first call `useRemoveRelatedProductMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveRelatedProductMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeRelatedProductMutation, { data, loading, error }] = useRemoveRelatedProductMutation({
+ *   variables: {
+ *      productId: // value for 'productId'
+ *      relatedProductId: // value for 'relatedProductId'
+ *   },
+ * });
+ */
+export function useRemoveRelatedProductMutation(baseOptions?: Apollo.MutationHookOptions<RemoveRelatedProductMutation, RemoveRelatedProductMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveRelatedProductMutation, RemoveRelatedProductMutationVariables>(RemoveRelatedProductDocument, options);
+      }
+export type RemoveRelatedProductMutationHookResult = ReturnType<typeof useRemoveRelatedProductMutation>;
+export type RemoveRelatedProductMutationResult = Apollo.MutationResult<RemoveRelatedProductMutation>;
+export type RemoveRelatedProductMutationOptions = Apollo.BaseMutationOptions<RemoveRelatedProductMutation, RemoveRelatedProductMutationVariables>;
 export const CreateProyectoDocument = gql`
     mutation CreateProyecto($createInput: CreateProyectosInput!) {
   createProyecto(createInput: $createInput) {

@@ -17,6 +17,7 @@ import handleUploadImage from "../../lib/uptloadFile";
 import { formatCurrency } from "../../lib/utils";
 import TableProductFeatured from "./TableProductFeacture";
 import PageMeta from "../../components/common/PageMeta";
+import TableProductRelation from "./TableProductRelation";
 
 // Schema de validación
 const productSchema = z.object({
@@ -55,7 +56,7 @@ export default function UpdateProduct() {
   const [searchText, setSearchText] = useState("");
 
   // Queries y Mutations
-  const { data: productData, loading: loadingProduct } = useProductQuery({
+  const { data: productData, loading: loadingProduct, refetch: refetchProducts } = useProductQuery({
     variables: { productId: id! },
     skip: !id,
   });
@@ -430,6 +431,13 @@ export default function UpdateProduct() {
         {
           id && (
             <TableProductFeatured id={id} key={id}/>
+          )
+        }
+      </div>
+      <div className="mt-4">
+        {
+          id && (
+          <TableProductRelation id={id} products={productData?.product.relatedProducts || []} refetch={refetchProducts}/>
           )
         }
       </div>

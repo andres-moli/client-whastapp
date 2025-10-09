@@ -79,7 +79,7 @@ export default function App() {
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/edit-products/:id" element={<UpdateProduct />} />
-            <Route path="orders-detail/:id" element={<OrderDetail/>} />
+            <Route path="/orders-detail/:id" element={<OrderDetail/>} />
             <Route path="/client-store" element={<ClienteStorePage/>} />
             <Route path="/view-client-store/:id" element={<ViewClienteStore/>} />
 

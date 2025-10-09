@@ -72,6 +72,19 @@ query Product($productId: ID!) {
       description
       status
     }
+    relatedProducts {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      reference
+      title
+      description
+      basePrice
+      active
+      isDiscount
+      discountPercentage
+    }
   }
 }
 query Products($orderBy: [FindProductOrderBy!], $where: FindProductWhere, $pagination: Pagination) {
@@ -144,6 +157,16 @@ query ProductFeatureds($orderBy: [FindProductFeaturedOrderBy!], $where: FindProd
 }
 mutation RemoveProductFeatured($removeProductFeaturedId: ID!) {
   removeProductFeatured(id: $removeProductFeaturedId) {
+    id
+  }
+}
+mutation AddRelatedProduct($productId: String!, $relatedProductId: String!) {
+  addRelatedProduct(productId: $productId, relatedProductId: $relatedProductId) {
+    id
+  }
+}
+mutation RemoveRelatedProduct($productId: String!, $relatedProductId: String!) {
+  removeRelatedProduct(productId: $productId, relatedProductId: $relatedProductId) {
     id
   }
 }
