@@ -1,0 +1,266 @@
+mutation CreateOrder($createInput: CreateOrderInput!) {
+  createOrder(createInput: $createInput) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    total
+    status
+  }
+}
+mutation CreateWompiPayment($input: CreatePaymentInput!) {
+  createWompiPayment(input: $input) {
+    url
+    transactionId
+  }
+}
+query GetPaymentStatus($transactionId: String!) {
+  getPaymentStatus(transactionId: $transactionId) {
+    id
+    status
+    amount
+    paymentMethod
+    createdAt
+    updatedAt
+  }
+}
+
+query Orders($orderBy: [FindOrderOrderBy!], $where: FindOrderWhere, $pagination: Pagination) {
+  orders(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    iva
+    retencion
+    subtotal
+    client {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      nit
+      firstName
+      lastName
+      email
+      phone
+      clientKind
+      clientType
+    }
+    items {
+      id
+    }
+    total
+    status
+    payment {
+      transactionId
+    }
+  }
+  ordersCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages 
+  }
+}
+query OderAdmin($orderId: String!) {
+  oderAdmin(orderId: $orderId) {
+      id
+    createdAt
+    updatedAt
+    deletedAt
+    iva
+    subtotal
+    retencion
+    items {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      product {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        reference
+        title
+        description
+        file {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          fileName
+          fileExtension
+          fileMode
+          fileMongoId
+          chunkSize
+          fileUrl
+          url
+        }
+        basePrice
+        active
+      }
+      quantity
+      unitPrice
+      subtotal
+    }
+    total
+    status
+    payment {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      provider
+      transactionId
+      amount
+      status
+      customerName
+      customerEmail
+      customerPhone
+      addressLine1
+      addressLine2
+      city
+      state
+      country
+      postalCode
+      paymentMethod
+      bankCode
+    }  
+        client {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      nit
+      firstName
+      lastName
+      email
+      phone
+      clientKind
+      clientType
+    }
+  }
+}
+query Order($orderId: ID!) {
+  order(id: $orderId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    iva
+    subtotal
+    retencion
+    client {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      nit
+      firstName
+      lastName
+      email
+      phone
+      clientKind
+      clientType
+    }
+    items {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      product {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        reference
+        title
+        description
+        file {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          fileName
+          fileExtension
+          fileMode
+          fileMongoId
+          chunkSize
+          fileUrl
+          url
+        }
+        basePrice
+        active
+      }
+      quantity
+      unitPrice
+      subtotal
+    }
+    total
+    status
+    payment {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      provider
+      transactionId
+      amount
+      status
+      customerName
+      customerEmail
+      customerPhone
+      addressLine1
+      addressLine2
+      city
+      state
+      country
+      postalCode
+      paymentMethod
+      bankCode
+    }
+  }
+}
+query OrderCheckout($orderId: ID!) {
+  order(id: $orderId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    iva
+    subtotal
+    retencion
+    total
+    status
+  }
+}
+query FindAllPayment($orderId: String!) {
+  findAllPayment(orderId: $orderId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    provider
+    transactionId
+    amount
+    status
+    customerName
+    customerEmail
+    customerPhone
+    addressLine1
+    addressLine2
+    city
+    state
+    country
+    postalCode
+    paymentMethod
+    bankCode
+  }
+}
+mutation UpdateOrder($updateInput: UpdateOrderInput!) {
+  updateOrder(updateInput: $updateInput) {
+    id
+  }
+}

@@ -79,12 +79,13 @@ const navItems: NavItem[] = [
         path: 'products',
       }, 
       {
-        name: "Catalogo",
-        path: 'catalog',
-      }, 
+        name: "Ordenes",
+        path: "orders"
+      },
       {
-        name: "Inicio Tienda",
-        path: 'home-store',
+        name: "Clientes",
+        path: "client-store",
+        new: true
       }
     ],
   },

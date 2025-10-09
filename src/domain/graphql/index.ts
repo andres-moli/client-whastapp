@@ -66,7 +66,8 @@ export type Cart = {
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   items: Array<CartItem>;
-  total: Scalars['Float']['output'];
+  /** Total calculado dinámicamente a partir de los ítems */
+  total?: Maybe<Scalars['Float']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -75,10 +76,14 @@ export type CartItem = {
   cart: Cart;
   createdAt: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  discountPercentage?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
+  isDiscount: Scalars['Boolean']['output'];
   product: Product;
   quantity: Scalars['Int']['output'];
   subtotal: Scalars['Float']['output'];
+  /** Total con descuento aplicado si corresponde */
+  total?: Maybe<Scalars['Float']['output']>;
   unitPrice: Scalars['Float']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -599,6 +604,7 @@ export type CreateStoreClientInput = {
   clientKind: ClientKind;
   email: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
+  identificationType: UserDocumentTypes;
   lastName?: InputMaybe<Scalars['String']['input']>;
   nit: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -1178,6 +1184,7 @@ export type FindStockTypeWhere = {
 };
 
 export type FindStoreClientOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
   email?: InputMaybe<OrderTypes>;
   firstName?: InputMaybe<OrderTypes>;
   lastName?: InputMaybe<OrderTypes>;
@@ -1191,6 +1198,7 @@ export type FindStoreClientWhere = {
   email?: InputMaybe<StringFilter>;
   firstName?: InputMaybe<StringFilter>;
   lastName?: InputMaybe<StringFilter>;
+  nit?: InputMaybe<StringFilter>;
   phone?: InputMaybe<StringFilter>;
 };
 
@@ -2532,8 +2540,11 @@ export type Order = {
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   items: Array<OrderItem>;
+  iva: Scalars['Float']['output'];
   payment?: Maybe<Payment>;
+  retencion: Scalars['Float']['output'];
   status: OrderStatus;
+  subtotal: Scalars['Float']['output'];
   total: Scalars['Float']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -2542,7 +2553,9 @@ export type OrderItem = {
   __typename?: 'OrderItem';
   createdAt: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  discountPercentage?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
+  isDiscount: Scalars['Boolean']['output'];
   order: Order;
   product: Product;
   quantity: Scalars['Int']['output'];
@@ -2699,8 +2712,11 @@ export type Product = {
   createdAt: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description: Scalars['String']['output'];
+  /** Porcentaje de descuento (0-100) */
+  discountPercentage?: Maybe<Scalars['Float']['output']>;
   file?: Maybe<FileInfo>;
   id: Scalars['ID']['output'];
+  isDiscount: Scalars['Boolean']['output'];
   photos?: Maybe<Array<ProductPhoto>>;
   priceRules?: Maybe<Array<PriceRule>>;
   reference: Scalars['String']['output'];
@@ -2934,6 +2950,7 @@ export type Query = {
   notificationConfigsCount: MetadataPagination;
   notifications: Array<Notification>;
   notificationsCount: MetadataPagination;
+  oderAdmin: Order;
   order: Order;
   orders: Array<Order>;
   ordersCount: MetadataPagination;
@@ -3496,6 +3513,11 @@ export type QueryNotificationsArgs = {
 
 export type QueryNotificationsCountArgs = {
   pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryOderAdminArgs = {
+  orderId: Scalars['String']['input'];
 };
 
 
@@ -4162,6 +4184,7 @@ export type StoreClient = {
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  identificationType?: Maybe<UserDocumentTypes>;
   lastName?: Maybe<Scalars['String']['output']>;
   nit: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
@@ -4671,6 +4694,7 @@ export type UpdateStoreClientInput = {
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
+  identificationType?: InputMaybe<UserDocumentTypes>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   nit?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
@@ -5597,6 +5621,71 @@ export type AddCellToGroupMutationVariables = Exact<{
 
 export type AddCellToGroupMutation = { __typename?: 'Mutation', addCellToGroup: { __typename?: 'WsGroupCell', id: string } };
 
+export type CreateOrderMutationVariables = Exact<{
+  createInput: CreateOrderInput;
+}>;
+
+
+export type CreateOrderMutation = { __typename?: 'Mutation', createOrder: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, total: number, status: OrderStatus } };
+
+export type CreateWompiPaymentMutationVariables = Exact<{
+  input: CreatePaymentInput;
+}>;
+
+
+export type CreateWompiPaymentMutation = { __typename?: 'Mutation', createWompiPayment: { __typename?: 'ResponsePasarelaModel', url?: string | null, transactionId: string } };
+
+export type GetPaymentStatusQueryVariables = Exact<{
+  transactionId: Scalars['String']['input'];
+}>;
+
+
+export type GetPaymentStatusQuery = { __typename?: 'Query', getPaymentStatus: { __typename?: 'PaymentStatus', id: string, status: string, amount: number, paymentMethod?: string | null, createdAt?: string | null, updatedAt?: string | null } };
+
+export type OrdersQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindOrderOrderBy> | FindOrderOrderBy>;
+  where?: InputMaybe<FindOrderWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type OrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, iva: number, retencion: number, subtotal: number, total: number, status: OrderStatus, client: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType }, items: Array<{ __typename?: 'OrderItem', id: string }>, payment?: { __typename?: 'Payment', transactionId: string } | null }>, ordersCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type OderAdminQueryVariables = Exact<{
+  orderId: Scalars['String']['input'];
+}>;
+
+
+export type OderAdminQuery = { __typename?: 'Query', oderAdmin: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, iva: number, subtotal: number, retencion: number, total: number, status: OrderStatus, items: Array<{ __typename?: 'OrderItem', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, quantity: number, unitPrice: number, subtotal: number, product: { __typename?: 'Product', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, reference: string, title: string, description: string, basePrice: number, active: boolean, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null } }>, payment?: { __typename?: 'Payment', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, provider: string, transactionId: string, amount: number, status: string, customerName: string, customerEmail: string, customerPhone?: string | null, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, postalCode: string, paymentMethod: string, bankCode?: string | null } | null, client: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType } } };
+
+export type OrderQueryVariables = Exact<{
+  orderId: Scalars['ID']['input'];
+}>;
+
+
+export type OrderQuery = { __typename?: 'Query', order: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, iva: number, subtotal: number, retencion: number, total: number, status: OrderStatus, client: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType }, items: Array<{ __typename?: 'OrderItem', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, quantity: number, unitPrice: number, subtotal: number, product: { __typename?: 'Product', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, reference: string, title: string, description: string, basePrice: number, active: boolean, file?: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string } | null } }>, payment?: { __typename?: 'Payment', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, provider: string, transactionId: string, amount: number, status: string, customerName: string, customerEmail: string, customerPhone?: string | null, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, postalCode: string, paymentMethod: string, bankCode?: string | null } | null } };
+
+export type OrderCheckoutQueryVariables = Exact<{
+  orderId: Scalars['ID']['input'];
+}>;
+
+
+export type OrderCheckoutQuery = { __typename?: 'Query', order: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, iva: number, subtotal: number, retencion: number, total: number, status: OrderStatus } };
+
+export type FindAllPaymentQueryVariables = Exact<{
+  orderId: Scalars['String']['input'];
+}>;
+
+
+export type FindAllPaymentQuery = { __typename?: 'Query', findAllPayment: Array<{ __typename?: 'Payment', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, provider: string, transactionId: string, amount: number, status: string, customerName: string, customerEmail: string, customerPhone?: string | null, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, postalCode: string, paymentMethod: string, bankCode?: string | null }> };
+
+export type UpdateOrderMutationVariables = Exact<{
+  updateInput: UpdateOrderInput;
+}>;
+
+
+export type UpdateOrderMutation = { __typename?: 'Mutation', updateOrder: { __typename?: 'Order', id: string } };
+
 export type ParametersQueryVariables = Exact<{
   pagination?: InputMaybe<Pagination>;
 }>;
@@ -5811,6 +5900,36 @@ export type SesionesQueryVariables = Exact<{
 
 
 export type SesionesQuery = { __typename?: 'Query', sesiones: Array<{ __typename?: 'WsSesion', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, description?: string | null, status: SesionEmun, user?: { __typename?: 'User', email: string, identificationType?: UserDocumentTypes | null, identificationNumber?: string | null, id: string, fullName: string } | null }>, sesionesCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type CreateStoreClientMutationVariables = Exact<{
+  createInput: CreateStoreClientInput;
+}>;
+
+
+export type CreateStoreClientMutation = { __typename?: 'Mutation', createStoreClient: { __typename?: 'StoreClient', id: string } };
+
+export type UpdateStoreClientMutationVariables = Exact<{
+  updateInput: UpdateStoreClientInput;
+}>;
+
+
+export type UpdateStoreClientMutation = { __typename?: 'Mutation', updateStoreClient: { __typename?: 'StoreClient', id: string } };
+
+export type StoreClientsQueryVariables = Exact<{
+  orderBy?: InputMaybe<Array<FindStoreClientOrderBy> | FindStoreClientOrderBy>;
+  where?: InputMaybe<FindStoreClientWhere>;
+  pagination?: InputMaybe<Pagination>;
+}>;
+
+
+export type StoreClientsQuery = { __typename?: 'Query', storeClients: Array<{ __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, identificationType?: UserDocumentTypes | null, phone?: string | null, clientKind: ClientKind, clientType: ClientType }>, storeClientsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+
+export type StoreClientQueryVariables = Exact<{
+  storeClientId: Scalars['ID']['input'];
+}>;
+
+
+export type StoreClientQuery = { __typename?: 'Query', storeClient: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType, identificationType?: UserDocumentTypes | null } };
 
 export type TasksQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindTaskTypeOrderBy> | FindTaskTypeOrderBy>;
@@ -9158,6 +9277,567 @@ export function useAddCellToGroupMutation(baseOptions?: Apollo.MutationHookOptio
 export type AddCellToGroupMutationHookResult = ReturnType<typeof useAddCellToGroupMutation>;
 export type AddCellToGroupMutationResult = Apollo.MutationResult<AddCellToGroupMutation>;
 export type AddCellToGroupMutationOptions = Apollo.BaseMutationOptions<AddCellToGroupMutation, AddCellToGroupMutationVariables>;
+export const CreateOrderDocument = gql`
+    mutation CreateOrder($createInput: CreateOrderInput!) {
+  createOrder(createInput: $createInput) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    total
+    status
+  }
+}
+    `;
+export type CreateOrderMutationFn = Apollo.MutationFunction<CreateOrderMutation, CreateOrderMutationVariables>;
+
+/**
+ * __useCreateOrderMutation__
+ *
+ * To run a mutation, you first call `useCreateOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOrderMutation, { data, loading, error }] = useCreateOrderMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateOrderMutation(baseOptions?: Apollo.MutationHookOptions<CreateOrderMutation, CreateOrderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateOrderMutation, CreateOrderMutationVariables>(CreateOrderDocument, options);
+      }
+export type CreateOrderMutationHookResult = ReturnType<typeof useCreateOrderMutation>;
+export type CreateOrderMutationResult = Apollo.MutationResult<CreateOrderMutation>;
+export type CreateOrderMutationOptions = Apollo.BaseMutationOptions<CreateOrderMutation, CreateOrderMutationVariables>;
+export const CreateWompiPaymentDocument = gql`
+    mutation CreateWompiPayment($input: CreatePaymentInput!) {
+  createWompiPayment(input: $input) {
+    url
+    transactionId
+  }
+}
+    `;
+export type CreateWompiPaymentMutationFn = Apollo.MutationFunction<CreateWompiPaymentMutation, CreateWompiPaymentMutationVariables>;
+
+/**
+ * __useCreateWompiPaymentMutation__
+ *
+ * To run a mutation, you first call `useCreateWompiPaymentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateWompiPaymentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createWompiPaymentMutation, { data, loading, error }] = useCreateWompiPaymentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateWompiPaymentMutation(baseOptions?: Apollo.MutationHookOptions<CreateWompiPaymentMutation, CreateWompiPaymentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateWompiPaymentMutation, CreateWompiPaymentMutationVariables>(CreateWompiPaymentDocument, options);
+      }
+export type CreateWompiPaymentMutationHookResult = ReturnType<typeof useCreateWompiPaymentMutation>;
+export type CreateWompiPaymentMutationResult = Apollo.MutationResult<CreateWompiPaymentMutation>;
+export type CreateWompiPaymentMutationOptions = Apollo.BaseMutationOptions<CreateWompiPaymentMutation, CreateWompiPaymentMutationVariables>;
+export const GetPaymentStatusDocument = gql`
+    query GetPaymentStatus($transactionId: String!) {
+  getPaymentStatus(transactionId: $transactionId) {
+    id
+    status
+    amount
+    paymentMethod
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetPaymentStatusQuery__
+ *
+ * To run a query within a React component, call `useGetPaymentStatusQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPaymentStatusQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPaymentStatusQuery({
+ *   variables: {
+ *      transactionId: // value for 'transactionId'
+ *   },
+ * });
+ */
+export function useGetPaymentStatusQuery(baseOptions: Apollo.QueryHookOptions<GetPaymentStatusQuery, GetPaymentStatusQueryVariables> & ({ variables: GetPaymentStatusQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPaymentStatusQuery, GetPaymentStatusQueryVariables>(GetPaymentStatusDocument, options);
+      }
+export function useGetPaymentStatusLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaymentStatusQuery, GetPaymentStatusQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPaymentStatusQuery, GetPaymentStatusQueryVariables>(GetPaymentStatusDocument, options);
+        }
+export function useGetPaymentStatusSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPaymentStatusQuery, GetPaymentStatusQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPaymentStatusQuery, GetPaymentStatusQueryVariables>(GetPaymentStatusDocument, options);
+        }
+export type GetPaymentStatusQueryHookResult = ReturnType<typeof useGetPaymentStatusQuery>;
+export type GetPaymentStatusLazyQueryHookResult = ReturnType<typeof useGetPaymentStatusLazyQuery>;
+export type GetPaymentStatusSuspenseQueryHookResult = ReturnType<typeof useGetPaymentStatusSuspenseQuery>;
+export type GetPaymentStatusQueryResult = Apollo.QueryResult<GetPaymentStatusQuery, GetPaymentStatusQueryVariables>;
+export const OrdersDocument = gql`
+    query Orders($orderBy: [FindOrderOrderBy!], $where: FindOrderWhere, $pagination: Pagination) {
+  orders(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    iva
+    retencion
+    subtotal
+    client {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      nit
+      firstName
+      lastName
+      email
+      phone
+      clientKind
+      clientType
+    }
+    items {
+      id
+    }
+    total
+    status
+    payment {
+      transactionId
+    }
+  }
+  ordersCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useOrdersQuery__
+ *
+ * To run a query within a React component, call `useOrdersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrdersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrdersQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useOrdersQuery(baseOptions?: Apollo.QueryHookOptions<OrdersQuery, OrdersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrdersQuery, OrdersQueryVariables>(OrdersDocument, options);
+      }
+export function useOrdersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrdersQuery, OrdersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrdersQuery, OrdersQueryVariables>(OrdersDocument, options);
+        }
+export function useOrdersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<OrdersQuery, OrdersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrdersQuery, OrdersQueryVariables>(OrdersDocument, options);
+        }
+export type OrdersQueryHookResult = ReturnType<typeof useOrdersQuery>;
+export type OrdersLazyQueryHookResult = ReturnType<typeof useOrdersLazyQuery>;
+export type OrdersSuspenseQueryHookResult = ReturnType<typeof useOrdersSuspenseQuery>;
+export type OrdersQueryResult = Apollo.QueryResult<OrdersQuery, OrdersQueryVariables>;
+export const OderAdminDocument = gql`
+    query OderAdmin($orderId: String!) {
+  oderAdmin(orderId: $orderId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    iva
+    subtotal
+    retencion
+    items {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      product {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        reference
+        title
+        description
+        file {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          fileName
+          fileExtension
+          fileMode
+          fileMongoId
+          chunkSize
+          fileUrl
+          url
+        }
+        basePrice
+        active
+      }
+      quantity
+      unitPrice
+      subtotal
+    }
+    total
+    status
+    payment {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      provider
+      transactionId
+      amount
+      status
+      customerName
+      customerEmail
+      customerPhone
+      addressLine1
+      addressLine2
+      city
+      state
+      country
+      postalCode
+      paymentMethod
+      bankCode
+    }
+    client {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      nit
+      firstName
+      lastName
+      email
+      phone
+      clientKind
+      clientType
+    }
+  }
+}
+    `;
+
+/**
+ * __useOderAdminQuery__
+ *
+ * To run a query within a React component, call `useOderAdminQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOderAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOderAdminQuery({
+ *   variables: {
+ *      orderId: // value for 'orderId'
+ *   },
+ * });
+ */
+export function useOderAdminQuery(baseOptions: Apollo.QueryHookOptions<OderAdminQuery, OderAdminQueryVariables> & ({ variables: OderAdminQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OderAdminQuery, OderAdminQueryVariables>(OderAdminDocument, options);
+      }
+export function useOderAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OderAdminQuery, OderAdminQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OderAdminQuery, OderAdminQueryVariables>(OderAdminDocument, options);
+        }
+export function useOderAdminSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<OderAdminQuery, OderAdminQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OderAdminQuery, OderAdminQueryVariables>(OderAdminDocument, options);
+        }
+export type OderAdminQueryHookResult = ReturnType<typeof useOderAdminQuery>;
+export type OderAdminLazyQueryHookResult = ReturnType<typeof useOderAdminLazyQuery>;
+export type OderAdminSuspenseQueryHookResult = ReturnType<typeof useOderAdminSuspenseQuery>;
+export type OderAdminQueryResult = Apollo.QueryResult<OderAdminQuery, OderAdminQueryVariables>;
+export const OrderDocument = gql`
+    query Order($orderId: ID!) {
+  order(id: $orderId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    iva
+    subtotal
+    retencion
+    client {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      nit
+      firstName
+      lastName
+      email
+      phone
+      clientKind
+      clientType
+    }
+    items {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      product {
+        id
+        createdAt
+        updatedAt
+        deletedAt
+        reference
+        title
+        description
+        file {
+          id
+          createdAt
+          updatedAt
+          deletedAt
+          fileName
+          fileExtension
+          fileMode
+          fileMongoId
+          chunkSize
+          fileUrl
+          url
+        }
+        basePrice
+        active
+      }
+      quantity
+      unitPrice
+      subtotal
+    }
+    total
+    status
+    payment {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      provider
+      transactionId
+      amount
+      status
+      customerName
+      customerEmail
+      customerPhone
+      addressLine1
+      addressLine2
+      city
+      state
+      country
+      postalCode
+      paymentMethod
+      bankCode
+    }
+  }
+}
+    `;
+
+/**
+ * __useOrderQuery__
+ *
+ * To run a query within a React component, call `useOrderQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrderQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrderQuery({
+ *   variables: {
+ *      orderId: // value for 'orderId'
+ *   },
+ * });
+ */
+export function useOrderQuery(baseOptions: Apollo.QueryHookOptions<OrderQuery, OrderQueryVariables> & ({ variables: OrderQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrderQuery, OrderQueryVariables>(OrderDocument, options);
+      }
+export function useOrderLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrderQuery, OrderQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrderQuery, OrderQueryVariables>(OrderDocument, options);
+        }
+export function useOrderSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<OrderQuery, OrderQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrderQuery, OrderQueryVariables>(OrderDocument, options);
+        }
+export type OrderQueryHookResult = ReturnType<typeof useOrderQuery>;
+export type OrderLazyQueryHookResult = ReturnType<typeof useOrderLazyQuery>;
+export type OrderSuspenseQueryHookResult = ReturnType<typeof useOrderSuspenseQuery>;
+export type OrderQueryResult = Apollo.QueryResult<OrderQuery, OrderQueryVariables>;
+export const OrderCheckoutDocument = gql`
+    query OrderCheckout($orderId: ID!) {
+  order(id: $orderId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    iva
+    subtotal
+    retencion
+    total
+    status
+  }
+}
+    `;
+
+/**
+ * __useOrderCheckoutQuery__
+ *
+ * To run a query within a React component, call `useOrderCheckoutQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrderCheckoutQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrderCheckoutQuery({
+ *   variables: {
+ *      orderId: // value for 'orderId'
+ *   },
+ * });
+ */
+export function useOrderCheckoutQuery(baseOptions: Apollo.QueryHookOptions<OrderCheckoutQuery, OrderCheckoutQueryVariables> & ({ variables: OrderCheckoutQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OrderCheckoutQuery, OrderCheckoutQueryVariables>(OrderCheckoutDocument, options);
+      }
+export function useOrderCheckoutLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OrderCheckoutQuery, OrderCheckoutQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OrderCheckoutQuery, OrderCheckoutQueryVariables>(OrderCheckoutDocument, options);
+        }
+export function useOrderCheckoutSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<OrderCheckoutQuery, OrderCheckoutQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OrderCheckoutQuery, OrderCheckoutQueryVariables>(OrderCheckoutDocument, options);
+        }
+export type OrderCheckoutQueryHookResult = ReturnType<typeof useOrderCheckoutQuery>;
+export type OrderCheckoutLazyQueryHookResult = ReturnType<typeof useOrderCheckoutLazyQuery>;
+export type OrderCheckoutSuspenseQueryHookResult = ReturnType<typeof useOrderCheckoutSuspenseQuery>;
+export type OrderCheckoutQueryResult = Apollo.QueryResult<OrderCheckoutQuery, OrderCheckoutQueryVariables>;
+export const FindAllPaymentDocument = gql`
+    query FindAllPayment($orderId: String!) {
+  findAllPayment(orderId: $orderId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    provider
+    transactionId
+    amount
+    status
+    customerName
+    customerEmail
+    customerPhone
+    addressLine1
+    addressLine2
+    city
+    state
+    country
+    postalCode
+    paymentMethod
+    bankCode
+  }
+}
+    `;
+
+/**
+ * __useFindAllPaymentQuery__
+ *
+ * To run a query within a React component, call `useFindAllPaymentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindAllPaymentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindAllPaymentQuery({
+ *   variables: {
+ *      orderId: // value for 'orderId'
+ *   },
+ * });
+ */
+export function useFindAllPaymentQuery(baseOptions: Apollo.QueryHookOptions<FindAllPaymentQuery, FindAllPaymentQueryVariables> & ({ variables: FindAllPaymentQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindAllPaymentQuery, FindAllPaymentQueryVariables>(FindAllPaymentDocument, options);
+      }
+export function useFindAllPaymentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindAllPaymentQuery, FindAllPaymentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindAllPaymentQuery, FindAllPaymentQueryVariables>(FindAllPaymentDocument, options);
+        }
+export function useFindAllPaymentSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FindAllPaymentQuery, FindAllPaymentQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FindAllPaymentQuery, FindAllPaymentQueryVariables>(FindAllPaymentDocument, options);
+        }
+export type FindAllPaymentQueryHookResult = ReturnType<typeof useFindAllPaymentQuery>;
+export type FindAllPaymentLazyQueryHookResult = ReturnType<typeof useFindAllPaymentLazyQuery>;
+export type FindAllPaymentSuspenseQueryHookResult = ReturnType<typeof useFindAllPaymentSuspenseQuery>;
+export type FindAllPaymentQueryResult = Apollo.QueryResult<FindAllPaymentQuery, FindAllPaymentQueryVariables>;
+export const UpdateOrderDocument = gql`
+    mutation UpdateOrder($updateInput: UpdateOrderInput!) {
+  updateOrder(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateOrderMutationFn = Apollo.MutationFunction<UpdateOrderMutation, UpdateOrderMutationVariables>;
+
+/**
+ * __useUpdateOrderMutation__
+ *
+ * To run a mutation, you first call `useUpdateOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateOrderMutation, { data, loading, error }] = useUpdateOrderMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateOrderMutation(baseOptions?: Apollo.MutationHookOptions<UpdateOrderMutation, UpdateOrderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateOrderMutation, UpdateOrderMutationVariables>(UpdateOrderDocument, options);
+      }
+export type UpdateOrderMutationHookResult = ReturnType<typeof useUpdateOrderMutation>;
+export type UpdateOrderMutationResult = Apollo.MutationResult<UpdateOrderMutation>;
+export type UpdateOrderMutationOptions = Apollo.BaseMutationOptions<UpdateOrderMutation, UpdateOrderMutationVariables>;
 export const ParametersDocument = gql`
     query Parameters($pagination: Pagination) {
   parameters(pagination: $pagination) {
@@ -11040,6 +11720,182 @@ export type SesionesQueryHookResult = ReturnType<typeof useSesionesQuery>;
 export type SesionesLazyQueryHookResult = ReturnType<typeof useSesionesLazyQuery>;
 export type SesionesSuspenseQueryHookResult = ReturnType<typeof useSesionesSuspenseQuery>;
 export type SesionesQueryResult = Apollo.QueryResult<SesionesQuery, SesionesQueryVariables>;
+export const CreateStoreClientDocument = gql`
+    mutation CreateStoreClient($createInput: CreateStoreClientInput!) {
+  createStoreClient(createInput: $createInput) {
+    id
+  }
+}
+    `;
+export type CreateStoreClientMutationFn = Apollo.MutationFunction<CreateStoreClientMutation, CreateStoreClientMutationVariables>;
+
+/**
+ * __useCreateStoreClientMutation__
+ *
+ * To run a mutation, you first call `useCreateStoreClientMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateStoreClientMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createStoreClientMutation, { data, loading, error }] = useCreateStoreClientMutation({
+ *   variables: {
+ *      createInput: // value for 'createInput'
+ *   },
+ * });
+ */
+export function useCreateStoreClientMutation(baseOptions?: Apollo.MutationHookOptions<CreateStoreClientMutation, CreateStoreClientMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateStoreClientMutation, CreateStoreClientMutationVariables>(CreateStoreClientDocument, options);
+      }
+export type CreateStoreClientMutationHookResult = ReturnType<typeof useCreateStoreClientMutation>;
+export type CreateStoreClientMutationResult = Apollo.MutationResult<CreateStoreClientMutation>;
+export type CreateStoreClientMutationOptions = Apollo.BaseMutationOptions<CreateStoreClientMutation, CreateStoreClientMutationVariables>;
+export const UpdateStoreClientDocument = gql`
+    mutation UpdateStoreClient($updateInput: UpdateStoreClientInput!) {
+  updateStoreClient(updateInput: $updateInput) {
+    id
+  }
+}
+    `;
+export type UpdateStoreClientMutationFn = Apollo.MutationFunction<UpdateStoreClientMutation, UpdateStoreClientMutationVariables>;
+
+/**
+ * __useUpdateStoreClientMutation__
+ *
+ * To run a mutation, you first call `useUpdateStoreClientMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateStoreClientMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateStoreClientMutation, { data, loading, error }] = useUpdateStoreClientMutation({
+ *   variables: {
+ *      updateInput: // value for 'updateInput'
+ *   },
+ * });
+ */
+export function useUpdateStoreClientMutation(baseOptions?: Apollo.MutationHookOptions<UpdateStoreClientMutation, UpdateStoreClientMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateStoreClientMutation, UpdateStoreClientMutationVariables>(UpdateStoreClientDocument, options);
+      }
+export type UpdateStoreClientMutationHookResult = ReturnType<typeof useUpdateStoreClientMutation>;
+export type UpdateStoreClientMutationResult = Apollo.MutationResult<UpdateStoreClientMutation>;
+export type UpdateStoreClientMutationOptions = Apollo.BaseMutationOptions<UpdateStoreClientMutation, UpdateStoreClientMutationVariables>;
+export const StoreClientsDocument = gql`
+    query StoreClients($orderBy: [FindStoreClientOrderBy!], $where: FindStoreClientWhere, $pagination: Pagination) {
+  storeClients(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nit
+    firstName
+    lastName
+    email
+    identificationType
+    phone
+    clientKind
+    clientType
+  }
+  storeClientsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+    `;
+
+/**
+ * __useStoreClientsQuery__
+ *
+ * To run a query within a React component, call `useStoreClientsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStoreClientsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStoreClientsQuery({
+ *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
+ *      pagination: // value for 'pagination'
+ *   },
+ * });
+ */
+export function useStoreClientsQuery(baseOptions?: Apollo.QueryHookOptions<StoreClientsQuery, StoreClientsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StoreClientsQuery, StoreClientsQueryVariables>(StoreClientsDocument, options);
+      }
+export function useStoreClientsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StoreClientsQuery, StoreClientsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StoreClientsQuery, StoreClientsQueryVariables>(StoreClientsDocument, options);
+        }
+export function useStoreClientsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<StoreClientsQuery, StoreClientsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<StoreClientsQuery, StoreClientsQueryVariables>(StoreClientsDocument, options);
+        }
+export type StoreClientsQueryHookResult = ReturnType<typeof useStoreClientsQuery>;
+export type StoreClientsLazyQueryHookResult = ReturnType<typeof useStoreClientsLazyQuery>;
+export type StoreClientsSuspenseQueryHookResult = ReturnType<typeof useStoreClientsSuspenseQuery>;
+export type StoreClientsQueryResult = Apollo.QueryResult<StoreClientsQuery, StoreClientsQueryVariables>;
+export const StoreClientDocument = gql`
+    query StoreClient($storeClientId: ID!) {
+  storeClient(id: $storeClientId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nit
+    firstName
+    lastName
+    email
+    phone
+    clientKind
+    clientType
+    identificationType
+  }
+}
+    `;
+
+/**
+ * __useStoreClientQuery__
+ *
+ * To run a query within a React component, call `useStoreClientQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStoreClientQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStoreClientQuery({
+ *   variables: {
+ *      storeClientId: // value for 'storeClientId'
+ *   },
+ * });
+ */
+export function useStoreClientQuery(baseOptions: Apollo.QueryHookOptions<StoreClientQuery, StoreClientQueryVariables> & ({ variables: StoreClientQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StoreClientQuery, StoreClientQueryVariables>(StoreClientDocument, options);
+      }
+export function useStoreClientLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StoreClientQuery, StoreClientQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StoreClientQuery, StoreClientQueryVariables>(StoreClientDocument, options);
+        }
+export function useStoreClientSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<StoreClientQuery, StoreClientQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<StoreClientQuery, StoreClientQueryVariables>(StoreClientDocument, options);
+        }
+export type StoreClientQueryHookResult = ReturnType<typeof useStoreClientQuery>;
+export type StoreClientLazyQueryHookResult = ReturnType<typeof useStoreClientLazyQuery>;
+export type StoreClientSuspenseQueryHookResult = ReturnType<typeof useStoreClientSuspenseQuery>;
+export type StoreClientQueryResult = Apollo.QueryResult<StoreClientQuery, StoreClientQueryVariables>;
 export const TasksDocument = gql`
     query Tasks($orderBy: [FindTaskTypeOrderBy!], $where: FindTaskTypeWhere, $pagination: Pagination) {
   tasks(orderBy: $orderBy, where: $where, pagination: $pagination) {

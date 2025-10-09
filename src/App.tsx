@@ -38,6 +38,10 @@ import UpdateProduct from "./pages/products/UpdateProducts";
 import DashboardStore from "./pages/store/Home";
 import StoreHeader from "./layout/StoreHeader";
 import LoginStore from "./pages/store/LoginStore";
+import OrdersPage from "./pages/store/orders/OrdersPage";
+import OrderDetail from "./pages/store/orders/OrderDetail";
+import ClienteStorePage from "./pages/store/Client";
+import { ViewClienteStore } from "./pages/store/Client/ViewClienteStore";
 
 export default function App() {
   return (
@@ -72,9 +76,12 @@ export default function App() {
             
             {/* STORE */}
             <Route path="/products" element={<ProductPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/edit-products/:id" element={<UpdateProduct />} />
-
+            <Route path="orders-detail/:id" element={<OrderDetail/>} />
+            <Route path="/client-store" element={<ClienteStorePage/>} />
+            <Route path="/view-client-store/:id" element={<ViewClienteStore/>} />
 
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />

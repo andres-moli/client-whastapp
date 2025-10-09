@@ -1,0 +1,48 @@
+mutation CreateStoreClient($createInput: CreateStoreClientInput!) {
+  createStoreClient(createInput: $createInput) {
+    id
+  }
+}
+mutation UpdateStoreClient($updateInput: UpdateStoreClientInput!) {
+  updateStoreClient(updateInput: $updateInput) {
+    id
+  }
+}
+query StoreClients($orderBy: [FindStoreClientOrderBy!], $where: FindStoreClientWhere, $pagination: Pagination) {
+  storeClients(orderBy: $orderBy, where: $where, pagination: $pagination) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nit
+    firstName
+    lastName
+    email
+    identificationType
+    phone
+    clientKind
+    clientType
+  }
+  storeClientsCount(orderBy: $orderBy, where: $where, pagination: $pagination)  {
+    currentPage
+    itemsPerPage
+    totalItems
+    totalPages
+  }
+}
+query StoreClient($storeClientId: ID!) {
+  storeClient(id: $storeClientId) {
+    id
+    createdAt
+    updatedAt
+    deletedAt
+    nit
+    firstName
+    lastName
+    email
+    phone
+    clientKind
+    clientType
+    identificationType
+  }
+}
