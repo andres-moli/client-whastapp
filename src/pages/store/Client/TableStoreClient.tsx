@@ -2,12 +2,13 @@ import { useNavigate } from "react-router";
 import { useUser } from "../../../context/UserContext";
 import { useModal } from "../../../hooks/useModal";
 import { useEffect, useMemo, useState } from "react";
-import { ClientKind, OrderTypes, useStoreClientsQuery } from "../../../domain/graphql";
+import { ClientKind, ClientStatus, OrderTypes, useStoreClientsQuery } from "../../../domain/graphql";
 import { debounce } from "lodash";
 import { Eye, Search } from "lucide-react";
 import Input from "../../../components/form/input/InputField";
 import { ButtonTable, Table, TableBody, TableCell, TableHeader, TableRow } from "../../../components/ui/table";
 import { Pagination } from "../../../components/ui/table/pagination";
+import clsx from "clsx";
 
 
 export default function ClientStoreTable() {
@@ -136,6 +137,12 @@ export default function ClientStoreTable() {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
+                  Estado
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                >
                   Acciones
                 </TableCell>
               </TableRow>
@@ -162,6 +169,21 @@ export default function ClientStoreTable() {
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     {client.clientType}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                    <span
+                      className={clsx(
+                        'px-3 py-1 rounded-full font-medium border text-xs',
+                        {
+                          'text-green-600 border-green-600 bg-green-50': client.status === ClientStatus.Active,
+                          'text-gray-600 border-gray-600 bg-gray-50': client.status === ClientStatus.Inactive,
+                          'text-yellow-600 border-yellow-600 bg-yellow-50': client.status === ClientStatus.Pending,
+                          'text-red-600 border-red-600 bg-red-50': client.status === ClientStatus.Suspended,
+                        }
+                      )}
+                    >
+                      {client.status}
+                    </span>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                     <Eye

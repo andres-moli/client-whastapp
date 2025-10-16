@@ -188,6 +188,13 @@ export enum ClientKind {
   Normal = 'NORMAL'
 }
 
+export enum ClientStatus {
+  Active = 'ACTIVE',
+  Inactive = 'INACTIVE',
+  Pending = 'PENDING',
+  Suspended = 'SUSPENDED'
+}
+
 export enum ClientType {
   A = 'A',
   Aa = 'AA',
@@ -4202,9 +4209,11 @@ export type StoreClient = {
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   identificationType?: Maybe<UserDocumentTypes>;
+  isVerifiedEmail: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   nit: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
+  status: ClientStatus;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -4713,10 +4722,12 @@ export type UpdateStoreClientInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   identificationType?: InputMaybe<UserDocumentTypes>;
+  isVerifiedEmail?: InputMaybe<Scalars['Boolean']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   nit?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<ClientStatus>;
 };
 
 export type UpdateSubClassInput = {
@@ -5956,14 +5967,14 @@ export type StoreClientsQueryVariables = Exact<{
 }>;
 
 
-export type StoreClientsQuery = { __typename?: 'Query', storeClients: Array<{ __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, identificationType?: UserDocumentTypes | null, phone?: string | null, clientKind: ClientKind, clientType: ClientType }>, storeClientsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
+export type StoreClientsQuery = { __typename?: 'Query', storeClients: Array<{ __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, identificationType?: UserDocumentTypes | null, phone?: string | null, clientKind: ClientKind, clientType: ClientType, status: ClientStatus, isVerifiedEmail: boolean }>, storeClientsCount: { __typename?: 'MetadataPagination', currentPage?: number | null, itemsPerPage?: number | null, totalItems?: number | null, totalPages?: number | null } };
 
 export type StoreClientQueryVariables = Exact<{
   storeClientId: Scalars['ID']['input'];
 }>;
 
 
-export type StoreClientQuery = { __typename?: 'Query', storeClient: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType, identificationType?: UserDocumentTypes | null } };
+export type StoreClientQuery = { __typename?: 'Query', storeClient: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType, identificationType?: UserDocumentTypes | null, status: ClientStatus, isVerifiedEmail: boolean } };
 
 export type TasksQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindTaskTypeOrderBy> | FindTaskTypeOrderBy>;
@@ -11916,6 +11927,8 @@ export const StoreClientsDocument = gql`
     phone
     clientKind
     clientType
+    status
+    isVerifiedEmail
   }
   storeClientsCount(orderBy: $orderBy, where: $where, pagination: $pagination) {
     currentPage
@@ -11975,6 +11988,8 @@ export const StoreClientDocument = gql`
     clientKind
     clientType
     identificationType
+    status
+    isVerifiedEmail
   }
 }
     `;

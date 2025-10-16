@@ -22,6 +22,8 @@ query StoreClients($orderBy: [FindStoreClientOrderBy!], $where: FindStoreClientW
     phone
     clientKind
     clientType
+    status
+    isVerifiedEmail
   }
   storeClientsCount(orderBy: $orderBy, where: $where, pagination: $pagination)  {
     currentPage
@@ -44,5 +46,7 @@ query StoreClient($storeClientId: ID!) {
     clientKind
     clientType
     identificationType
+    status
+    isVerifiedEmail
   }
 }

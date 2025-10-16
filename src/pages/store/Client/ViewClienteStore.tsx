@@ -4,6 +4,7 @@ import { Eye, Loader2 } from "lucide-react";
 import clsx from "clsx";
 import {
   ClientKind,
+  ClientStatus,
   ClientType,
   OrderStatus,
   OrderTypes,
@@ -230,6 +231,45 @@ export const ViewClienteStore = () => {
               <option value={ClientKind.Normal}>Persona</option>
               <option value={ClientKind.Company}>Empresa</option>
             </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-500">Estado</label>
+            <select
+              name="status"
+              value={formData.status ?? client.status ?? ""}
+              onChange={handleChange}
+              disabled={!isEditing}
+              className="mt-1 w-full px-3 py-2 rounded-md border dark:bg-gray-800 border-gray-300"
+            >
+              <option value={ClientStatus.Active}>Activo</option>
+              <option value={ClientStatus.Inactive}>Inactivo</option>
+              <option value={ClientStatus.Pending}>Pendiente</option>
+              <option value={ClientStatus.Suspended}>Suspendida</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-500">Fecha de creación</label>
+            <input
+              value={new Date(client.createdAt).toLocaleDateString()}
+              disabled
+              className="mt-1 w-full px-3 py-2 rounded-md border dark:bg-gray-800 border-gray-300 bg-gray-100 dark:bg-gray-800"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-500">Fecha de actualización</label>
+            <input
+              value={new Date(client.updatedAt).toLocaleDateString()}
+              disabled
+              className="mt-1 w-full px-3 py-2 rounded-md border dark:bg-gray-800 border-gray-300 bg-gray-100 dark:bg-gray-800"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-500">Email Verificado</label>
+            <input
+              value={client.isVerifiedEmail ? "Sí" : "No"}
+              disabled
+              className="mt-1 w-full px-3 py-2 rounded-md border dark:bg-gray-800 border-gray-300 bg-gray-100 dark:bg-gray-800"
+            />
           </div>
         </div>
 
