@@ -48,5 +48,35 @@ query StoreClient($storeClientId: ID!) {
     identificationType
     status
     isVerifiedEmail
+    rut {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      chunkSize
+      fileUrl
+      url
+    }
+    addresses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      address
+      complement
+      city
+      state
+      zipCode
+      reference
+      isDefault
+      status
+      latitude
+      longitude
+    }
   }
 }

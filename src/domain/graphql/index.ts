@@ -41,6 +41,12 @@ export type AddReferenciaToProyectoInput = {
   valor: Scalars['Float']['input'];
 };
 
+export enum AddressStatus {
+  Active = 'ACTIVE',
+  Deleted = 'DELETED',
+  Inactive = 'INACTIVE'
+}
+
 export type ApprovalTokenInput = {
   code: Scalars['String']['input'];
   token: Scalars['String']['input'];
@@ -336,6 +342,20 @@ export type CreateClassInput = {
   status?: InputMaybe<ClassStatus>;
 };
 
+export type CreateClientAddressInput = {
+  address: Scalars['String']['input'];
+  city: Scalars['String']['input'];
+  clientId: Scalars['String']['input'];
+  complement?: InputMaybe<Scalars['String']['input']>;
+  isDefault?: Scalars['Boolean']['input'];
+  latitude?: InputMaybe<Scalars['Float']['input']>;
+  longitude?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  reference?: InputMaybe<Scalars['String']['input']>;
+  state: Scalars['String']['input'];
+  zipCode: Scalars['String']['input'];
+};
+
 export type CreateClientContactInput = {
   celular: Scalars['String']['input'];
   clientId: Scalars['String']['input'];
@@ -403,6 +423,7 @@ export type CreateFletesInput = {
   carrierCell: Scalars['String']['input'];
   contactClient: Scalars['String']['input'];
   description: Scalars['String']['input'];
+  isTienda: Scalars['Boolean']['input'];
   numberDocument: Scalars['String']['input'];
   numberGuia: Scalars['String']['input'];
   oip: Scalars['Float']['input'];
@@ -608,6 +629,7 @@ export type CreateStockInput = {
 };
 
 export type CreateStoreClientInput = {
+  captchaToken: Scalars['String']['input'];
   clientKind: ClientKind;
   clientType: ClientType;
   email: Scalars['String']['input'];
@@ -617,6 +639,13 @@ export type CreateStoreClientInput = {
   nit: Scalars['String']['input'];
   password: Scalars['String']['input'];
   phone?: InputMaybe<Scalars['String']['input']>;
+  rutId: Scalars['String']['input'];
+};
+
+export type CreateStoreReviewInput = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  productId: Scalars['ID']['input'];
+  rating: Scalars['Float']['input'];
 };
 
 export type CreateSubClassInput = {
@@ -1210,6 +1239,18 @@ export type FindStoreClientWhere = {
   phone?: InputMaybe<StringFilter>;
 };
 
+export type FindStoreReviewOrderBy = {
+  createdAt?: InputMaybe<OrderTypes>;
+};
+
+export type FindStoreReviewWhere = {
+  _and?: InputMaybe<Array<FindStoreReviewWhere>>;
+  _or?: InputMaybe<Array<FindStoreReviewWhere>>;
+  client?: InputMaybe<StringFilter>;
+  comment?: InputMaybe<StringFilter>;
+  product?: InputMaybe<StringFilter>;
+};
+
 export type FindSubClassOrderBy = {
   createdAt?: InputMaybe<OrderTypes>;
 };
@@ -1334,6 +1375,7 @@ export type Fletes = {
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  isTienda: Scalars['Boolean']['output'];
   numberDocument: Scalars['String']['output'];
   numberGuia: Scalars['String']['output'];
   oip: Scalars['Float']['output'];
@@ -1458,6 +1500,7 @@ export type Mutation = {
   addUserRole: User;
   assignSubordinate: User;
   bundleMailSend: SendLoteResult;
+  changePassword: Scalars['Boolean']['output'];
   clearCart: Scalars['Boolean']['output'];
   codeConfirmation: User;
   crearConcepto: ConceptoTable;
@@ -1468,6 +1511,7 @@ export type Mutation = {
   createCell: WsCell;
   createClass: Class;
   createClient: Client;
+  createClientAddress: StoreClientAddress;
   createClientContact: ClientContact;
   createCotizacion: Cotizacion;
   createDefaultRoles: Array<Role>;
@@ -1499,6 +1543,7 @@ export type Mutation = {
   createSesion: WsSesion;
   createStock: Stock;
   createStoreClient: StoreClient;
+  createStoreReview: StoreReview;
   createSubClass: SubClass;
   createTask: Task;
   createTaskComment: TaskComment;
@@ -1553,6 +1598,7 @@ export type Mutation = {
   removeSesion: WsSesion;
   removeStock: Stock;
   removeStoreClient: StoreClient;
+  removeStoreReview: StoreReview;
   removeSubClass: SubClass;
   removeSubordinate: User;
   removeTask: Task;
@@ -1584,6 +1630,7 @@ export type Mutation = {
   updateCell: WsCell;
   updateClass: Class;
   updateClient: Client;
+  updateClientAddress: StoreClientAddress;
   updateClientContact: ClientContact;
   updateConcepto: ConceptoTable;
   updateCotizacion: Cotizacion;
@@ -1615,6 +1662,7 @@ export type Mutation = {
   updateSesion: WsSesion;
   updateStock: Stock;
   updateStoreClient: StoreClient;
+  updateStoreReview: StoreReview;
   updateSubClass: SubClass;
   updateTask: Task;
   updateTaskComment: TaskComment;
@@ -1669,6 +1717,12 @@ export type MutationBundleMailSendArgs = {
 };
 
 
+export type MutationChangePasswordArgs = {
+  lastPassword: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+
 export type MutationCodeConfirmationArgs = {
   createInput: CodeConfirmationInput;
 };
@@ -1706,6 +1760,11 @@ export type MutationCreateClassArgs = {
 
 export type MutationCreateClientArgs = {
   createInput: CreateClientInput;
+};
+
+
+export type MutationCreateClientAddressArgs = {
+  input: CreateClientAddressInput;
 };
 
 
@@ -1851,6 +1910,11 @@ export type MutationCreateStockArgs = {
 
 export type MutationCreateStoreClientArgs = {
   createInput: CreateStoreClientInput;
+};
+
+
+export type MutationCreateStoreReviewArgs = {
+  createInput: CreateStoreReviewInput;
 };
 
 
@@ -2116,6 +2180,11 @@ export type MutationRemoveStoreClientArgs = {
 };
 
 
+export type MutationRemoveStoreReviewArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationRemoveSubClassArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2220,6 +2289,7 @@ export type MutationSignInAdminArgs = {
 
 
 export type MutationSignInClientArgs = {
+  captcha_token: Scalars['String']['input'];
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
 };
@@ -2267,6 +2337,11 @@ export type MutationUpdateClassArgs = {
 
 export type MutationUpdateClientArgs = {
   updateInput: UpdateClientInput;
+};
+
+
+export type MutationUpdateClientAddressArgs = {
+  input: UpdateClientAddressInput;
 };
 
 
@@ -2423,6 +2498,11 @@ export type MutationUpdateStockArgs = {
 
 export type MutationUpdateStoreClientArgs = {
   updateInput: UpdateStoreClientInput;
+};
+
+
+export type MutationUpdateStoreReviewArgs = {
+  updateInput: UpdateStoreReviewInput;
 };
 
 
@@ -2952,6 +3032,7 @@ export type Query = {
   findBundleInStop?: Maybe<WsBatch>;
   findOne: UserKey;
   findOneFacturaClienteByCode: FindOneFacturaClienteByCode;
+  findOneReferencia?: Maybe<FichaTecnica>;
   findSeachCotizacion: Scalars['Boolean']['output'];
   findStatisticStatusProyect: Array<ProyectoEmbudoDto>;
   findUtilidadReal: UtilidadRealModel;
@@ -2974,6 +3055,7 @@ export type Query = {
   notificationConfigsCount: MetadataPagination;
   notifications: Array<Notification>;
   notificationsCount: MetadataPagination;
+  obtenerStockReferencia?: Maybe<ReferenciaResponse>;
   oderAdmin: Order;
   order: Order;
   orders: Array<Order>;
@@ -3029,6 +3111,9 @@ export type Query = {
   storeClient: StoreClient;
   storeClients: Array<StoreClient>;
   storeClientsCount: MetadataPagination;
+  storeReview: StoreReview;
+  storeReviews: Array<StoreReview>;
+  storeReviewsCount: MetadataPagination;
   task: Task;
   taskComment: TaskComment;
   tasks: Array<Task>;
@@ -3431,6 +3516,11 @@ export type QueryFindOneFacturaClienteByCodeArgs = {
 };
 
 
+export type QueryFindOneReferenciaArgs = {
+  referencia: Scalars['String']['input'];
+};
+
+
 export type QueryFindSeachCotizacionArgs = {
   cotizacionSeachInput: CotizacionSeachInput;
 };
@@ -3537,6 +3627,11 @@ export type QueryNotificationsArgs = {
 
 export type QueryNotificationsCountArgs = {
   pagination?: InputMaybe<Pagination>;
+};
+
+
+export type QueryObtenerStockReferenciaArgs = {
+  referencia: Scalars['String']['input'];
 };
 
 
@@ -3850,6 +3945,25 @@ export type QueryStoreClientsCountArgs = {
 };
 
 
+export type QueryStoreReviewArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryStoreReviewsArgs = {
+  orderBy?: InputMaybe<Array<FindStoreReviewOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindStoreReviewWhere>;
+};
+
+
+export type QueryStoreReviewsCountArgs = {
+  orderBy?: InputMaybe<Array<FindStoreReviewOrderBy>>;
+  pagination?: InputMaybe<Pagination>;
+  where?: InputMaybe<FindStoreReviewWhere>;
+};
+
+
 export type QueryTaskArgs = {
   id: Scalars['ID']['input'];
 };
@@ -4013,6 +4127,14 @@ export type ReferenciaProyecto = {
   isActive: Scalars['Boolean']['output'];
   marca: Array<MarcaProyecto>;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ReferenciaResponse = {
+  __typename?: 'ReferenciaResponse';
+  Costo?: Maybe<Scalars['Float']['output']>;
+  Descripcion: Scalars['String']['output'];
+  Stock?: Maybe<Scalars['Int']['output']>;
+  referencia: Scalars['String']['output'];
 };
 
 export enum ResendOption {
@@ -4201,6 +4323,7 @@ export type Stock = {
 
 export type StoreClient = {
   __typename?: 'StoreClient';
+  addresses?: Maybe<Array<StoreClientAddress>>;
   clientKind: ClientKind;
   clientType: ClientType;
   createdAt: Scalars['DateTime']['output'];
@@ -4211,9 +4334,43 @@ export type StoreClient = {
   identificationType?: Maybe<UserDocumentTypes>;
   isVerifiedEmail: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
+  lastPasswordTime?: Maybe<Scalars['DateTime']['output']>;
   nit: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
+  rut: FileInfo;
   status: ClientStatus;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type StoreClientAddress = {
+  __typename?: 'StoreClientAddress';
+  address: Scalars['String']['output'];
+  city: Scalars['String']['output'];
+  client: StoreClient;
+  complement?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  isDefault: Scalars['Boolean']['output'];
+  latitude?: Maybe<Scalars['Float']['output']>;
+  longitude?: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
+  reference?: Maybe<Scalars['String']['output']>;
+  state: Scalars['String']['output'];
+  status: AddressStatus;
+  updatedAt: Scalars['DateTime']['output'];
+  zipCode: Scalars['String']['output'];
+};
+
+export type StoreReview = {
+  __typename?: 'StoreReview';
+  client: StoreClient;
+  comment?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  product: Product;
+  rating: Scalars['Float']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -4399,6 +4556,22 @@ export type UpdateClassInput = {
   status?: InputMaybe<ClassStatus>;
 };
 
+export type UpdateClientAddressInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  city?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['String']['input']>;
+  complement?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  isDefault?: InputMaybe<Scalars['Boolean']['input']>;
+  latitude?: InputMaybe<Scalars['Float']['input']>;
+  longitude?: InputMaybe<Scalars['Float']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  reference?: InputMaybe<Scalars['String']['input']>;
+  state?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<AddressStatus>;
+  zipCode?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateClientContactInput = {
   celular?: InputMaybe<Scalars['String']['input']>;
   clientId?: InputMaybe<Scalars['String']['input']>;
@@ -4484,6 +4657,7 @@ export type UpdateFletesInput = {
   contactClient?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
+  isTienda?: InputMaybe<Scalars['Boolean']['input']>;
   numberDocument?: InputMaybe<Scalars['String']['input']>;
   numberGuia?: InputMaybe<Scalars['String']['input']>;
   oip?: InputMaybe<Scalars['Float']['input']>;
@@ -4716,6 +4890,7 @@ export type UpdateStockInput = {
 };
 
 export type UpdateStoreClientInput = {
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
   clientKind?: InputMaybe<ClientKind>;
   clientType?: InputMaybe<ClientType>;
   email?: InputMaybe<Scalars['String']['input']>;
@@ -4727,7 +4902,15 @@ export type UpdateStoreClientInput = {
   nit?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
+  rutId?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<ClientStatus>;
+};
+
+export type UpdateStoreReviewInput = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  productId?: InputMaybe<Scalars['ID']['input']>;
+  rating?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type UpdateSubClassInput = {
@@ -5974,7 +6157,7 @@ export type StoreClientQueryVariables = Exact<{
 }>;
 
 
-export type StoreClientQuery = { __typename?: 'Query', storeClient: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType, identificationType?: UserDocumentTypes | null, status: ClientStatus, isVerifiedEmail: boolean } };
+export type StoreClientQuery = { __typename?: 'Query', storeClient: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType, identificationType?: UserDocumentTypes | null, status: ClientStatus, isVerifiedEmail: boolean, rut: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string }, addresses?: Array<{ __typename?: 'StoreClientAddress', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, address: string, complement?: string | null, city: string, state: string, zipCode: string, reference?: string | null, isDefault: boolean, status: AddressStatus, latitude?: number | null, longitude?: number | null }> | null } };
 
 export type TasksQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindTaskTypeOrderBy> | FindTaskTypeOrderBy>;
@@ -11990,6 +12173,36 @@ export const StoreClientDocument = gql`
     identificationType
     status
     isVerifiedEmail
+    rut {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      fileName
+      fileExtension
+      fileMode
+      fileMongoId
+      chunkSize
+      fileUrl
+      url
+    }
+    addresses {
+      id
+      createdAt
+      updatedAt
+      deletedAt
+      name
+      address
+      complement
+      city
+      state
+      zipCode
+      reference
+      isDefault
+      status
+      latitude
+      longitude
+    }
   }
 }
     `;

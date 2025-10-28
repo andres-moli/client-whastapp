@@ -73,7 +73,6 @@ export default function App() {
             <Route index path="/sesion" element={<SessionPage />} />
             <Route index path="/ficha" element={<FichaPage />} />
             <Route index path="/web" element={<AdminPage />} />
-            
             {/* STORE */}
             <Route path="/products" element={<ProductPage />} />
             <Route path="/orders" element={<OrdersPage />} />

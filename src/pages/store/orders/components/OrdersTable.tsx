@@ -13,7 +13,7 @@ export function OrdersTable() {
   const navigate = useNavigate();
   const { user } = useUser();
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
 
   // 🔍 Nuevos filtros
   const [dateFrom, setDateFrom] = useState("");
