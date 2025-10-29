@@ -3,6 +3,7 @@
   import { Eye, Loader2 } from "lucide-react";
   import clsx from "clsx";
   import {
+    AddressStatus,
     ClientKind,
     ClientStatus,
     ClientType,
@@ -71,9 +72,14 @@
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const { name, value } = e.target;
-      setFormData((prev: any) => ({ ...prev, [name]: value }));
+      const { name, value, type } = e.target;
+      const newValue = type === "checkbox" 
+        ? (e.target as HTMLInputElement).checked 
+        : value;
+
+      setFormData((prev: any) => ({ ...prev, [name]: newValue }));
     };
+
 
     const handleSave = async () => {
       try {
@@ -86,6 +92,7 @@
           cancelButtonText: "Cancelar",
         });
         if(result.dismiss) return
+        delete formData.isVerified
         const res = await updateClient({
           variables: {
             updateInput: { id: client.id, ...formData },
@@ -271,6 +278,19 @@
                 className="mt-1 w-full px-3 py-2 rounded-md border dark:bg-gray-800 border-gray-300 bg-gray-100 dark:bg-gray-800"
               />
             </div>
+            <div className="flex items-center mt-2">
+              <input
+                type="checkbox"
+                name="isRentencion"
+                checked={formData.isRentencion ?? client.isRentencion ?? false}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              />
+              <label className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                Cliente Retención
+              </label>
+            </div>
           </div>
 
           {isEditing && (
@@ -356,7 +376,7 @@
                     <span
                       className={clsx(
                         "px-2 py-1 rounded-md font-medium",
-                        addr.status === "Active"
+                        addr.status === AddressStatus.Active
                           ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
                           : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
                       )}

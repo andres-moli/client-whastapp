@@ -4332,6 +4332,7 @@ export type StoreClient = {
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   identificationType?: Maybe<UserDocumentTypes>;
+  isRentencion: Scalars['Boolean']['output'];
   isVerifiedEmail: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   lastPasswordTime?: Maybe<Scalars['DateTime']['output']>;
@@ -4897,6 +4898,7 @@ export type UpdateStoreClientInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   identificationType?: InputMaybe<UserDocumentTypes>;
+  isRentencion?: InputMaybe<Scalars['Boolean']['input']>;
   isVerifiedEmail?: InputMaybe<Scalars['Boolean']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   nit?: InputMaybe<Scalars['String']['input']>;
@@ -6157,7 +6159,7 @@ export type StoreClientQueryVariables = Exact<{
 }>;
 
 
-export type StoreClientQuery = { __typename?: 'Query', storeClient: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType, identificationType?: UserDocumentTypes | null, status: ClientStatus, isVerifiedEmail: boolean, rut: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string }, addresses?: Array<{ __typename?: 'StoreClientAddress', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, address: string, complement?: string | null, city: string, state: string, zipCode: string, reference?: string | null, isDefault: boolean, status: AddressStatus, latitude?: number | null, longitude?: number | null }> | null } };
+export type StoreClientQuery = { __typename?: 'Query', storeClient: { __typename?: 'StoreClient', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, nit: string, firstName: string, lastName?: string | null, email: string, phone?: string | null, clientKind: ClientKind, clientType: ClientType, identificationType?: UserDocumentTypes | null, status: ClientStatus, isVerifiedEmail: boolean, isRentencion: boolean, rut: { __typename?: 'FileInfo', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, fileName: string, fileExtension: string, fileMode: FileModes, fileMongoId?: string | null, chunkSize?: number | null, fileUrl?: string | null, url: string }, addresses?: Array<{ __typename?: 'StoreClientAddress', id: string, createdAt: any, updatedAt: any, deletedAt?: any | null, name: string, address: string, complement?: string | null, city: string, state: string, zipCode: string, reference?: string | null, isDefault: boolean, status: AddressStatus, latitude?: number | null, longitude?: number | null }> | null } };
 
 export type TasksQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<FindTaskTypeOrderBy> | FindTaskTypeOrderBy>;
@@ -12173,6 +12175,7 @@ export const StoreClientDocument = gql`
     identificationType
     status
     isVerifiedEmail
+    isRentencion
     rut {
       id
       createdAt

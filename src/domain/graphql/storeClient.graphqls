@@ -48,6 +48,7 @@ query StoreClient($storeClientId: ID!) {
     identificationType
     status
     isVerifiedEmail
+    isRentencion
     rut {
       id
       createdAt
