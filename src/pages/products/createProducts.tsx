@@ -8,6 +8,8 @@ import { apolloClient } from "../../main.config";
 import { ClientType, CreatePriceRuleInput, SubClass, useCreateProductMutation, useDeleteFileMutation, useSubClassesQuery } from "../../domain/graphql";
 import handleUploadImage from "../../lib/uptloadFile";
 import { formatCurrency } from "../../lib/utils";
+import { Import } from "lucide-react";
+import PageMeta from "../../components/common/PageMeta";
 
 // Schema de validación
 const productSchema = z.object({
@@ -24,7 +26,12 @@ const productSchema = z.object({
     ),
   subclassIds: z.array(z.string()),
 });
-
+interface RespuestaApi {
+  referencia: string;
+  Descripcion: string;
+  Stock: number;
+  Costo: number;
+}
 type RulePrice = { clientType: string; percentage: number };
 const CLIENT_TYPES = ClientType ? Object.values(ClientType) : [];
 export default function CreateProduct() {
@@ -52,7 +59,47 @@ export default function CreateProduct() {
   const { data, loading, error, refetch } = useSubClassesQuery({
     variables: { where: { name: { _contains: searchText } }, pagination: { skip: 0, take: 20 } },
   });
+ const [respuesta, setRespuesta] = useState<RespuestaApi | null>(null);
 
+  const fetchReferencia = async () => {
+    if (!reference.trim()) return;
+    setRespuesta(null);
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_APP_MICRO_GRAPH}ventas/referencia/tienda/${reference}`
+      );
+
+      if (!res.ok) {
+        throw new Error(`Error HTTP: ${res.status}`);
+      }
+
+      const text = await res.text();
+      if (!text) {
+        toast.info('No se encontro esta referencia en el fomplus')
+        setBasePrice(0)
+        setTitle('')
+        setRespuesta(null);
+        return;
+      }
+
+      const data: RespuestaApi = JSON.parse(text);
+      setBasePrice(data?.Costo ?? 0)
+      setTitle(data?.Descripcion ?? '')
+      setRespuesta(data);
+      
+    } catch (err) {
+      console.error("Error al consultar la API:", err);
+    }
+  };
+
+  // 3️⃣ Detectar la tecla Enter
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      fetchReferencia();
+    }
+  };
   //MUTATIONS
   const [deleteFile] = useDeleteFileMutation();
   const [createProduct] = useCreateProductMutation();
@@ -169,6 +216,7 @@ export default function CreateProduct() {
       toast.error("El precio base es requerido");
       return;
     }
+    
     const subclassIds = selectedSubclasses.map((s) => s.id);
     const parsed = productSchema.safeParse({
       reference,
@@ -238,6 +286,7 @@ export default function CreateProduct() {
 
   return (
     <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
+      <PageMeta description="hola" title="Productos crear"/>
       <h3 className="mb-4 font-semibold text-gray-800 text-theme-xl dark:text-white/90 sm:text-2xl">Crear producto</h3>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -246,6 +295,7 @@ export default function CreateProduct() {
           <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-white/90 ">Referencia</label>
           <input
             value={reference}
+            onKeyDown={handleKeyDown}
             onChange={(e) => setReference(e.target.value)}
             className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400"
           />
@@ -272,6 +322,15 @@ export default function CreateProduct() {
                 type="number"
                 value={basePrice}
                 onChange={(e) => setBasePrice(e.target.value)}
+                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-white/90 ">Stock</label>
+              <input
+                type="number"
+                value={respuesta?.Stock ?? 0}
+                disabled={true}
                 className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400"
               />
             </div>
