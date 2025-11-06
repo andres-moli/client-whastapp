@@ -64,10 +64,10 @@ export default function CreateProduct() {
   const fetchReferencia = async () => {
     if (!reference.trim()) return;
     setRespuesta(null);
-
+    const referencaEncode = encodeURI(reference)
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_APP_MICRO_GRAPH}ventas/referencia/tienda/${reference}`
+        `${import.meta.env.VITE_APP_MICRO_GRAPH}ventas/referencia/tienda/${referencaEncode}`
       );
 
       if (!res.ok) {
