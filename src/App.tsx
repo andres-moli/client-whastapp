@@ -42,7 +42,11 @@ import OrdersPage from "./pages/store/orders/OrdersPage";
 import OrderDetail from "./pages/store/orders/OrderDetail";
 import ClienteStorePage from "./pages/store/Client";
 import { ViewClienteStore } from "./pages/store/Client/ViewClienteStore";
-
+// import { StageEditor } from "./pages/scenario/components/StageEditor/StageEditor";
+// import StageViewer from "./pages/scenario/components/StageEditor/ViewStage";
+import json from './data.json'
+import ChatPage from "./pages/chats/ChatPage";
+import ChatSelector from "./pages/chats/ChatSelector";
 export default function App() {
   return (
     <>
@@ -52,7 +56,8 @@ export default function App() {
           {/* Dashboard Layout */}
           <Route path="/looger/:token"  element={<LoagerPage />}/>
           <Route path="/login" element={<LoginStore />} />
-
+          {/* <Route path="/demo" element={<StageEditor/>} /> */}
+          {/* <Route path="/viewver" element={<StageViewer layout={json}/>} /> */}
           <Route element={<StoreHeader />}>
             <Route index path="/home-store" element={<DashboardStore />} />
             <Route path="/product/:id" element={<ProductDetail />} />
@@ -73,6 +78,8 @@ export default function App() {
             <Route index path="/sesion" element={<SessionPage />} />
             <Route index path="/ficha" element={<FichaPage />} />
             <Route index path="/web" element={<AdminPage />} />
+            <Route index path="/chat" element={<ChatSelector />} />
+            <Route path="/chat/:numberSeller" element={<ChatPage />} />
             {/* STORE */}
             <Route path="/products" element={<ProductPage />} />
             <Route path="/orders" element={<OrdersPage />} />
