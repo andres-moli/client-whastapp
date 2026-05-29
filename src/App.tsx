@@ -44,7 +44,7 @@ import ClienteStorePage from "./pages/store/Client";
 import { ViewClienteStore } from "./pages/store/Client/ViewClienteStore";
 // import { StageEditor } from "./pages/scenario/components/StageEditor/StageEditor";
 // import StageViewer from "./pages/scenario/components/StageEditor/ViewStage";
-import json from './data.json'
+// import json from './data.json'
 import ChatPage from "./pages/chats/ChatPage";
 import ChatSelector from "./pages/chats/ChatSelector";
 export default function App() {
